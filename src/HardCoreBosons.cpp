@@ -17,7 +17,7 @@
 using Eigen::MatrixXd;
 using namespace boost::math::quadrature;
 
-using Cplx = complex<double>;
+using Cplx = complex<double>; //pseudoname for complex<double>
 
 const Cplx Cplx_i = Cplx(0,1);
 
