@@ -10,8 +10,7 @@
 
 
 #include <iostream>
-//#include <math.h>	 // definition of M_PI = pi = 3.14...
-#include <cmath> 	 // pow (x,3) = x^3 = x*x*x
+#include <cmath> 	 // pow (x,3) = x^3 = x*x*x and M_PI = pi = 3.14
 #include <complex.h> // trigoniometric functions sin() cos()
 
 using Eigen::MatrixXd;
