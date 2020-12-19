@@ -9,6 +9,7 @@
 
 
 #include <iostream>
+#include <math.h> // for definition of pi = 3.14...    M_PI
 
 using Eigen::MatrixXd;
 using namespace boost::math::quadrature;
@@ -24,7 +25,16 @@ int main(){
 //  std::cout << m << std::endl;
 
 
-	auto f = [](const double& t) { return t * t * std::atan(t); };
-	double Q = gauss<double, 100>::integrate(f, 0, 1);
-	std::cout << Q ;
+	//auto f = [](const double& t) { return t * t * std::atan(t); };
+	auto f = [](const double& t) { return std::exp(-t * t); };
+
+
+//	boost::multiprecision::cpp_bin_float_quad Q2 = gauss<boost::multiprecision::cpp_bin_float_quad, 20>::integrate(f2, -M_PI, M_PI);
+
+	double Q = gauss<double, 10>::integrate(f, -M_PI, M_PI);
+
+
+	std::cout << std::setprecision(16)
+		<< Q  << "\n"
+		<< 1.7724381183457067 ;
 }
