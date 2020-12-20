@@ -9,7 +9,7 @@
 #include "profile.h"
 
 
-#include <iostream>
+#include <iostream>	 // screen input output
 #include <cmath> 	 // pow (x,3) = x^3 = x*x*x and M_PI = pi = 3.14
 #include <complex.h> // trigoniometric functions sin() cos()
 
@@ -70,6 +70,53 @@ Cplx KernelFiniteRank (const Cplx kernel,
 }
 
 
+MatrixXd ConstructMatrix( 	const int size,
+							const double x,
+							const double beta,
+							const double gamma,
+							const double magnetization){
+	MatrixXd m(size,size);
+	gauss<double, 5> g;
+
+	auto momenta = [&](const size_t i){
+		size_t middle_point = g.abscissa().size();
+		bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
+		if (size_parity_is_odd){
+			return  i < middle_point ? -M_PI*g.abscissa()[middle_point - i - 1] : M_PI*g.abscissa()[i - middle_point];
+		} else {
+			return  i < (middle_point-1) ? -M_PI*g.abscissa()[middle_point - i - 1] : M_PI*g.abscissa()[i - middle_point + 1];
+		}
+	};
+
+	auto weight = [&](const size_t i){
+		size_t middle_point = g.weights().size();
+		bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
+		//cerr << size_parity_is_odd << endl;
+		if (size_parity_is_odd){
+			return  i < middle_point ? M_PI*g.weights()[middle_point - i - 1]
+									 : M_PI*g.weights()[i - middle_point];
+		} else {
+			return  i < (middle_point-1) ? M_PI*g.weights()[middle_point - i - 1]
+										 : M_PI*g.weights()[i - middle_point + 1];
+		}
+
+	};
+
+
+
+
+	return m;
+}
+
+/*
+ *  gauss<double, 10> g; in wolfram its
+ *  GaussianQuadratureWeights[10, -1, 1]
+ * 	g.weights() = {0.295524, 0.269267, 0.219086, 0.149451, 0.0666713} positive part
+ * 	g.abscissa()= {0.148874, 0.433395, 0.67941,  0.865063, 0.973907 } positive part
+ *
+ *	to obtain GaussianQuadratureWeights[10, -pi, pi] one should
+ *	pi*g.weights() and pi*g.abscissa()
+ */
 
 
 int main(){
@@ -82,31 +129,9 @@ int main(){
 //  std::cout << m << std::endl;
 
 
-	//auto f = [](const double& t) { return t * t * std::atan(t); };
-	auto f = [](const double& t) { return std::exp(-t * t); };
 
 
-	double Q{0};
-	{
-		LOG_DURATION("gauss  30");
-		Q = gauss<double, 30>::integrate(f, -M_PI, M_PI);
-	}
-	{
-		LOG_DURATION("gauss  40");
-		Q = gauss<double, 40>::integrate(f, -M_PI, M_PI);
-	}
-	{
-		LOG_DURATION("gauss 100");
-		Q = gauss<double, 100>::integrate(f, -M_PI, M_PI);
-	}
-	{
-		LOG_DURATION("gauss 500");
-		Q = gauss<double, 500>::integrate(f, -M_PI, M_PI);
-	}
-
-
-
-	std::cout << std::setprecision(16)
-		<< Q  << "\n"
-		<< 1.7724381183457067 ;
+//	std::cout << std::setprecision(16)
+//		<< Q  << "\n"
+//		<< 1.7724381183457067 ;
 }
