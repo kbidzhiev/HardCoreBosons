@@ -14,6 +14,7 @@
 #include <complex.h> // trigoniometric functions sin() cos()
 
 using Eigen::MatrixXd;
+using Eigen::MatrixXcf;
 using namespace boost::math::quadrature;
 
 using Cplx = complex<double>; //pseudoname for complex<double>
@@ -32,7 +33,7 @@ complex<double> Weight (const double momenta,
 			magnetization - cos(momenta) - Cplx_i * gamma * sin(momenta) ;
 
 	result /= sqrt_term ;
-	result *= -tanh(beta * sqrt_term /2.);
+	result *= -tanh(0.5*beta * sqrt_term);
 	result += 1;
 	result *= 0.5;
 
@@ -44,8 +45,7 @@ complex<double> Weight (const double momenta,
 Cplx Kernel (const Cplx weight,
 		const double x,
 		const double momenta1,
-		const double momenta2
-		){
+		const double momenta2) {
 	Cplx kernel = sin(0.5 * x * (momenta1-momenta2))/
 			sin(0.5 * x * (momenta1-momenta2));
 	Cplx result = -weight/M_PI;
@@ -65,33 +65,35 @@ Cplx KernelFiniteRank (const Cplx kernel,
 		){
 	Cplx result = kernel;
 	result += weight * exp(-Cplx_i * x * 0.5* (momenta1 + momenta2))
-		*exp(-Cplx_i * 0.5* (momenta1 - momenta2));
+		*exp(-Cplx_i * 0.5* (momenta1 - momenta2))/M_PI;
 	return result;
 }
 
 
-MatrixXd ConstructMatrix( 	const int size,
+MatrixXcf ConstructMatrix(
 							const double x,
 							const double beta,
 							const double gamma,
-							const double magnetization){
-	MatrixXd m(size,size);
-	gauss<double, 5> g;
+							const double magnetization,
+							const bool finite_rank = false){
+	//MatrixXd m(5,5);
+	MatrixXcf m(50,50);
+	gauss<double, 50> g;
+	bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
 
 	auto momenta = [&](const size_t i){
 		size_t middle_point = g.abscissa().size();
-		bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
 		if (size_parity_is_odd){
-			return  i < middle_point ? -M_PI*g.abscissa()[middle_point - i - 1] : M_PI*g.abscissa()[i - middle_point];
+			return  i < middle_point ? -M_PI*g.abscissa()[middle_point - i - 1]
+									  : M_PI*g.abscissa()[i - middle_point];
 		} else {
-			return  i < (middle_point-1) ? -M_PI*g.abscissa()[middle_point - i - 1] : M_PI*g.abscissa()[i - middle_point + 1];
+			return  i < (middle_point-1) ? -M_PI*g.abscissa()[middle_point - i - 1]
+										  : M_PI*g.abscissa()[i - middle_point + 1];
 		}
 	};
 
 	auto weight = [&](const size_t i){
 		size_t middle_point = g.weights().size();
-		bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
-		//cerr << size_parity_is_odd << endl;
 		if (size_parity_is_odd){
 			return  i < middle_point ? M_PI*g.weights()[middle_point - i - 1]
 									 : M_PI*g.weights()[i - middle_point];
@@ -102,10 +104,21 @@ MatrixXd ConstructMatrix( 	const int size,
 
 	};
 
+	size_t length = size_parity_is_odd ? 2 * g.abscissa().size()
+			: (2 * g.abscissa().size() -1);
 
-
-
-	return m;
+	for (size_t i = 0; i<length; i++){
+		for (size_t j = 0; j< length; j++){
+				Cplx TD_weight  = Weight (momenta(i), beta, gamma, magnetization);
+				Cplx kernel = Kernel (TD_weight, x, momenta(i), momenta(j) );
+				if (finite_rank == true){
+					kernel = KernelFiniteRank (kernel , TD_weight, x, momenta(i), momenta(j));
+				}
+				m(i,j) = sqrt(weight(i)) * kernel * sqrt(weight(j));
+			}
+	}
+	m +=  MatrixXcf::Identity(50, 50);
+	return  m;
 }
 
 /*
@@ -120,18 +133,14 @@ MatrixXd ConstructMatrix( 	const int size,
 
 
 int main(){
-//
-//  MatrixXd m(2,2);
-//  m(0,0) = 3;
-//  m(1,0) = 2.5;
-//  m(0,1) = -1;
-//  m(1,1) = m(1,0) + m(0,1);
-//  std::cout << m << std::endl;
+	{LOG_DURATION("N = 50");
 
+	MatrixXcf m = ConstructMatrix( 1., 100, 0, 0 );
 
+	MatrixXcf m_finite = ConstructMatrix( 1., 100, 0, 0, true );
+	//cout << m_finite << endl;
+	auto det = m.determinant() - m_finite.determinant();
+	cout << det << endl;
+	}
 
-
-//	std::cout << std::setprecision(16)
-//		<< Q  << "\n"
-//		<< 1.7724381183457067 ;
 }
