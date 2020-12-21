@@ -8,13 +8,14 @@
 #include "../../cpp_libs/eigen/Eigen/Dense"
 #include "profile.h"
 
-
+#include <fstream>	 // file input output
 #include <iostream>	 // screen input output
 #include <cmath> 	 // pow (x,3) = x^3 = x*x*x and M_PI = pi = 3.14
 #include <complex.h> // trigoniometric functions sin() cos()
 
 using Eigen::MatrixXd;
 using Eigen::MatrixXcf;
+using Eigen::MatrixXcd;
 using namespace boost::math::quadrature;
 
 using Cplx = complex<double>; //pseudoname for complex<double>
@@ -36,8 +37,6 @@ complex<double> Weight (const double momenta,
 	result *= -tanh(0.5*beta * sqrt_term);
 	result += 1;
 	result *= 0.5;
-
-
 	return result;
 }
 
@@ -47,7 +46,7 @@ Cplx Kernel (const Cplx weight,
 		const double momenta1,
 		const double momenta2) {
 	Cplx kernel = sin(0.5 * x * (momenta1-momenta2))/
-			sin(0.5 * x * (momenta1-momenta2));
+			sin(0.5 * (momenta1-momenta2));
 	Cplx result = -weight/M_PI;
 	if (abs (momenta1 - momenta2) > 1e-14 ){
 		result *= kernel;
@@ -65,21 +64,23 @@ Cplx KernelFiniteRank (const Cplx kernel,
 		){
 	Cplx result = kernel;
 	result += weight * exp(-Cplx_i * x * 0.5* (momenta1 + momenta2))
-		*exp(-Cplx_i * 0.5* (momenta1 - momenta2))/M_PI;
+		* exp(Cplx_i * 0.5* (momenta1 - momenta2))/M_PI;
 	return result;
 }
 
 
-MatrixXcf ConstructMatrix(
+
+MatrixXcd ConstructMatrix(
 							const double x,
 							const double beta,
 							const double gamma,
 							const double magnetization,
 							const bool finite_rank = false){
-	//MatrixXd m(5,5);
-	MatrixXcf m(50,50);
-	gauss<double, 50> g;
-	bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
+	const int s = 10;
+	gauss<double, 10> g;
+	MatrixXcd m(s,s);
+	auto identity = MatrixXcd::Identity(s, s);
+		bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
 
 	auto momenta = [&](const size_t i){
 		size_t middle_point = g.abscissa().size();
@@ -112,12 +113,13 @@ MatrixXcf ConstructMatrix(
 				Cplx TD_weight  = Weight (momenta(i), beta, gamma, magnetization);
 				Cplx kernel = Kernel (TD_weight, x, momenta(i), momenta(j) );
 				if (finite_rank == true){
+					cerr << "finite rank" << endl;
 					kernel = KernelFiniteRank (kernel , TD_weight, x, momenta(i), momenta(j));
 				}
 				m(i,j) = sqrt(weight(i)) * kernel * sqrt(weight(j));
 			}
 	}
-	m +=  MatrixXcf::Identity(50, 50);
+	m += identity;
 	return  m;
 }
 
@@ -130,17 +132,60 @@ MatrixXcf ConstructMatrix(
  *	to obtain GaussianQuadratureWeights[10, -pi, pi] one should
  *	pi*g.weights() and pi*g.abscissa()
  */
+complex<double> det(double coordinate) {
+	MatrixXcd m = ConstructMatrix(coordinate, 100, 0, 0);
+	if (abs(coordinate + 10.) < 1e-10){
+		cout << m << endl;
+	}
+	MatrixXcd m_finite = ConstructMatrix(coordinate, 100, 0, 0, true);
 
+	return m_finite.determinant() - m.determinant();
+}
 
 int main(){
-	{LOG_DURATION("N = 50");
+	double momenta1 = -2.5;
+	double momenta2 = 1.;
+	double beta = 2.9;
+	double gamma = -0.3;
+	double magnetization = 0.4;
+	double coordinate = -10;
 
-	MatrixXcf m = ConstructMatrix( 1., 100, 0, 0 );
+	auto weight = Weight (momenta1, beta, gamma, magnetization);
+	auto kern = Kernel(weight, coordinate, momenta1, momenta2);
+	cout << "weight = " << weight << endl;
+	cout << "kernel = " << kern << endl;
+	cout << ConstructMatrix(coordinate, beta,gamma,magnetization ) << endl;
 
-	MatrixXcf m_finite = ConstructMatrix( 1., 100, 0, 0, true );
-	//cout << m_finite << endl;
-	auto det = m.determinant() - m_finite.determinant();
-	cout << det << endl;
+	{
+		LOG_DURATION("total");
+		ofstream correlator; //here I'm defining output streams == files
+		ios_base::openmode mode;
+		mode = std::ofstream::out; //Erase previous file (if present)
+		correlator.open("Correlator_100.dat", mode);
+		correlator.precision(15);
+		correlator << "#x \t correlator \t time \n";
+
+		// ------- Correlator profile -------
+		double dx = 0.01;
+		double system_size = 1.0;
+		const int n_steps = system_size / dx;
+		for (int n = -n_steps / 2; n <= n_steps / 2; ++n) {
+			const double coordinate = n * dx; //+param.val("time_shift");
+		//  cout << "#x" << n << "/" << n_steps << "\ttime=" << time << endl;
+
+
+		//	for (int time = 0; time <= time_total; time++) {
+		//		correlator << "\"t=" << dt*time << "\"" << endl;
+
+//				const complex<double> determ = det(coordinate);
+//				correlator << coordinate << "\t" << real(determ) << "\t" << imag(determ) << "\t" << endl;
+		//	}
+		//	correlator << "\n\n"; //I need this part to separate time steps in *.dat files (for gnuplot)
+
+
+
+		}
+		//cout << det(-10.);
 	}
 
 }
