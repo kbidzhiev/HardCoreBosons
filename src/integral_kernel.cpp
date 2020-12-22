@@ -2,36 +2,57 @@
 #include "integral_kernel.hpp"
 
 #include <complex.h> // trigoniometric functions sin() cos()
+#include "boost/math/quadrature/gauss.hpp" // Gauss-Legendre quadrature
 
 
+using namespace boost::math::quadrature;
 using namespace std;
 
 const Cplx Cplx_i = Cplx(0,1);
 
 const double mass =  1.;
+const double g_coupling = 999.;
+
+
 
 const double Energy (const double q_momenta){
 	return  q_momenta * q_momenta * 0.5 / mass;
 }
 
-const double Tau (const double q_momenta,
-		const double coordinate,
-		const double time
-){
-	return time * Energy(q_momenta) - coordinate * q_momenta;
+const double Tau (const double q_momenta, const double x_coordinate, const double t_time){
+	return t_time * Energy(q_momenta) - x_coordinate * q_momenta;
 }
 
+Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const double t_time){
+	const double cutoff = 1e-10;
+	auto f = [&](const double& p_momenta) {
+		const double tau_2 = Tau(p_momenta, x_coordinate, t_time);
+		return exp(-Cplx_i * tau_2)/(p_momenta-q_momenta);
+	};
+	Cplx value_left = gauss<double, 50>::integrate(f, -M_PI, -cutoff); // Check how integration works
+	Cplx value_right = gauss<double, 50>::integrate(f, cutoff, M_PI);
+	return value_left + value_right;
+}
+
+const Cplx E_inf(const double eta, const double q_momenta, const double x_coordinate, const double t_time){
+	const double tau = Tau(q_momenta, x_coordinate, t_time);
+	Cplx result = PrincipalValue(q_momenta, x_coordinate, t_time)/M_PI;
+	result *= sin(0.5 * eta) * sin(0.5 * eta);
+	result += sin(0.5 * eta) * cos(0.5 * eta) * tau;
+	return result;
+}
+
+const Cplx E_plus();
+const Cplx E_minus();
 
 
 
 
 
-
-
-Cplx G_0(const double coordinate, const double time){
+Cplx G_0(const double x_coordinate, const double t_time){
 	Cplx result = exp(-Cplx_i * M_PI /4.);
-	result *= sqrt(1./(2 * M_PI * time));
-	result *= exp( (Cplx_i * coordinate * coordinate )/ (2 * time) );
+	result *= sqrt(1./(2 * M_PI * t_time));
+	result *= exp( (Cplx_i * x_coordinate * x_coordinate )/ (2 * t_time) );
 	return result;
 }
 
@@ -86,8 +107,7 @@ Cplx KernelFiniteRank (const Cplx kernel,
 
 
 
-const Cplx E_plus();
-const Cplx E_minus();
+
 
 const Cplx V_p_q(const double p_momenta, const double q_momenta, const double g_coupling){
 	return (E_plus(p_momenta) * E_minus(q_momenta) - E_minus(p_momenta) * E_plus (q_momenta))/(p_momenta- q_momenta);

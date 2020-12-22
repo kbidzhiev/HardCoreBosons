@@ -12,13 +12,17 @@ using Cplx = complex<double>; //pseudoname for complex<double>
 const double Energy (const double q_momenta);
 
 const double Tau (const double q_momenta,
-		const double coordinate,
-		const double time
+		const double x_coordinate,
+		const double t_time
 );
 
+const Cplx E_inf(const double eta,
+		const double q_momenta,
+		const double x_coordinate,
+		const double t_time);
 
 
-Cplx G_0(const double coordinate, const double time);//Eq (3.22) arxiv.org/abs/1511.05922
+Cplx G_0(const double x_coordinate, const double t_time);//Eq (3.22) arxiv.org/abs/1511.05922
 
 
 Cplx Weight (const double momenta,
