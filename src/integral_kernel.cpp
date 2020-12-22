@@ -14,6 +14,12 @@ const double Energy (const double q_momenta){
 	return  q_momenta * q_momenta * 0.5 / mass;
 }
 
+const double Tau (const double q_momenta,
+		const double coordinate,
+		const double time
+){
+	return time * Energy(q_momenta) - coordinate * q_momenta;
+}
 
 
 

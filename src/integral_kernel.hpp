@@ -11,7 +11,10 @@ using Cplx = complex<double>; //pseudoname for complex<double>
 
 const double Energy (const double q_momenta);
 
-
+const double Tau (const double q_momenta,
+		const double coordinate,
+		const double time
+);
 
 
 
