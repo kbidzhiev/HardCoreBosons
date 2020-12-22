@@ -9,14 +9,7 @@ using Cplx = complex<double>; //pseudoname for complex<double>
 
 
 
-const double Energy (const double q_momenta);
-
-
-
-
-
 Cplx G_0(const double coordinate, const double time);//Eq (3.22) arxiv.org/abs/1511.05922
-
 
 Cplx Weight (const double momenta,
 		const double beta,
@@ -34,15 +27,3 @@ Cplx KernelFiniteRank (const Cplx kernel,
 		const double momenta1,
 		const double momenta2);
 
-
-
-
-
-
-
-const Cplx E_plus();
-const Cplx E_minus();
-
-const Cplx V_p_q(const double momenta1, const double momenta2, const double g_coupling);
-
-const Cplx V_inf_p_q(const double momenta1, const double momenta2);

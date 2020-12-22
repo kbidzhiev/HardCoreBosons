@@ -31,8 +31,8 @@ MatrixXcd ConstructMatrix(
 							const double gamma,
 							const double magnetization,
 							const bool finite_rank = false){
-	const int s = 100;
-	gauss<double, 100> g;
+	const int s = 10;
+	gauss<double, 10> g;
 	MatrixXcd m(s,s);
 	auto identity = MatrixXcd::Identity(s, s);
 		bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
@@ -95,6 +95,8 @@ complex<double> det(double coordinate) {
 }
 
 int main(){
+
+
 
 	{
 		LOG_DURATION("total");
