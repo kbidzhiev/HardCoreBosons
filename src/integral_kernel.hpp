@@ -21,12 +21,39 @@ const Cplx E_inf(const double eta,
 		const double x_coordinate,
 		const double t_time);
 
+const double Teta(const double b_beta,
+		const double energy,
+		const double chem_potential);
+
+const Cplx E_minus(const double q_momenta,
+		const double x_coordinate,
+		const double t_time);
+
+const Cplx E_plus(const double eta,
+		const double q_momenta,
+		const double x_coordinate,
+		const double t_time);
+
+
+const Cplx V_p_q_inf(const double p_momenta,
+		const double q_momenta,
+		const double eta,
+		const double x_coordinate,
+		const double t_time);
+
+const Cplx W_p_q_inf(const double p_momenta,
+		const double q_momenta,
+		const double eta,
+		const double x_coordinate,
+		const double t_time);
+
+
 
 Cplx G_0(const double x_coordinate, const double t_time);//Eq (3.22) arxiv.org/abs/1511.05922
 
 
 Cplx Weight (const double momenta,
-		const double beta,
+		const double b_beta,
 		const double gamma,
 		const double magnetization);
 
@@ -43,13 +70,3 @@ Cplx KernelFiniteRank (const Cplx kernel,
 
 
 
-
-
-
-
-const Cplx E_plus();
-const Cplx E_minus();
-
-const Cplx V_p_q(const double momenta1, const double momenta2, const double g_coupling);
-
-const Cplx V_inf_p_q(const double momenta1, const double momenta2);

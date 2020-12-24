@@ -35,13 +35,13 @@ MatrixXcd ConstructMatrix(
 	gauss<double, 10> g;
 	MatrixXcd m(s,s);
 	auto identity = MatrixXcd::Identity(s, s);
-		bool size_parity_is_odd = g.abscissa().front() == 0 ? false : true ;
+	bool size_parity_is_odd = g.abscissa().front() == 0 ? true : false ;
 
 	auto momenta = [&](const size_t i){
 		size_t middle_point = g.abscissa().size();
 		if (size_parity_is_odd){
 			return  i < middle_point ? -M_PI*g.abscissa()[middle_point - i - 1]
-									  : M_PI*g.abscissa()[i - middle_point];
+									  : M_PI*g.abscissa()[i - middle_point]; //WRONG!
 		} else {
 			return  i < (middle_point-1) ? -M_PI*g.abscissa()[middle_point - i - 1]
 										  : M_PI*g.abscissa()[i - middle_point + 1];
