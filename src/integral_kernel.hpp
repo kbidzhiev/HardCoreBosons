@@ -16,6 +16,14 @@ const double Tau (const double q_momenta,
 		const double t_time
 );
 
+Cplx PrincipalValue(const double q_momenta,
+		const double x_coordinate,
+		const double t_time); // According to "Gauss-Legendre Principal value Integration"
+// by Julian V. Noble
+// DOI:10.1109/MCISE.2000.970778
+
+
+
 const Cplx E_inf(const double eta,
 		const double q_momenta,
 		const double x_coordinate,
@@ -33,7 +41,6 @@ const Cplx E_plus(const double eta,
 		const double q_momenta,
 		const double x_coordinate,
 		const double t_time);
-
 
 const Cplx V_p_q_inf(const double p_momenta,
 		const double q_momenta,
