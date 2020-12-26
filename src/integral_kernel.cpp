@@ -71,7 +71,8 @@ const Cplx E_inf(const double eta, const double q_momenta, const double x_coordi
 	Cplx result = PrincipalValue(q_momenta, x_coordinate, t_time)/M_PI;
 	result *= sin(0.5 * eta) * sin(0.5 * eta);
 	result += sin(0.5 * eta) * cos(0.5 * eta) * tau;
-	return result;
+	return 0;
+	//this part is wrong !! it doesnt integrate from -inf to inf
 }
 
 
