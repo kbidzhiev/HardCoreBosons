@@ -81,7 +81,7 @@ const double Teta(const double q_momenta){
 }
 
 const Cplx E_minus(const double q_momenta, const double x_coordinate, const double t_time ){
-	return sqrt(Teta(q_momenta)/ M_PI)*exp(Tau(q_momenta, x_coordinate, t_time));
+	return sqrt(Teta(q_momenta)/ M_PI)*exp(Cplx_i * 0.5 * Tau(q_momenta, x_coordinate, t_time));
 }
 
 const Cplx E_plus(const double eta, const double q_momenta, const double x_coordinate, const double t_time){
