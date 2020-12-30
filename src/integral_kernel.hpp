@@ -55,7 +55,6 @@ const Cplx W_p_q_inf(const double p_momenta,
 		const double t_time);
 
 
-
 Cplx G_0(const double x_coordinate, const double t_time);//Eq (3.22) arxiv.org/abs/1511.05922
 
 

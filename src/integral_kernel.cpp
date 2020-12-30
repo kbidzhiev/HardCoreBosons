@@ -1,23 +1,34 @@
 
 #include "integral_kernel.hpp"
 
+
+#include <cstdlib>
 #include <complex.h> // trigoniometric functions sin() cos()
 #include "boost/math/quadrature/gauss.hpp" // Gauss-Legendre quadrature
+#include <boost/math/quadrature/gauss_kronrod.hpp>
+#include <boost/math/quadrature/trapezoidal.hpp>
+
+
+#include <boost/math/quadrature/tanh_sinh.hpp>
+#include <boost/math/quadrature/exp_sinh.hpp>
+#include <boost/math/quadrature/sinh_sinh.hpp>
+
 
 
 using namespace boost::math::quadrature;
+using boost::math::quadrature::trapezoidal;
 using namespace std;
 
+using Cplx = complex<double>; //pseudoname for complex<double>
 const Cplx Cplx_i = Cplx(0,1);
 
-const double mass =  1.;
+const double mass = 1.0;
 const double g_coupling = 999.;
 const double b_beta = 100.;
 const double chem_potential = 0;
 
-
-
 const double Energy (const double q_momenta){
+
 	return  q_momenta * q_momenta * 0.5 / mass;
 }
 
@@ -25,25 +36,30 @@ const double Tau (const double q_momenta, const double x_coordinate, const doubl
 	return t_time * Energy(q_momenta) - x_coordinate * q_momenta;
 }
 
+Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const double t_time) {
 
-
-Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const double t_time){
-
-	auto ExpTau = [&](const double& p_momenta) {
+	auto ExpTau = [&](const double &p_momenta) {
 		return exp(-Cplx_i * Tau(p_momenta, x_coordinate, t_time));
 	};
-	auto f = [&](const double& p_momenta) {
-		return ExpTau(p_momenta)/(p_momenta-q_momenta);
+
+	auto f = [&](const double &p_momenta){
+		return (ExpTau(q_momenta + p_momenta) - ExpTau(q_momenta - p_momenta));
 	};
 
-	const double cutoff = 0.1;
+	auto u = [&](const double &t){
+		//double z = t/(1.0 - t);
+		//double Jacobian = 1.0 / ( (1. - t)*(1.0 - t));
+		return f(t) / t;
+	};
+
+	const double cutoff = 1.0;
 	const gauss<double, 100> g;
 
 	const auto x = [&](const size_t i) {
 		size_t middle_point = g.abscissa().size();
 		return i < middle_point ?
 				-g.abscissa()[middle_point - i - 1] :
-				 g.abscissa()[i - middle_point];
+				g.abscissa()[i - middle_point];
 	};
 
 	const auto weight = [&](const size_t i) {
@@ -55,26 +71,34 @@ Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const dou
 
 	Cplx value_pole = 0;
 	const int NUMBER_OF_POINTS = 2 * g.weights().size();
-	for (int i = 0 ; i < NUMBER_OF_POINTS; i++ ){
-		value_pole += (weight(i)/x(i)) *
-				(ExpTau( cutoff * x(i) + q_momenta) - ExpTau(q_momenta ) );
+	for (int i = 0; i < NUMBER_OF_POINTS; i++) {
+		value_pole += (weight(i) / x(i))
+				* (f(cutoff * x(i) ) - f(0));
 	}
+	value_pole *= 0.5; // symmetrization of integration limits requires factor 1/2
 
-	const Cplx value_left = g.integrate(f, -M_PI, q_momenta - cutoff); // Check how integration works
-	const Cplx value_right = g.integrate(f, q_momenta + cutoff, M_PI);
-
-	return value_left + value_pole + value_right;
+	Cplx left_and_right = 0;
+	complex<long double > df = 1.0 + Cplx_i;
+	double i = cutoff;
+	const double step = 1.;
+	while (abs(df) > 1e-10 ){
+		df = trapezoidal(u, double(i), double(i + step));
+		left_and_right += df;
+		//cout << "step = " << i/step << " real = " << real(df) << " imag = " << imag(df)  << endl;
+		i += step;
+	}
+	return value_pole + left_and_right;
 }
+
 
 const Cplx E_inf(const double eta, const double q_momenta, const double x_coordinate, const double t_time){
 	const double tau = Tau(q_momenta, x_coordinate, t_time);
 	Cplx result = PrincipalValue(q_momenta, x_coordinate, t_time)/M_PI;
 	result *= sin(0.5 * eta) * sin(0.5 * eta);
-	result += sin(0.5 * eta) * cos(0.5 * eta) * tau;
+	result += sin(0.5 * eta) * cos(0.5 * eta) * exp(-Cplx_i * tau);
 	return 0;
 	//this part is wrong !! it doesnt integrate from -inf to inf
 }
-
 
 const double Teta(const double q_momenta){
 	return exp(b_beta*(Energy(q_momenta) - chem_potential)) + 1 ;
@@ -86,12 +110,13 @@ const Cplx E_minus(const double q_momenta, const double x_coordinate, const doub
 
 const Cplx E_plus(const double eta, const double q_momenta, const double x_coordinate, const double t_time){
 	return E_inf(eta, q_momenta, x_coordinate, t_time)
-			* E_minus(q_momenta, x_coordinate, t_time );
+			* E_minus(q_momenta, x_coordinate, t_time);
 }
 
 
 const Cplx V_p_q_inf(const double p_momenta, const double q_momenta,
-		const double eta ,const double x_coordinate, const double t_time){
+		const double eta, const double x_coordinate, const double t_time){
+
 	const Cplx e_plus_p = E_plus(eta, p_momenta, x_coordinate, t_time);
 	const Cplx e_plus_q = E_plus(eta, q_momenta, x_coordinate, t_time);
 
@@ -110,7 +135,7 @@ const Cplx W_p_q_inf(const double p_momenta,
 	const Cplx e_plus_p = E_plus(eta, p_momenta, x_coordinate, t_time);
 	const Cplx e_plus_q = E_plus(eta, q_momenta, x_coordinate, t_time);
 
-	return e_plus_p * e_plus_p * 0.5 / (sin(0.5* eta) * sin(0.5* eta));
+	return e_plus_p * e_plus_q * 0.5 / (sin(0.5* eta) * sin(0.5* eta));
 }
 
 
