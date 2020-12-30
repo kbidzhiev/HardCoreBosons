@@ -101,7 +101,6 @@ const Cplx E_inf(const double& eta, const double& q_momenta, const double& x_coo
 	Cplx result = PrincipalValue(q_momenta, x_coordinate, t_time)/M_PI;
 	result *= sin(0.5 * eta) * sin(0.5 * eta);
 	result += sin(0.5 * eta) * cos(0.5 * eta) * exp(-Cplx_i * tau);
-	cout << result << endl;
 	return result;
 }
 
