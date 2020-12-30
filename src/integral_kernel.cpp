@@ -1,6 +1,6 @@
 
 #include "integral_kernel.hpp"
-
+#include <omp.h>
 
 #include <cstdlib>
 #include <complex.h> // trigoniometric functions sin() cos()
@@ -27,16 +27,16 @@ const double g_coupling = 999.;
 const double b_beta = 100.;
 const double chem_potential = 0;
 
-const double Energy (const double q_momenta){
+const double Energy (const double& q_momenta){
 
 	return  q_momenta * q_momenta * 0.5 / mass;
 }
 
-const double Tau (const double q_momenta, const double x_coordinate, const double t_time){
+const double Tau (const double& q_momenta, const double& x_coordinate, const double& t_time){
 	return t_time * Energy(q_momenta) - x_coordinate * q_momenta;
 }
 
-Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const double t_time) {
+Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const double& t_time) {
 
 	auto ExpTau = [&](const double &p_momenta) {
 		return exp(-Cplx_i * Tau(p_momenta, x_coordinate, t_time));
@@ -44,10 +44,6 @@ Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const dou
 
 	auto f = [&](const double &p_momenta){
 		return (ExpTau(q_momenta + p_momenta) - ExpTau(q_momenta - p_momenta));
-	};
-
-	auto u = [&](const double &t){
-		return f(t) / t;
 	};
 
 	const double cutoff = 1.0;
@@ -75,43 +71,56 @@ Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const dou
 	}
 	value_pole *= 0.5; // symmetrization of integration limits requires factor 1/2
 
+
+	auto u = [&](const double &t){
+		return f(t + cutoff) / (t + cutoff);
+	};
 	Cplx left_and_right = 0;
 	complex<long double > df = 1.0 + Cplx_i;
-	double i = cutoff;
-	const double step = 1.;
-	while (abs(df) > 1e-10 ){
-		df = trapezoidal(u, double(i), double(i + step));
+	double trunc = 1e-3;
+
+//#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(1)
+	for (size_t i = 0; abs(df) > trunc ; i++ ){
+
+		df = trapezoidal(u, double(i), double(i + 1));
 		left_and_right += df;
-		i += step;
+
 	}
+
+
+//	while (abs(df) > trunc ){
+//		df = trapezoidal(u, double(i), double(i + step));
+//		left_and_right += df;
+//		i += step;
+//	}
 	return value_pole + left_and_right;
 }
 
-const Cplx E_inf(const double eta, const double q_momenta, const double x_coordinate, const double t_time){
+const Cplx E_inf(const double& eta, const double& q_momenta, const double& x_coordinate, const double& t_time){
 	const double tau = Tau(q_momenta, x_coordinate, t_time);
 	Cplx result = PrincipalValue(q_momenta, x_coordinate, t_time)/M_PI;
 	result *= sin(0.5 * eta) * sin(0.5 * eta);
 	result += sin(0.5 * eta) * cos(0.5 * eta) * exp(-Cplx_i * tau);
-	return 0;
-	//this part is wrong !! it doesnt integrate from -inf to inf
+	cout << result << endl;
+	return result;
 }
 
-const double Teta(const double q_momenta){
+const double Teta(const double& q_momenta){
 	return exp(b_beta*(Energy(q_momenta) - chem_potential)) + 1 ;
 }
 
-const Cplx E_minus(const double q_momenta, const double x_coordinate, const double t_time ){
+const Cplx E_minus(const double& q_momenta, const double& x_coordinate, const double& t_time ){
 	return sqrt(Teta(q_momenta)/ M_PI)*exp(Cplx_i * 0.5 * Tau(q_momenta, x_coordinate, t_time));
 }
 
-const Cplx E_plus(const double eta, const double q_momenta, const double x_coordinate, const double t_time){
+const Cplx E_plus(const double& eta, const double& q_momenta, const double& x_coordinate, const double& t_time){
 	return E_inf(eta, q_momenta, x_coordinate, t_time)
 			* E_minus(q_momenta, x_coordinate, t_time);
 }
 
 
-const Cplx V_p_q_inf(const double p_momenta, const double q_momenta,
-		const double eta, const double x_coordinate, const double t_time){
+const Cplx V_p_q_inf(const double& p_momenta, const double& q_momenta,
+		const double& eta, const double& x_coordinate, const double& t_time){
 
 	const Cplx e_plus_p = E_plus(eta, p_momenta, x_coordinate, t_time);
 	const Cplx e_plus_q = E_plus(eta, q_momenta, x_coordinate, t_time);
@@ -122,11 +131,11 @@ const Cplx V_p_q_inf(const double p_momenta, const double q_momenta,
 	return (e_plus_p * e_minus_q - e_plus_q * e_minus_p)/(p_momenta- q_momenta);
 }
 
-const Cplx W_p_q_inf(const double p_momenta,
-		const double q_momenta,
-		const double eta,
-		const double x_coordinate,
-		const double t_time){
+const Cplx W_p_q_inf(const double& p_momenta,
+		const double& q_momenta,
+		const double& eta,
+		const double& x_coordinate,
+		const double& t_time){
 
 	const Cplx e_plus_p = E_plus(eta, p_momenta, x_coordinate, t_time);
 	const Cplx e_plus_q = E_plus(eta, q_momenta, x_coordinate, t_time);
@@ -135,7 +144,7 @@ const Cplx W_p_q_inf(const double p_momenta,
 }
 
 
-Cplx G_0(const double x_coordinate, const double t_time){
+Cplx G_0(const double& x_coordinate, const double& t_time){
 	Cplx result = exp(-Cplx_i * M_PI /4.);
 	result *= sqrt(1./(2 * M_PI * t_time));
 	result *= exp( (Cplx_i * x_coordinate * x_coordinate )/ (2 * t_time) );

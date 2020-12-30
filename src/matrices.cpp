@@ -3,6 +3,7 @@
 
 #include "boost/math/quadrature/gauss.hpp"
 #include <utility>
+#include <omp.h>
 
 using namespace std;
 using namespace boost::math::quadrature;
@@ -21,7 +22,7 @@ MatrixXcd IdMatrix(int size){
 }
 
 
-pair<MatrixXcd,MatrixXcd> OnePlusV_W(const double eta,const double x_coordinate, const double t_time){
+pair<MatrixXcd,MatrixXcd> OnePlusV_W(const double& eta,const double& x_coordinate, const double& t_time){
 
 	const gauss<double, 10> g;
 	const int s = 10;
@@ -44,41 +45,50 @@ pair<MatrixXcd,MatrixXcd> OnePlusV_W(const double eta,const double x_coordinate,
 
 
 
-	for (size_t i = 0; i< s; i++){
-		for (size_t j = 0; j< s; j++){
-			cout << "(i,j) = (" << i << ", " << j <<")" << endl;
-			{
-				LOG_DURATION("V");
-				V(i,j) = sqrt(weight(i))
+
+//omp_set_num_threads (omp_get_num_procs()); // number of threads = num of processors
+//#pragma omp parallel for collapse(2)
+
+
+#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
+		for (size_t i = 0; i < s; i++) {
+			for (size_t j = 0; j < s; j++) {
+				//cout << "V(i,j) = (" << i << ", " << j << ") \n";
+				{
+					//LOG_DURATION("V");
+					V(i, j) = sqrt(weight(i))
 							* V_p_q_inf(x(i), x(j), eta, x_coordinate, t_time)
 							* sqrt(weight(j));
-			}
-			{
-				LOG_DURATION("W");
-				W(i,j) = sqrt(weight(i))
+					cout << "V(i,j) = " << V(i,j) << "\n";
+				}
+				{
+					//LOG_DURATION("W");
+					W(i, j) = sqrt(weight(i))
 							* W_p_q_inf(x(i), x(j), eta, x_coordinate, t_time)
 							* sqrt(weight(j));
+				}
 			}
-			}
-	}
-
+		}
 	return {IdMatrix(s) + V,W};
 }
 
 
 
 
-Cplx G_inf (const double x_coordinate, const double t_time){
+Cplx G_inf (const double& x_coordinate, const double& t_time){
 	auto f = [&](double eta){
 		auto [one_plus_V, W] = OnePlusV_W(eta, x_coordinate, t_time);
 		Cplx detV = one_plus_V.determinant();
 		Cplx detV_W = (one_plus_V - W).determinant();
 		Cplx g0 = G_0(x_coordinate, t_time) - 1.0;
+		cout <<  "detV = " << detV
+			<<  " detV_W = " << detV_W
+			<<  " g0 = " << g0 << '\n' ;
 		return g0*detV + detV_W;
 	};
 
 
-	const gauss<double, 50> g;
+	const gauss<double, 12> g;
 	Cplx result = g.integrate(f, -M_PI,M_PI);
 	return result/(2*M_PI);
 }
