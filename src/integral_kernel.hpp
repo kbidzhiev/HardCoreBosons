@@ -18,7 +18,9 @@ const double Tau (const double q_momenta,
 
 Cplx PrincipalValue(const double q_momenta,
 		const double x_coordinate,
-		const double t_time); // According to "Gauss-Legendre Principal value Integration"
+		const double t_time);
+// from (-1,1) I integrate with Gauss, from 1, to \infty with trapezoid
+// According to "Gauss-Legendre Principal value Integration"
 // by Julian V. Noble
 // DOI:10.1109/MCISE.2000.970778
 
