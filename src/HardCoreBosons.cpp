@@ -79,6 +79,7 @@ int main(){
 	double x_coordinate = -3.0;
 	double t_time = 2.0;
 	{	LOG_DURATION("total");
-		cout << PrincipalValue( pole,  x_coordinate,  t_time) << endl;
+		//cout << PrincipalValue( pole,  x_coordinate,  t_time) << endl;
+		cout << G_inf (x_coordinate, t_time) << endl;
 	}
 }

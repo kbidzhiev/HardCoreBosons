@@ -24,8 +24,6 @@ Cplx PrincipalValue(const double q_momenta,
 // by Julian V. Noble
 // DOI:10.1109/MCISE.2000.970778
 
-
-
 const Cplx E_inf(const double eta,
 		const double q_momenta,
 		const double x_coordinate,

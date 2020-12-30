@@ -47,13 +47,11 @@ Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const dou
 	};
 
 	auto u = [&](const double &t){
-		//double z = t/(1.0 - t);
-		//double Jacobian = 1.0 / ( (1. - t)*(1.0 - t));
 		return f(t) / t;
 	};
 
 	const double cutoff = 1.0;
-	const gauss<double, 100> g;
+	const gauss<double, 50> g;
 
 	const auto x = [&](const size_t i) {
 		size_t middle_point = g.abscissa().size();
@@ -84,12 +82,10 @@ Cplx PrincipalValue(const double q_momenta, const double x_coordinate, const dou
 	while (abs(df) > 1e-10 ){
 		df = trapezoidal(u, double(i), double(i + step));
 		left_and_right += df;
-		//cout << "step = " << i/step << " real = " << real(df) << " imag = " << imag(df)  << endl;
 		i += step;
 	}
 	return value_pole + left_and_right;
 }
-
 
 const Cplx E_inf(const double eta, const double q_momenta, const double x_coordinate, const double t_time){
 	const double tau = Tau(q_momenta, x_coordinate, t_time);
@@ -139,14 +135,16 @@ const Cplx W_p_q_inf(const double p_momenta,
 }
 
 
-
-
 Cplx G_0(const double x_coordinate, const double t_time){
 	Cplx result = exp(-Cplx_i * M_PI /4.);
 	result *= sqrt(1./(2 * M_PI * t_time));
 	result *= exp( (Cplx_i * x_coordinate * x_coordinate )/ (2 * t_time) );
 	return result;
 }
+
+
+
+
 
 Cplx Weight (const double momenta,
 		const double b_beta,

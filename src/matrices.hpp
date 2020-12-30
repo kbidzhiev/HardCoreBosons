@@ -14,5 +14,9 @@ using Eigen::MatrixXcd;
 
 MatrixXcd IdMatrix(int size);
 
-MatrixXcd V(const double eta ,const double x_coordinate, const double t_time);
+pair<MatrixXcd,MatrixXcd> OnePlusV_W (const double eta,
+		const double x_coordinate,
+		const double t_time);
 
+
+Cplx G_inf (const double x_coordinate, const double t_time);

@@ -1,9 +1,8 @@
-
-
 #include "matrices.hpp"
+#include "profile.h"
 
 #include "boost/math/quadrature/gauss.hpp"
-
+#include <utility>
 
 using namespace std;
 using namespace boost::math::quadrature;
@@ -22,46 +21,70 @@ MatrixXcd IdMatrix(int size){
 }
 
 
-//
-//auto momenta = [&](const size_t i){
-//		size_t middle_point = g.abscissa().size();
-//		if (size_parity_is_odd){
-//			return  i < middle_point ? -M_PI*g.abscissa()[middle_point - i - 1]
-//									  : M_PI*g.abscissa()[i - middle_point]; //WRONG!
-//		} else {
-//			return  i < (middle_point-1) ? -M_PI*g.abscissa()[middle_point - i - 1]
-//										  : M_PI*g.abscissa()[i - middle_point + 1];
-//		}
-//	};
-//
-//	auto weight = [&](const size_t i){
-//		size_t middle_point = g.weights().size();
-//		if (size_parity_is_odd){
-//			return  i < middle_point ? M_PI*g.weights()[middle_point - i - 1]
-//									 : M_PI*g.weights()[i - middle_point];
-//		} else {
-//			return  i < (middle_point-1) ? M_PI*g.weights()[middle_point - i - 1]
-//										 : M_PI*g.weights()[i - middle_point + 1];
-//		}
-//
-//	};
+pair<MatrixXcd,MatrixXcd> OnePlusV_W(const double eta,const double x_coordinate, const double t_time){
 
+	const gauss<double, 10> g;
+	const int s = 10;
+	MatrixXcd V(s,s);
+	MatrixXcd W(s,s);
 
-MatrixXcd V(const double eta ,const double x_coordinate, const double t_time){
+	const auto x = [&](const size_t i) {
+		size_t middle_point = g.abscissa().size();
+		return i < middle_point ?
+				-g.abscissa()[middle_point - i - 1] :
+				g.abscissa()[i - middle_point];
+	};
 
-	MatrixXcd result(50,50);
+	const auto weight = [&](const size_t i) {
+		size_t middle_point = g.weights().size();
+		return i < middle_point ?
+				g.weights()[middle_point - i - 1] :
+				g.weights()[i - middle_point];
+	};
 
 
 
-//	for (size_t i = 0; i<length; i++){
-//		for (size_t j = 0; j< length; j++){
-//
-//				m(i,j) = sqrt(weight(i)) * V_p_q_inf(p_momenta, q_momenta, eta, x_coordinate, t_time)
-//						* sqrt(weight(j));
-//			}
-//	}
-	return result;
+	for (size_t i = 0; i< s; i++){
+		for (size_t j = 0; j< s; j++){
+			cout << "(i,j) = (" << i << ", " << j <<")" << endl;
+			{
+				LOG_DURATION("V");
+				V(i,j) = sqrt(weight(i))
+							* V_p_q_inf(x(i), x(j), eta, x_coordinate, t_time)
+							* sqrt(weight(j));
+			}
+			{
+				LOG_DURATION("W");
+				W(i,j) = sqrt(weight(i))
+							* W_p_q_inf(x(i), x(j), eta, x_coordinate, t_time)
+							* sqrt(weight(j));
+			}
+			}
+	}
+
+	return {IdMatrix(s) + V,W};
 }
+
+
+
+
+Cplx G_inf (const double x_coordinate, const double t_time){
+	auto f = [&](double eta){
+		auto [one_plus_V, W] = OnePlusV_W(eta, x_coordinate, t_time);
+		Cplx detV = one_plus_V.determinant();
+		Cplx detV_W = (one_plus_V - W).determinant();
+		Cplx g0 = G_0(x_coordinate, t_time) - 1.0;
+		return g0*detV + detV_W;
+	};
+
+
+	const gauss<double, 50> g;
+	Cplx result = g.integrate(f, -M_PI,M_PI);
+	return result/(2*M_PI);
+}
+
+
+
 
 
 MatrixXcd ConstructMatrix(
