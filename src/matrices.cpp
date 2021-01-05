@@ -15,6 +15,8 @@ using Cplx = complex<double>;
 
 const Cplx Cplx_i = Cplx(0, 1);
 
+gauss<double, 10> g;
+
 MatrixXcd IdMatrix(int size) {
 	return MatrixXcd::Identity(size, size);
 }
@@ -22,7 +24,7 @@ MatrixXcd IdMatrix(int size) {
 pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		const double &x_coordinate, const double &t_time) {
 
-	const gauss<double, 10> g;
+	//const gauss<double, 20> g;, 10> g;
 	const int s = 10;
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
@@ -76,7 +78,11 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 			}
 		}
 	}
-	return {IdMatrix(s) + V, IdMatrix(s) + V - W};
+
+	V += IdMatrix(s); // Id(s,s) + V
+	W = V - W;			// W - Id(s,s) - V ;
+
+	return {V, W};
 }
 
 Cplx G_inf(const double &x_coordinate, const double &t_time) {
@@ -89,7 +95,7 @@ Cplx G_inf(const double &x_coordinate, const double &t_time) {
 		return g0 * detV + detV_W;
 	};
 
-	const gauss<double, 20> g;
+	//const gauss<double, 20> g;
 	Cplx result = g.integrate(f, -M_PI, M_PI);
 	return result / (2 * M_PI);
 }

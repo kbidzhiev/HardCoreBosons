@@ -36,16 +36,6 @@
 
 
 
-//complex<double> det(double coordinate) {
-//	MatrixXcd m = ConstructMatrix(coordinate, 100, 0, 0);
-//
-//	MatrixXcd m_finite = ConstructMatrix(coordinate, 100, 0, 0, true);
-//
-//	return m_finite.determinant() - m.determinant();
-//}
-
-
-
 struct Parameters {
 	const double mass = 1.;
 	const double g_coupling = 999.;

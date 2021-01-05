@@ -9,12 +9,6 @@
 #include <boost/math/quadrature/trapezoidal.hpp>
 
 
-#include <boost/math/quadrature/tanh_sinh.hpp>
-#include <boost/math/quadrature/exp_sinh.hpp>
-#include <boost/math/quadrature/sinh_sinh.hpp>
-
-
-
 using namespace boost::math::quadrature;
 using boost::math::quadrature::trapezoidal;
 using namespace std;
@@ -26,6 +20,12 @@ const double mass = 1.0;
 const double g_coupling = 999.;
 const double b_beta = 100.;
 const double chem_potential = 0;
+
+const gauss<double, 10> g;
+double TRUNC = 1e-2;
+
+//(0.027067, 0.261572)
+//(0.0269412,0.260941)
 
 double Energy (const double& q_momenta){
 	return  q_momenta * q_momenta * 0.5 / mass;
@@ -50,7 +50,7 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 	};
 
 	const double cutoff = 1.0;
-	const gauss<double, 20> g;
+	//const gauss<double, 20> g;, 20> g;
 
 	const auto x = [&](const size_t i) {
 		size_t middle_point = g.abscissa().size();
@@ -80,8 +80,8 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 	};
 	Cplx left_and_right = 0;
 	complex<long double > df = 1.0 + Cplx_i;
-	double trunc = 1e-3;
 
+	double trunc = TRUNC;
 //#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(1)
 	for (size_t i = 0; abs(df) > trunc ; i++ ){
 
@@ -120,7 +120,7 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 	};
 
 	const double cutoff = 1.0;
-	const gauss<double, 20> g;
+	//const gauss<double, 20> g;, 20> g;
 
 	const auto x = [&](const size_t i) {
 		size_t middle_point = g.abscissa().size();
@@ -150,7 +150,8 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 	};
 	Cplx left_and_right = 0;
 	complex<long double > df = 1.0 + Cplx_i;
-	double trunc = 1e-3;
+
+	double trunc = TRUNC;
 
 //#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(1)
 	for (size_t i = 0; abs(df) > trunc ; i++ ){
