@@ -11,6 +11,7 @@
 
 #include <fstream>	 // file input output
 #include <iostream>	 // screen input output
+#include <iomanip>   // setprecision(15)
 #include <cmath> 	 // pow (x,3) = x^3 = x*x*x and M_PI = pi = 3.14
 					 // trigoniometric functions sin() cos()
 #include <complex.h>
@@ -26,7 +27,7 @@
 /*
  *  gauss<double, 10> g; in wolfram its
  *  GaussianQuadratureWeights[10, -1, 1]
- * 	g.weights() = {0.295524, 0.269267, 0.219086, 0.149451, 0.0666713} positive part
+ * 	g.weights() = {0.295524, 0.269267, 0.219086, 0.149451, 0.0666713} always positive
  * 	g.abscissa()= {0.148874, 0.433395, 0.67941,  0.865063, 0.973907 } positive part
  *
  *	to obtain GaussianQuadratureWeights[10, -pi, pi] one should
@@ -48,7 +49,7 @@
 struct Parameters {
 	const double mass = 1.;
 	const double g_coupling = 999.;
-	const double b_beta = 100.;
+	const double b_beta = 10.;
 	const double chem_potential = 0;
 };
 
@@ -79,7 +80,9 @@ int main(){
 	double x_coordinate = -3.0;
 	double t_time = 2.0;
 	{	LOG_DURATION("total");
-		//cout << PrincipalValue( pole,  x_coordinate,  t_time) << endl;
+		//cout << setprecision(15) << endl;
+		//cout << PrincipalValue ( pole,  x_coordinate,  t_time) << endl;
+		//cout << PrincipalValueDerivative( pole,  x_coordinate,  t_time) << endl;
 		cout << G_inf (x_coordinate, t_time) << endl;
 	}
 }
