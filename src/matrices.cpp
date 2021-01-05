@@ -22,8 +22,8 @@ MatrixXcd IdMatrix(int size) {
 pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		const double &x_coordinate, const double &t_time) {
 
-	const gauss<double, 8> g;
-	const int s = 8;
+	const gauss<double, 10> g;
+	const int s = 10;
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
 
@@ -89,16 +89,16 @@ Cplx G_inf(const double &x_coordinate, const double &t_time) {
 		return g0 * detV + detV_W;
 	};
 
-	const gauss<double, 12> g;
+	const gauss<double, 20> g;
 	Cplx result = g.integrate(f, -M_PI, M_PI);
 	return result / (2 * M_PI);
 }
 
 MatrixXcd ConstructMatrix(const double x, const double beta, const double gamma,
 		const double magnetization, const bool finite_rank = false) {
-	const int s = 10;
+	const int s = 20;
 	MatrixXcd m(s, s);
-	gauss<double, 10> g;
+	gauss<double, 20> g;
 	auto identity = MatrixXcd::Identity(s, s);
 	bool size_parity_is_odd = g.abscissa().front() == 0 ? true : false;
 

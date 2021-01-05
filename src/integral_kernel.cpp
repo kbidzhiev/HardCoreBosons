@@ -28,7 +28,6 @@ const double b_beta = 100.;
 const double chem_potential = 0;
 
 double Energy (const double& q_momenta){
-
 	return  q_momenta * q_momenta * 0.5 / mass;
 }
 
@@ -51,7 +50,7 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 	};
 
 	const double cutoff = 1.0;
-	const gauss<double, 30> g;
+	const gauss<double, 20> g;
 
 	const auto x = [&](const size_t i) {
 		size_t middle_point = g.abscissa().size();
@@ -121,7 +120,7 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 	};
 
 	const double cutoff = 1.0;
-	const gauss<double, 30> g;
+	const gauss<double, 20> g;
 
 	const auto x = [&](const size_t i) {
 		size_t middle_point = g.abscissa().size();
