@@ -44,7 +44,7 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 	auto f = [&](const double &p_momenta){
 		/*
 		 * Hilbert transformation
-		 * https://en.wikipedia.org/wiki/Hilbert_transform
+		 * https://en.wikipedia.org/wiki/Hilbert_transformation
 		 */
 		return (ExpTau(q_momenta + p_momenta) - ExpTau(q_momenta - p_momenta));
 	};
@@ -156,6 +156,7 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 //#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(1)
 	for (size_t i = 0; abs(df) > trunc ; i++ ){
 
+		//df = g.integrate(u, double(i), double(i+1)); //(-0.00398057,0.227016)
 		df = trapezoidal(u, double(i), double(i + 1));
 		left_and_right += df;
 

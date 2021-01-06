@@ -87,9 +87,9 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 
 Cplx G_inf(const double &x_coordinate, const double &t_time) {
 	auto f = [&](double eta) {
-		auto [one_plus_V, W] = OnePlusV_W(eta, x_coordinate, t_time);
+		auto [one_plus_V, one_plus_V_minus_W] = OnePlusV_W(eta, x_coordinate, t_time);
 		Cplx detV = one_plus_V.determinant();
-		Cplx detV_W = W.determinant();
+		Cplx detV_W = one_plus_V_minus_W.determinant();
 		Cplx g0 = G_0(x_coordinate, t_time) - 1.0;
 		//cout << "detV = " << detV << " detV_W = " << detV_W << " g0 = " << g0 << '\n';
 		return g0 * detV + detV_W;

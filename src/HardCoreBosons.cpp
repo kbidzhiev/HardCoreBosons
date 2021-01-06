@@ -47,32 +47,34 @@ int main(){
 
 
 
-//	{
-//
-//		ofstream correlator; //here I'm defining output streams == files
-//		ios_base::openmode mode;
-//		mode = std::ofstream::out; //Erase previous file (if present)
-//		correlator.open("Correlator_100.dat", mode);
-//		correlator.precision(15);
-//		correlator << "#x \t correlator \t time \n";
-//
-//		// ------- Correlator profile -------
-//		double dx = 0.1;
-//		double system_size = 20.0;
-//		const int n_steps = system_size / dx;
-//		for (int n = -n_steps / 2; n <= n_steps / 2; ++n) {
-//			const double coordinate = n * dx; //+param.val("time_shift");
-//			//const complex<double> determ = det(coordinate);
-//			//correlator << coordinate << "\t" << real(determ) << "\t" << imag(determ) << "\t" << endl;
-//		}
-//	}
-	double pole = 10.0;
-	double x_coordinate = -3.0;
-	double t_time = 2.0;
-	{	LOG_DURATION("total");
-		//cout << setprecision(15) << endl;
-		//cout << PrincipalValue ( pole,  x_coordinate,  t_time) << endl;
-		//cout << PrincipalValueDerivative( pole,  x_coordinate,  t_time) << endl;
-		cout << G_inf (x_coordinate, t_time) << endl;
+	{
+
+		ofstream correlator; //here I'm defining output streams == files
+		ios_base::openmode mode;
+		mode = std::ofstream::out; //Erase previous file (if present)
+		correlator.open("Correlator.dat", mode);
+		correlator.precision(15);
+		correlator << "#x \t correlator \t time \n";
+
+		// ------- Correlator profile -------
+		double dx = 0.1;
+		double system_size = 1.0;
+		const double t_time = 0.1;
+		const int n_steps = system_size / dx;
+		for (int n = -n_steps / 2; n <= n_steps / 2; ++n) {
+			LOG_DURATION("time step");
+			const double x_coordinate = n * dx; //+param.val("time_shift");
+			const complex<double> determ = G_inf (x_coordinate, t_time);
+			correlator << x_coordinate << "\t" << real(determ) << "\t" << imag(determ) << "\n" ;
+		}
 	}
+//	double pole = 10.0;
+//	double x_coordinate = -3.0;
+//	double t_time = 2.0;
+//	{	LOG_DURATION("total");
+//		//cout << setprecision(15) << endl;
+//		//cout << PrincipalValue ( pole,  x_coordinate,  t_time) << endl;
+//		//cout << PrincipalValueDerivative( pole,  x_coordinate,  t_time) << endl;
+//	//	cout << G_inf (x_coordinate, t_time) << endl;
+//	}
 }
