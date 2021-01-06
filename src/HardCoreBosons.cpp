@@ -47,7 +47,7 @@ int main(){
 
 
 
-	{
+	{ LOG_DURATION("Total");
 
 		ofstream correlator; //here I'm defining output streams == files
 		ios_base::openmode mode;
@@ -57,17 +57,23 @@ int main(){
 		correlator << "#x \t correlator \t time \n";
 
 		// ------- Correlator profile -------
-		double dx = 0.1;
-		double system_size = 1.0;
-		const double t_time = 0.1;
+
+
+		const double t_time = 0.01;
+		const double system_size = 1.0;
+		const double dx = 0.01;
 		const int n_steps = system_size / dx;
+		int counter = 0;
 		for (int n = -n_steps / 2; n <= n_steps / 2; ++n) {
 			LOG_DURATION("time step");
 			const double x_coordinate = n * dx; //+param.val("time_shift");
-			const complex<double> determ = G_inf (x_coordinate, t_time);
-			correlator << x_coordinate << "\t" << real(determ) << "\t" << imag(determ) << "\n" ;
+			const complex<double> g_inf = G_inf (x_coordinate, t_time);
+			correlator << x_coordinate << "\t" << real(g_inf) << "\t" << imag(g_inf) << "\n" ;
+			cout << "step " << counter << "/" << n_steps << '\n';
+			counter++;
 		}
 	}
+	cout << "DONE !" << endl;
 //	double pole = 10.0;
 //	double x_coordinate = -3.0;
 //	double t_time = 2.0;

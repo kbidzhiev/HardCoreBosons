@@ -234,6 +234,10 @@ Cplx W_p_q_inf(const double& p_momenta,
 		const double& x_coordinate,
 		const double& t_time){
 
+	if(p_momenta == q_momenta){
+		const Cplx e_plus_p = E_plus(eta, p_momenta, x_coordinate, t_time);
+		return e_plus_p * e_plus_p * 0.5 / (sin(0.5* eta) * sin(0.5* eta));
+	}
 	const Cplx e_plus_p = E_plus(eta, p_momenta, x_coordinate, t_time);
 	const Cplx e_plus_q = E_plus(eta, q_momenta, x_coordinate, t_time);
 

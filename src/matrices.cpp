@@ -4,6 +4,7 @@
 #include "boost/math/quadrature/gauss.hpp"
 #include <utility>
 #include <omp.h>
+#include <map>
 
 using namespace std;
 using namespace boost::math::quadrature;
@@ -33,7 +34,7 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		size_t middle_point = g.abscissa().size();
 		return i < middle_point ?
 				-g.abscissa()[middle_point - i - 1] :
-				 g.abscissa()[i - middle_point];
+				g.abscissa()[i - middle_point];
 	};
 
 	const auto weight = [&](const size_t i) {
@@ -46,18 +47,44 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 //omp_set_num_threads (omp_get_num_procs()); // number of threads = num of processors
 //#pragma omp parallel for collapse(2)
 
+	map<double, Cplx> e_minus;
+	map<double, Cplx> e_infty;
+	map<double, Cplx> e_infty_derivative;
+	for (size_t i = 0; i < s; i++) {
+		if (e_minus.count(x(i)) == 0) {
+			e_minus[x(i)] = E_minus(x(i), x_coordinate, t_time);
+		}
+		if (e_infty.count(x(i)) == 0) {
+			e_infty[x(i)] = E_inf(eta, x(i), x_coordinate, t_time);
+		}
+		if (e_infty_derivative.count(x(i)) == 0) {
+			e_infty_derivative[x(i)] = E_inf_Derivative(eta, x(i),
+					x_coordinate, t_time);
+		}
+	}
+
 #pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
 	for (size_t i = 0; i < s; i++) {
 		for (size_t j = i; j < s; j++) {
 			//cout << "V(i,j) = (" << i << ", " << j << ") \n";
 
+
+
 			{
 				//LOG_DURATION("V");
 				if (i == j) {
-					Cplx v = V_diag_inf(x(i), eta, x_coordinate, t_time);
+
+					Cplx v = e_infty_derivative[x(i)] * e_minus[x(i)]
+							* e_minus[x(i)];
+
+					//Cplx v = V_diag_inf(x(i), eta, x_coordinate, t_time);
 					V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
 				} else {
-					Cplx v = V_p_q_inf(x(i), x(j), eta, x_coordinate, t_time);
+					//Cplx v = V_p_q_inf(x(i), x(j), eta, x_coordinate, t_time);
+
+					Cplx v = (e_infty[x(i)] - e_infty[x(j)]) * e_minus[x(i)]
+							* e_minus[x(j)];
+					v /= x(i) - x(j);
 
 					V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
 					V(j, i) = V(i, j);
@@ -66,14 +93,13 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 			}
 			{
 				//LOG_DURATION("W");
-				if (i == j) {
-					W(i, j) = 0;
-				} else {
 
-					W(i, j) = sqrt(weight(i))
-							* W_p_q_inf(x(i), x(j), eta, x_coordinate, t_time)
-							* sqrt(weight(j));
-				}
+				//Cplx w =  W_p_q_inf(x(i), x(j), eta, x_coordinate, t_time);
+				Cplx w =  e_infty[x(i)] * e_minus[x(i)] //E_+ = E_infty E_-
+						 *e_infty[x(j)] * e_minus[x(j)]
+						 * 0.5 / (sin(0.5 * eta) * sin(0.5 * eta));
+
+				W(i, j) = sqrt(weight(i)) * w * sqrt(weight(j));
 
 			}
 		}
@@ -87,7 +113,8 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 
 Cplx G_inf(const double &x_coordinate, const double &t_time) {
 	auto f = [&](double eta) {
-		auto [one_plus_V, one_plus_V_minus_W] = OnePlusV_W(eta, x_coordinate, t_time);
+		auto [one_plus_V, one_plus_V_minus_W] = OnePlusV_W(eta, x_coordinate,
+				t_time);
 		Cplx detV = one_plus_V.determinant();
 		Cplx detV_W = one_plus_V_minus_W.determinant();
 		Cplx g0 = G_0(x_coordinate, t_time) - 1.0;
@@ -125,8 +152,8 @@ MatrixXcd ConstructMatrix(const double x, const double beta, const double gamma,
 		size_t middle_point = g.weights().size();
 		if (size_parity_is_odd) {
 			return i < middle_point ?
-					M_PI * g.weights()[middle_point - i - 1] :
-					M_PI * g.weights()[i - middle_point];
+			M_PI * g.weights()[middle_point - i - 1] :
+										M_PI * g.weights()[i - middle_point];
 		} else {
 			return i < (middle_point - 1) ?
 					M_PI * g.weights()[middle_point - i - 1] :
