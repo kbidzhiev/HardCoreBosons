@@ -24,8 +24,8 @@ const double b_beta = 100.;
 const double chem_potential = 0;
 
 const gauss<double, 30> g;
-const double gauss_limits = 100.0; //from (-1 to 1)
-double TRUNC = 1e-2;
+const double gauss_limits = 100.0; // gauss PV integration domain (-gauss_limits : gauss_limits)
+double TRUNC = 1e-2; // controls convergence for interval (gauss_limits : \infty)
 
 //(0.027067, 0.261572)
 //(0.0269412,0.260941)
