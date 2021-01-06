@@ -26,8 +26,6 @@ MatrixXcd IdMatrix(int size) {
 pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		const double &x_coordinate, const double &t_time) {
 
-
-	//const gauss<double, 20> g;, 10> g;
 	const int s = 10;
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
@@ -46,17 +44,12 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 				g.weights()[i - middle_point];
 	};
 
-//omp_set_num_threads (omp_get_num_procs()); // number of threads = num of processors
-//#pragma omp parallel for collapse(2)
 
 	vector<Cplx> e_minus, e_infty, e_infty_derivative;
-//	vector<Cplx> e_infty;
-//	vector<Cplx>e_infty_derivative;
 	e_minus.reserve(s);
 	e_infty.reserve(s);
 	e_infty_derivative.reserve(s);
-	{
-		//LOG_DURATION("PV");
+
 #pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
 		e_minus[i] = E_minus(x(i), x_coordinate, t_time);
@@ -64,7 +57,7 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		e_infty_derivative[i] = E_inf_Derivative(eta, x(i), x_coordinate,
 				t_time);
 	}
-	}
+
 #pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
 	for (size_t i = 0; i < s; i++) {
 		for (size_t j = i; j < s; j++) {
@@ -75,10 +68,9 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 			W(i, j) = sqrt(weight(i)) * w * sqrt(weight(j));
 			if (i == j) {
 				v = e_infty_derivative[i] * e_minus[i] * e_minus[i];
-				//Cplx v = V_diag_inf(x(i), eta, x_coordinate, t_time);
 				V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
 			} else {
-				//Cplx v = V_p_q_inf(x(i), x(j), eta, x_coordinate, t_time);
+
 				v = (e_infty[i] - e_infty[j]) * e_minus[i] * e_minus[j];
 				v /= x(i) - x(j);
 				V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));

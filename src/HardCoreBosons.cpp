@@ -65,7 +65,7 @@ int main(){
 		const int n_steps = system_size / dx;
 		int counter = 0;
 		for (int n = -n_steps / 2; n <= n_steps / 2; ++n) {
-			LOG_DURATION("time step");
+			//LOG_DURATION("time step");
 			const double x_coordinate = n * dx; //+param.val("time_shift");
 			const complex<double> g_inf = G_inf (x_coordinate, t_time);
 			correlator << x_coordinate << "\t" << real(g_inf) << "\t" << imag(g_inf) << "\n" ;
