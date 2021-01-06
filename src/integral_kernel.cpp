@@ -1,6 +1,8 @@
 
 #include "integral_kernel.hpp"
 #include <omp.h>
+#include "profile.h"
+
 
 #include <cstdlib>
 #include <complex.h> // trigoniometric functions sin() cos()
@@ -21,7 +23,8 @@ const double g_coupling = 999.;
 const double b_beta = 100.;
 const double chem_potential = 0;
 
-const gauss<double, 10> g;
+const gauss<double, 30> g;
+const double gauss_limits = 100.0; //from (-1 to 1)
 double TRUNC = 1e-2;
 
 //(0.027067, 0.261572)
@@ -37,6 +40,7 @@ double Tau (const double& q_momenta, const double& x_coordinate, const double& t
 
 Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const double& t_time) {
 
+
 	auto ExpTau = [&](const double &p_momenta) {
 		return exp(-Cplx_i * Tau(p_momenta, x_coordinate, t_time));
 	};
@@ -49,7 +53,7 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 		return (ExpTau(q_momenta + p_momenta) - ExpTau(q_momenta - p_momenta));
 	};
 
-	const double cutoff = 1.0;
+
 	//const gauss<double, 20> g;, 20> g;
 
 	const auto x = [&](const size_t i) {
@@ -70,19 +74,20 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 	const int NUMBER_OF_POINTS = 2 * g.weights().size();
 	for (int i = 0; i < NUMBER_OF_POINTS; i++) {
 		value_pole += (weight(i) / x(i))
-				* (f(cutoff * x(i) ) - f(0));
+				* (f(gauss_limits * x(i) ) - f(0));
 	}
+
 	value_pole *= 0.5; // symmetrization of integration limits requires factor 1/2
 
 
 	auto u = [&](const double &t){
-		return f(t + cutoff) / (t + cutoff);
+		return f(t + gauss_limits) / (t + gauss_limits);
 	};
 	Cplx left_and_right = 0;
 	complex<long double > df = 1.0 + Cplx_i;
 
 	double trunc = TRUNC;
-//#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(1)
+
 	for (size_t i = 0; abs(df) > trunc ; i++ ){
 
 		df = trapezoidal(u, double(i), double(i + 1));
@@ -90,19 +95,13 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 
 	}
 
-
-//	while (abs(df) > trunc ){
-//		df = trapezoidal(u, double(i), double(i + step));
-//		left_and_right += df;
-//		i += step;
-//	}
-	//cout << "PV " << value_pole + left_and_right << endl;
 	return value_pole + left_and_right;
 }
 
 
 
 Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinate, const double& t_time) {
+
 
 	auto ExpTauDerivative = [&](const double &p_momenta) {
 		Cplx result = exp(-Cplx_i * Tau(p_momenta, x_coordinate, t_time));
@@ -119,9 +118,6 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 		return (ExpTauDerivative(q_momenta + p_momenta) - ExpTauDerivative(q_momenta - p_momenta));
 	};
 
-	const double cutoff = 1.0;
-	//const gauss<double, 20> g;, 20> g;
-
 	const auto x = [&](const size_t i) {
 		size_t middle_point = g.abscissa().size();
 		return i < middle_point ?
@@ -140,20 +136,19 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 	const int NUMBER_OF_POINTS = 2 * g.weights().size();
 	for (int i = 0; i < NUMBER_OF_POINTS; i++) {
 		value_pole += (weight(i) / x(i))
-				* (f(cutoff * x(i) ) - f(0));
+				* (f(gauss_limits * x(i) ) - f(0));
 	}
 	value_pole *= 0.5; // symmetrization of integration limits requires factor 1/2
 
 
 	auto u = [&](const double &t){
-		return f(t + cutoff) / (t + cutoff);
+		return f(t + gauss_limits) / (t + gauss_limits);
 	};
 	Cplx left_and_right = 0;
 	complex<long double > df = 1.0 + Cplx_i;
 
 	double trunc = TRUNC;
 
-//#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(1)
 	for (size_t i = 0; abs(df) > trunc ; i++ ){
 
 		//df = g.integrate(u, double(i), double(i+1)); //(-0.00398057,0.227016)

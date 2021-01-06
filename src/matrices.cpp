@@ -26,6 +26,7 @@ MatrixXcd IdMatrix(int size) {
 pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		const double &x_coordinate, const double &t_time) {
 
+
 	//const gauss<double, 20> g;, 10> g;
 	const int s = 10;
 	MatrixXcd V(s, s);
@@ -54,6 +55,8 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 	e_minus.reserve(s);
 	e_infty.reserve(s);
 	e_infty_derivative.reserve(s);
+	{
+		//LOG_DURATION("PV");
 #pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
 		e_minus[i] = E_minus(x(i), x_coordinate, t_time);
@@ -61,7 +64,7 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		e_infty_derivative[i] = E_inf_Derivative(eta, x(i), x_coordinate,
 				t_time);
 	}
-
+	}
 #pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
 	for (size_t i = 0; i < s; i++) {
 		for (size_t j = i; j < s; j++) {
@@ -85,7 +88,6 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 			}
 		}
 	}
-
 	V += IdMatrix(s); // Id(s,s) + V
 	W = V - W;			// W - Id(s,s) - V ;
 
@@ -96,8 +98,10 @@ Cplx G_inf(const double &x_coordinate, const double &t_time) {
 	auto f = [&](double eta) {
 		auto [one_plus_V, one_plus_V_minus_W] = OnePlusV_W(eta, x_coordinate,
 				t_time);
-		Cplx detV = one_plus_V.determinant();
-		Cplx detV_W = one_plus_V_minus_W.determinant();
+		Cplx detV;
+		Cplx detV_W;
+		detV = one_plus_V.determinant();
+		detV_W = one_plus_V_minus_W.determinant();
 		Cplx g0 = G_0(x_coordinate, t_time) - 1.0;
 		//cout << "detV = " << detV << " detV_W = " << detV_W << " g0 = " << g0 << '\n';
 		return g0 * detV + detV_W;
