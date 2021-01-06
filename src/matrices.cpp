@@ -4,7 +4,8 @@
 #include "boost/math/quadrature/gauss.hpp"
 #include <utility>
 #include <omp.h>
-#include <map>
+
+#include <vector>
 
 using namespace std;
 using namespace boost::math::quadrature;
@@ -47,60 +48,40 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 //omp_set_num_threads (omp_get_num_procs()); // number of threads = num of processors
 //#pragma omp parallel for collapse(2)
 
-	map<double, Cplx> e_minus;
-	map<double, Cplx> e_infty;
-	map<double, Cplx> e_infty_derivative;
+	vector<Cplx> e_minus, e_infty, e_infty_derivative;
+//	vector<Cplx> e_infty;
+//	vector<Cplx>e_infty_derivative;
+	e_minus.reserve(s);
+	e_infty.reserve(s);
+	e_infty_derivative.reserve(s);
+#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
-		if (e_minus.count(x(i)) == 0) {
-			e_minus[x(i)] = E_minus(x(i), x_coordinate, t_time);
-		}
-		if (e_infty.count(x(i)) == 0) {
-			e_infty[x(i)] = E_inf(eta, x(i), x_coordinate, t_time);
-		}
-		if (e_infty_derivative.count(x(i)) == 0) {
-			e_infty_derivative[x(i)] = E_inf_Derivative(eta, x(i),
-					x_coordinate, t_time);
-		}
+		e_minus[i] = E_minus(x(i), x_coordinate, t_time);
+		e_infty[i] = E_inf(eta, x(i), x_coordinate, t_time);
+		e_infty_derivative[i] = E_inf_Derivative(eta, x(i), x_coordinate,
+				t_time);
 	}
 
 #pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
 	for (size_t i = 0; i < s; i++) {
 		for (size_t j = i; j < s; j++) {
-			//cout << "V(i,j) = (" << i << ", " << j << ") \n";
+			Cplx v;
+			Cplx w = e_infty[i] * e_minus[i] //E_+ = E_infty E_-
+					* e_infty[j] * e_minus[j] * 0.5
+					/ (sin(0.5 * eta) * sin(0.5 * eta));
+			W(i, j) = sqrt(weight(i)) * w * sqrt(weight(j));
+			if (i == j) {
+				v = e_infty_derivative[i] * e_minus[i] * e_minus[i];
+				//Cplx v = V_diag_inf(x(i), eta, x_coordinate, t_time);
+				V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
+			} else {
+				//Cplx v = V_p_q_inf(x(i), x(j), eta, x_coordinate, t_time);
+				v = (e_infty[i] - e_infty[j]) * e_minus[i] * e_minus[j];
+				v /= x(i) - x(j);
+				V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
 
-
-
-			{
-				//LOG_DURATION("V");
-				if (i == j) {
-
-					Cplx v = e_infty_derivative[x(i)] * e_minus[x(i)]
-							* e_minus[x(i)];
-
-					//Cplx v = V_diag_inf(x(i), eta, x_coordinate, t_time);
-					V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
-				} else {
-					//Cplx v = V_p_q_inf(x(i), x(j), eta, x_coordinate, t_time);
-
-					Cplx v = (e_infty[x(i)] - e_infty[x(j)]) * e_minus[x(i)]
-							* e_minus[x(j)];
-					v /= x(i) - x(j);
-
-					V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
-					V(j, i) = V(i, j);
-					//cout << "V(i,j) = " << V(i,j) << "\n";
-				}
-			}
-			{
-				//LOG_DURATION("W");
-
-				//Cplx w =  W_p_q_inf(x(i), x(j), eta, x_coordinate, t_time);
-				Cplx w =  e_infty[x(i)] * e_minus[x(i)] //E_+ = E_infty E_-
-						 *e_infty[x(j)] * e_minus[x(j)]
-						 * 0.5 / (sin(0.5 * eta) * sin(0.5 * eta));
-
-				W(i, j) = sqrt(weight(i)) * w * sqrt(weight(j));
-
+				V(j, i) = V(i, j);
+				W(i, j) = W(j, i);
 			}
 		}
 	}
