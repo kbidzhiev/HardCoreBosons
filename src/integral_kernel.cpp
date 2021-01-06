@@ -25,7 +25,9 @@ const double chem_potential = 0;
 
 const gauss<double, 30> g;
 const double gauss_limits = 100.0; // gauss PV integration domain (-gauss_limits : gauss_limits)
-double TRUNC = 1e-2; // controls convergence for interval (gauss_limits : \infty)
+double TRUNC = 1e-3; // controls convergence for interval (gauss_limits : \infty)
+double trapezoidal_convergence =  1e-4;
+
 
 //(0.027067, 0.261572)
 //(0.0269412,0.260941)
@@ -90,7 +92,7 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 
 	for (size_t i = 0; abs(df) > trunc ; i++ ){
 
-		df = trapezoidal(u, double(i), double(i + 1));
+		df = trapezoidal(u, double(i), double(i + 1), trapezoidal_convergence);
 		left_and_right += df;
 
 	}
@@ -152,7 +154,7 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 	for (size_t i = 0; abs(df) > trunc ; i++ ){
 
 		//df = g.integrate(u, double(i), double(i+1)); //(-0.00398057,0.227016)
-		df = trapezoidal(u, double(i), double(i + 1));
+		df = trapezoidal(u, double(i), double(i + 1),trapezoidal_convergence);
 		left_and_right += df;
 
 	}
