@@ -6,9 +6,9 @@
 
 #include <cstdlib>
 #include <complex.h> // trigoniometric functions sin() cos()
-#include "boost/math/quadrature/gauss.hpp" // Gauss-Legendre quadrature
-#include <boost/math/quadrature/gauss_kronrod.hpp>
-#include <boost/math/quadrature/trapezoidal.hpp>
+#include "gauss.hpp" // Gauss-Legendre quadrature
+#include "gauss_kronrod.hpp"
+//#include "trapezoidal.hpp"
 
 
 using namespace boost::math::quadrature;
