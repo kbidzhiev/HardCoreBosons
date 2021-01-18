@@ -1,7 +1,7 @@
 #include "matrices.hpp"
 #include "profile.h"
 
-#include "boost/math/quadrature/gauss.hpp"
+#include "gauss.hpp"
 #include <utility>
 #include <omp.h>
 
@@ -17,7 +17,7 @@ using Cplx = complex<double>;
 
 const Cplx Cplx_i = Cplx(0, 1);
 
-gauss<double, 20> g;
+gauss<double, 10> g;
 
 MatrixXcd IdMatrix(int size) {
 	return MatrixXcd::Identity(size, size);
@@ -26,7 +26,7 @@ MatrixXcd IdMatrix(int size) {
 pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		const double &x_coordinate, const double &t_time) {
 
-	const int s = 20;
+	const int s = 10;
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
 
@@ -128,7 +128,7 @@ MatrixXcd ConstructMatrix(const double x, const double beta, const double gamma,
 		size_t middle_point = g.weights().size();
 		if (size_parity_is_odd) {
 			return i < middle_point ?
-			M_PI * g.weights()[middle_point - i - 1] :
+					M_PI * g.weights()[middle_point - i - 1] :
 										M_PI * g.weights()[i - middle_point];
 		} else {
 			return i < (middle_point - 1) ?
