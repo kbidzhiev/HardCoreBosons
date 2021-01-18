@@ -4,8 +4,9 @@
 // Description : HardCoreBosons fredholm determinant
 //============================================================================
 
-
+#include "test_runner.h"
 #include "profile.h"
+
 
 #include "matrices.hpp"
 
@@ -36,18 +37,26 @@
 
 
 
-struct Parameters {
-	const double mass = 1.;
-	const double g_coupling = 999.;
-	const double b_beta = 10.;
-	const double chem_potential = 0;
-};
+void TestPVIntegration(){
+	LOG_DURATION("time");
+	const double momenta = 1.2;
+	const double coordinate = -2.1;
+	const double time = 0.2;
+	const complex<double> PV = PrincipalValue(momenta, coordinate, time);
+	const complex<double> PV_deriv = PrincipalValueDerivative(momenta, coordinate, time);
+	const complex<double> PV_wolfram = -1.10414 + 3.12551 * complex<double>(0,1);
+	const complex<double> PV_deriv_wolfram = 6.49805 + 3.35269 * complex<double>(0,1);
+	cout << PV << '\n' << PV_deriv << endl ;
+	ASSERT(abs(PV - PV_wolfram) < 1e-3);
+	ASSERT_EQUAL(abs(PV_deriv - PV_deriv_wolfram) < 1e-3, true);
+}
 
 int main(){
+//	TestRunner tr;
+//	RUN_TEST(tr, TestPVIntegration);
 
 
-
-	{ LOG_DURATION("Total");
+	 LOG_DURATION("Total");
 
 		ofstream correlator; //here I'm defining output streams == files
 		ios_base::openmode mode;
@@ -58,29 +67,31 @@ int main(){
 
 		// ------- Correlator profile -------
 
+		//int(param.val("Sz");
 
-		const double t_time = 0.01;
+
+		const double dt = 0.1;
 		const double system_size = 1.0;
 		const double dx = 0.01;
 		const int n_steps = system_size / dx;
+		const double time_total = 0.2;
+		const int T =  time_total / dt;
+		const int total_steps = (n_steps + 1) * T ;
+		cout << n_steps << " " << T << endl;
 		int counter = 0;
-		for (int n = -n_steps / 2; n <= n_steps / 2; ++n) {
-			//LOG_DURATION("time step");
-			const double x_coordinate = n * dx; //+param.val("time_shift");
-			const complex<double> g_inf = G_inf (x_coordinate, t_time);
-			correlator << x_coordinate << "\t" << real(g_inf) << "\t" << imag(g_inf) << "\n" ;
-			cout << "step " << counter << "/" << n_steps << '\n';
-			counter++;
-		}
+		for (double time = 0.001; time < time_total; time += dt) {
+			LOG_DURATION("time step");
+			correlator << "\"t=" << time << "\"" << endl;
+			for (int n = -n_steps / 2; n <= n_steps / 2; ++n) {
+				const double x_coordinate = n * dx; //+param.val("time_shift");
+				const complex<double> g_inf = G_inf(x_coordinate, time);
+				correlator << x_coordinate << "\t" << real(g_inf) << "\t"
+				<< imag(g_inf) << "\n";
+				cout << "step " << counter << "/" << total_steps << '\n';
+				counter++;
+			}
+			correlator << "\n \n";
 	}
 	cout << "DONE !" << endl;
-//	double pole = 10.0;
-//	double x_coordinate = -3.0;
-//	double t_time = 2.0;
-//	{	LOG_DURATION("total");
-//		//cout << setprecision(15) << endl;
-//		//cout << PrincipalValue ( pole,  x_coordinate,  t_time) << endl;
-//		//cout << PrincipalValueDerivative( pole,  x_coordinate,  t_time) << endl;
-//	//	cout << G_inf (x_coordinate, t_time) << endl;
-//	}
+
 }

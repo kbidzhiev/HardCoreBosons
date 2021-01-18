@@ -17,7 +17,7 @@ using Cplx = complex<double>;
 
 const Cplx Cplx_i = Cplx(0, 1);
 
-gauss<double, 10> g;
+gauss<double, 20> g;
 
 MatrixXcd IdMatrix(int size) {
 	return MatrixXcd::Identity(size, size);
@@ -26,7 +26,7 @@ MatrixXcd IdMatrix(int size) {
 pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 		const double &x_coordinate, const double &t_time) {
 
-	const int s = 10;
+	const int s = 20;
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
 
@@ -43,7 +43,6 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 				g.weights()[middle_point - i - 1] :
 				g.weights()[i - middle_point];
 	};
-
 
 	vector<Cplx> e_minus, e_infty, e_infty_derivative;
 	e_minus.reserve(s);
@@ -64,11 +63,11 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 			Cplx v;
 			Cplx w = e_infty[i] * e_minus[i] //E_+ = E_infty E_-
 					* e_infty[j] * e_minus[j] * 0.5
-					/ (sin(0.5 * eta) * sin(0.5 * eta));
+					/ ( sin(0.5 * eta) * sin(0.5 * eta) );
 			W(i, j) = sqrt(weight(i)) * w * sqrt(weight(j));
 			if (i == j) {
 				v = e_infty_derivative[i] * e_minus[i] * e_minus[i];
-				V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
+				V(i, j) = sqrt(weight(i)) * v * sqrt(weight(i));
 			} else {
 
 				v = (e_infty[i] - e_infty[j]) * e_minus[i] * e_minus[j];
@@ -76,12 +75,12 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double &eta,
 				V(i, j) = sqrt(weight(i)) * v * sqrt(weight(j));
 
 				V(j, i) = V(i, j);
-				W(i, j) = W(j, i);
+				W(j, i) = W(i, j);
 			}
 		}
 	}
-	V += IdMatrix(s); // Id(s,s) + V
-	W = V - W;			// W - Id(s,s) - V ;
+	V = IdMatrix(s) + V; // Id(s,s) + V
+	W = V - W;		  // Id(s,s) + V - W
 
 	return {V, W};
 }

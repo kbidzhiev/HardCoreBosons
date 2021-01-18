@@ -23,14 +23,13 @@ const double g_coupling = 999.;
 const double b_beta = 100.;
 const double chem_potential = 0;
 
-const gauss<double, 20> g;
+const gauss<double, 10> g; // has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 const double gauss_limits = 100.0; // gauss PV integration domain (-gauss_limits : gauss_limits)
-double TRUNC = 1e-3; // controls convergence for interval (gauss_limits : \infty)
-double convergence =  1e-4;
-const double step = 1.;
+double TRUNC = 1e-6; // controls convergence for interval from "gauss_limits" to \infty
+double convergence = 1e-8; //gauss_kronrod convergence criteria
 
-//(0.027067, 0.261572)
-//(0.0269412,0.260941)
+const double step = 1.; //integration domain (i : i + step)
+
 
 double Energy (const double& q_momenta){
 	return  q_momenta * q_momenta * 0.5 / mass;
@@ -42,17 +41,16 @@ double Tau (const double& q_momenta, const double& x_coordinate, const double& t
 
 Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const double& t_time) {
 
-
-	auto ExpTau = [&](const double &p_momenta) {
-		return exp(-Cplx_i * Tau(p_momenta, x_coordinate, t_time));
-	};
-
 	auto f = [&](const double &p_momenta){
 		/*
 		 * Hilbert transformation
 		 * https://en.wikipedia.org/wiki/Hilbert_transformation
 		 */
-		return (ExpTau(q_momenta + p_momenta) - ExpTau(q_momenta - p_momenta));
+		const Cplx exp_q_plus_p  = exp(-Cplx_i * Tau(q_momenta + p_momenta, x_coordinate, t_time));
+		const Cplx exp_q_minus_p = exp(-Cplx_i * Tau(q_momenta - p_momenta, x_coordinate, t_time));
+		return exp_q_plus_p - exp_q_minus_p;
+
+		//return (ExpTau(q_momenta + p_momenta) - ExpTau(q_momenta - p_momenta));
 	};
 
 
@@ -92,10 +90,11 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 
 	for (double i = 0; abs(df) > trunc ;  ){
 		//df = trapezoidal(u, i, i + step, convergence);
-		df = gauss_kronrod<double, 15>::integrate(u, i, i+step, 5, convergence);
+		df = gauss_kronrod<double, 15>::integrate(u, i, i+step, convergence);
 		left_and_right += df;
 		i += step;
 	}
+
 
 	return value_pole + left_and_right;
 }
@@ -105,19 +104,25 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinate, const double& t_time) {
 
 
-	auto ExpTauDerivative = [&](const double &p_momenta) {
-		Cplx result = exp(-Cplx_i * Tau(p_momenta, x_coordinate, t_time));
-		result *= -Cplx_i;
-		result *= t_time * p_momenta - x_coordinate;
-		return result;
-	};
-
 	auto f = [&](const double &p_momenta){
 		/*
 		 * Hilbert transformation
 		 * https://en.wikipedia.org/wiki/Hilbert_transform
 		 */
-		return (ExpTauDerivative(q_momenta + p_momenta) - ExpTauDerivative(q_momenta - p_momenta));
+
+		double momenta = q_momenta + p_momenta;
+		Cplx exp_q_plus_p_deriv = -Cplx_i * exp(-Cplx_i * Tau(momenta, x_coordinate, t_time));
+		exp_q_plus_p_deriv *= t_time * momenta - x_coordinate;
+
+		momenta = q_momenta - p_momenta;
+		Cplx exp_q_minus_p_deriv = -Cplx_i * exp(-Cplx_i * Tau(q_momenta - p_momenta, x_coordinate, t_time));
+		exp_q_minus_p_deriv *= t_time * momenta - x_coordinate;
+
+		return exp_q_plus_p_deriv - exp_q_minus_p_deriv;
+
+//		(-1.10417,3.12547)
+//		(6.49774,3.35358)
+
 	};
 
 	const auto x = [&](const size_t i) {
@@ -142,22 +147,22 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 	}
 	value_pole *= 0.5; // symmetrization of integration limits requires factor 1/2
 
-
 	auto u = [&](const double &t){
 		return f(t + gauss_limits) / (t + gauss_limits);
 	};
 	Cplx left_and_right = 0;
 	complex<long double > df = 1.0 + Cplx_i;
 
-	double trunc = TRUNC;
+	const double trunc = TRUNC;
 
 	for (double i = 0; abs(df) > trunc ;  ){
 		//df = g.integrate(u, double(i), double(i+1)); //(-0.00398057,0.227016)
 		//df = trapezoidal(u, i, i + step, trapezoidal_convergence);
-		df = gauss_kronrod<double, 15>::integrate(u, i, i+step, 5, convergence);
+		df = gauss_kronrod<double, 15>::integrate(u, i, i+step, convergence);
 		left_and_right += df;
 		i += step;
 	}
+
 
 
 //	while (abs(df) > trunc ){
@@ -231,14 +236,13 @@ Cplx W_p_q_inf(const double& p_momenta,
 		const double& x_coordinate,
 		const double& t_time){
 
-	if(p_momenta == q_momenta){
-		const Cplx e_plus_p = E_plus(eta, p_momenta, x_coordinate, t_time);
-		return e_plus_p * e_plus_p * 0.5 / (sin(0.5* eta) * sin(0.5* eta));
-	}
 	const Cplx e_plus_p = E_plus(eta, p_momenta, x_coordinate, t_time);
-	const Cplx e_plus_q = E_plus(eta, q_momenta, x_coordinate, t_time);
+	if(p_momenta == q_momenta){
+		return e_plus_p * e_plus_p ;
+	}
 
-	return e_plus_p * e_plus_q * 0.5 / (sin(0.5* eta) * sin(0.5* eta));
+	const Cplx e_plus_q = E_plus(eta, q_momenta, x_coordinate, t_time);
+	return e_plus_p * e_plus_q ;
 }
 
 
