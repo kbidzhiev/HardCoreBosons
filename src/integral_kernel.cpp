@@ -12,7 +12,7 @@
 
 
 using namespace boost::math::quadrature;
-using boost::math::quadrature::trapezoidal;
+//using boost::math::quadrature::trapezoidal;
 using namespace std;
 
 using Cplx = complex<double>; //pseudoname for complex<double>
