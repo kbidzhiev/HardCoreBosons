@@ -16,7 +16,9 @@ MatrixXcd IdMatrix(int size);
 
 pair<MatrixXcd,MatrixXcd> OnePlusV_W (const double& eta,
 		const double& x_coordinate,
-		const double& t_time);
+		const double& t_time,
+		const double& kL,
+		const double& kR);
 
 
 Cplx G_inf (const double& x_coordinate, const double& t_time);

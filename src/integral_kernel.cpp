@@ -1,8 +1,6 @@
-
 #include "integral_kernel.hpp"
 #include <omp.h>
 #include "profile.h"
-
 
 #include <cstdlib>
 #include <complex.h> // trigoniometric functions sin() cos()
@@ -20,8 +18,9 @@ const Cplx Cplx_i = Cplx(0,1);
 
 const double mass = 1.0;
 const double g_coupling = 999.;
-const double b_beta = 100.;
-const double chem_potential = 0;
+const double b_beta = 100.0;
+const double rho = 0.5 ; // rho = #particles / system size;    so 0 < rho < 1
+const double chem_potential = (M_PI * rho * M_PI * rho)/ (2 * mass);
 
 const gauss<double, 10> g; // has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 const double gauss_limits = 100.0; // gauss PV integration domain (-gauss_limits : gauss_limits)
@@ -29,6 +28,8 @@ double TRUNC = 1e-6; // controls convergence for interval from "gauss_limits" to
 double convergence = 1e-8; //gauss_kronrod convergence criteria
 
 const double step = 1.; //integration domain (i : i + step)
+
+
 
 
 double Energy (const double& q_momenta){
@@ -59,8 +60,8 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 	const auto x = [&](const size_t i) {
 		size_t middle_point = g.abscissa().size();
 		return i < middle_point ?
-				-g.abscissa()[middle_point - i - 1] :
-				g.abscissa()[i - middle_point];
+				- g.abscissa()[middle_point - i - 1] :
+				 g.abscissa()[i - middle_point];
 	};
 
 	const auto weight = [&](const size_t i) {
@@ -103,7 +104,6 @@ Cplx PrincipalValue(const double& q_momenta, const double& x_coordinate, const d
 
 Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinate, const double& t_time) {
 
-
 	auto f = [&](const double &p_momenta){
 		/*
 		 * Hilbert transformation
@@ -112,11 +112,11 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 
 		double momenta = q_momenta + p_momenta;
 		Cplx exp_q_plus_p_deriv = -Cplx_i * exp(-Cplx_i * Tau(momenta, x_coordinate, t_time));
-		exp_q_plus_p_deriv *= t_time * momenta - x_coordinate;
+		exp_q_plus_p_deriv *= t_time * momenta / mass - x_coordinate;
 
 		momenta = q_momenta - p_momenta;
-		Cplx exp_q_minus_p_deriv = -Cplx_i * exp(-Cplx_i * Tau(q_momenta - p_momenta, x_coordinate, t_time));
-		exp_q_minus_p_deriv *= t_time * momenta - x_coordinate;
+		Cplx exp_q_minus_p_deriv = -Cplx_i * exp(-Cplx_i * Tau(momenta, x_coordinate, t_time));
+		exp_q_minus_p_deriv *= t_time * momenta / mass - x_coordinate;
 
 		return exp_q_plus_p_deriv - exp_q_minus_p_deriv;
 
@@ -163,8 +163,6 @@ Cplx PrincipalValueDerivative(const double& q_momenta, const double& x_coordinat
 		i += step;
 	}
 
-
-
 //	while (abs(df) > trunc ){
 //		df = trapezoidal(u, double(i), double(i + step));
 //		left_and_right += df;
@@ -194,12 +192,33 @@ Cplx E_inf_Derivative(const double& eta, const double& q_momenta, const double& 
 }
 
 double Teta(const double& q_momenta){
-	return 1.0/(exp(b_beta*(Energy(q_momenta) - chem_potential)) + 1) ;
+	const double teta = 1.0/(exp(b_beta*(Energy(q_momenta) - chem_potential)) + 1.0);
+	//cout << "teta = " << teta << endl;
+	return  teta;
 }
 
+double LowerMomenta(){
+	double lower = 0;
+	for(double k = 0; abs(Teta(k)) > 1e-12 ; k -= 0.01){
+	//	cout << "lower k = " << k <<" theta = " << abs(Teta(k)) << endl;
+		lower = k;
+	}
+//	cout << "lower = " << lower << endl;
+	return lower;
+}
+
+double UpperMomenta(){
+	double upper = 0;
+	for(double k = 0; abs(Teta(k)) > 1e-12 ; k += 0.01){
+		upper = k;
+	}
+//	cout << "upper = " << upper << endl;
+	return upper;
+}
+
+
 Cplx E_minus(const double& q_momenta, const double& x_coordinate, const double& t_time ){
-	const Cplx a = sqrt(Teta(q_momenta)/ M_PI)*exp(Cplx_i * 0.5 * Tau(q_momenta, x_coordinate, t_time));
-	return a;
+	return sqrt(Teta(q_momenta)/ M_PI) * exp(Cplx_i * 0.5 * Tau(q_momenta, x_coordinate, t_time));
 }
 
 Cplx E_plus(const double& eta, const double& q_momenta, const double& x_coordinate, const double& t_time){
@@ -248,59 +267,59 @@ Cplx W_p_q_inf(const double& p_momenta,
 
 Cplx G_0(const double& x_coordinate, const double& t_time){
 	Cplx result = exp(-Cplx_i * M_PI /4.);
-	result *= sqrt(1./(2 * M_PI * t_time));
-	result *= exp( (Cplx_i * x_coordinate * x_coordinate )/ (2 * t_time) );
+	result *= sqrt(mass / (2 * M_PI * t_time));
+	result *= exp( Cplx_i * mass * x_coordinate * x_coordinate / (2 * t_time) );
 	return result;
 }
 
 
 
+// XY model :
 
-
-Cplx Weight (const double momenta,
-		const double b_beta,
-		const double gamma,
-		const double magnetization){
-
-	const Cplx sqrt_term = sqrt(pow(magnetization-cos(momenta),2) + pow(gamma * sin(momenta),2));
-
-	Cplx result =
-			magnetization - cos(momenta) - Cplx_i * gamma * sin(momenta) ;
-
-	result /= sqrt_term ;
-	result *= -tanh(0.5*b_beta * sqrt_term);
-	result += 1;
-	result *= 0.5;
-	return result;
-}
-
-
-Cplx Kernel (const Cplx weight,
-		const double x,
-		const double momenta1,
-		const double momenta2) {
-	Cplx kernel = sin(0.5 * x * (momenta1-momenta2))/
-			sin(0.5 * (momenta1-momenta2));
-	Cplx result = -weight/M_PI;
-	if (abs (momenta1 - momenta2) > 1e-14 ){
-		result *= kernel;
-	} else {
-		result *= x;
-	}
-	return  result;
-}
-
-Cplx KernelFiniteRank (const Cplx kernel,
-		const Cplx weight,
-		const double x,
-		const double momenta1,
-		const double momenta2
-		){
-	Cplx result = kernel;
-	result += weight * exp(-Cplx_i * x * 0.5* (momenta1 + momenta2))
-		* exp(Cplx_i * 0.5* (momenta1 - momenta2))/M_PI;
-	return result;
-}
+//Cplx Weight (const double momenta,
+//		const double b_beta,
+//		const double gamma,
+//		const double magnetization){
+//
+//	const Cplx sqrt_term = sqrt(pow(magnetization-cos(momenta),2) + pow(gamma * sin(momenta),2));
+//
+//	Cplx result =
+//			magnetization - cos(momenta) - Cplx_i * gamma * sin(momenta) ;
+//
+//	result /= sqrt_term ;
+//	result *= -tanh(0.5*b_beta * sqrt_term);
+//	result += 1;
+//	result *= 0.5;
+//	return result;
+//}
+//
+//
+//Cplx Kernel (const Cplx weight,
+//		const double x,
+//		const double momenta1,
+//		const double momenta2) {
+//	Cplx kernel = sin(0.5 * x * (momenta1-momenta2))/
+//			sin(0.5 * (momenta1-momenta2));
+//	Cplx result = -weight/M_PI;
+//	if (abs (momenta1 - momenta2) > 1e-14 ){
+//		result *= kernel;
+//	} else {
+//		result *= x;
+//	}
+//	return  result;
+//}
+//
+//Cplx KernelFiniteRank (const Cplx kernel,
+//		const Cplx weight,
+//		const double x,
+//		const double momenta1,
+//		const double momenta2
+//		){
+//	Cplx result = kernel;
+//	result += weight * exp(-Cplx_i * x * 0.5* (momenta1 + momenta2))
+//		* exp(Cplx_i * 0.5* (momenta1 - momenta2))/M_PI;
+//	return result;
+//}
 
 
 

@@ -71,10 +71,10 @@ int main(){
 
 
 		const double dt = 0.1;
-		const double system_size = 1.0;
+		const double system_size = 0.5;
 		const double dx = 0.01;
 		const int n_steps = system_size / dx;
-		const double time_total = 0.2;
+		const double time_total = 0.1;
 		const int T =  time_total / dt;
 		const int total_steps = (n_steps + 1) * T ;
 		cout << n_steps << " " << T << endl;
@@ -82,7 +82,7 @@ int main(){
 		for (double time = 0.001; time < time_total; time += dt) {
 			LOG_DURATION("time step");
 			correlator << "\"t=" << time << "\"" << endl;
-			for (int n = -n_steps / 2; n <= n_steps / 2; ++n) {
+			for (int n = -n_steps/2; n <= n_steps / 2; ++n) {
 				const double x_coordinate = n * dx; //+param.val("time_shift");
 				const complex<double> g_inf = G_inf(x_coordinate, time);
 				correlator << x_coordinate << "\t" << real(g_inf) << "\t"
