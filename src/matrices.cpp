@@ -60,23 +60,25 @@ pair<MatrixXcd, MatrixXcd> OnePlusV_W(const double eta,
 	vector<Cplx> e_infty(s);
 	vector<Cplx> e_infty_derivative(s);
 
-	auto Fresnel = [&](double q){
-		return exp(-Cplx_i * 3. * M_PI / 4.) * sqrt(2 * M_PI * t_time)
-				* exp(Cplx_i * x_coordinate * x_coordinate / (2 * t_time));
-	}
+	const Cplx fresnel = exp(-Cplx_i * 3. * M_PI / 4.) * sqrt(2 * M_PI * t_time)
+			* exp(Cplx_i * x_coordinate * x_coordinate / (2 * t_time));
 
-//	cout << "coord = " << x_coordinate << endl;
-#pragma omp parallel for num_threads(omp_get_num_procs())
+
+	cout << "fresn = " << fresnel << endl;
+	terminate();
+
+	#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
 		e_minus[i] = E_minus(q(i),    x_coordinate, t_time) ;
 		e_infty[i] = E_inf(eta, q(i), x_coordinate, t_time) ;
-				//E_inf_Derivative(eta, q(i), x_coordinate,t_time) ;
 	}
+
+
 #pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
-		e_infty_derivative[i] = Fresnel(q(i)) -Cplx_i * (q(i) * t_time - x_coordinate) * e_infty[i];
-				//E_inf_Derivative(eta, q(i), x_coordinate,t_time) ;
+		e_infty_derivative[i] = fresnel - Cplx_i * (q(i) * t_time - x_coordinate) * e_infty[i];
 	}
+
 //	cout << "coord and time " << x_coordinate << " " << t_time << endl;
 //	for (int i = 0; i<s; i++){
 //		cout << "(" << q(i) << ", " << weight(i) << ")" << endl;
