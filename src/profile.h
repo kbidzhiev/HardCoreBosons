@@ -20,7 +20,7 @@ public:
     auto dur = finish - start;
     cerr << message
        << duration_cast<seconds>(dur).count()
-       << "sec" << endl;
+       << " s" << endl;
   }
 private:
   string message;
