@@ -48,7 +48,7 @@ int main() {
 //		result *= (coeff - 1.0);
 //		result += w;
 
-		correlator << l << "\t" << real(result)<< "\t" << imag(result) << endl;
+		correlator << l << "\t" << real(result)<< "\t" << imag(result) << "\t" << l  << endl;
 	}
 
 	return 0;
