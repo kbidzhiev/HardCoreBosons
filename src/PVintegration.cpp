@@ -31,6 +31,7 @@ double WeightPV (const size_t i) {
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
 
 
+
 	auto f = [&](const double &p_momenta){
 		/*
 		 * Hilbert transformation
@@ -43,7 +44,7 @@ Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
 
 
 	Cplx value_pole = 0;
-	const int NUMBER_OF_POINTS = 2 * g.weights().size();
+	const int NUMBER_OF_POINTS = 2 * gPV.weights().size();
 	for (int i = 0; i < NUMBER_OF_POINTS; i++) {
 		value_pole += (WeightPV(i) / Ksi(i))
 				* (f(gauss_limits * Ksi(i) ) - f(0));

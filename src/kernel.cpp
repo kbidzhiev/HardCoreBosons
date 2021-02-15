@@ -67,6 +67,10 @@ double Weight (const size_t i) {
 pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 
 	const size_t s = 2 * g.weights().size();
+	if (g.abscissa().front() == 0) {
+		throw logic_error(
+				"Matrix size (= gauss quadrature order) can not be even. Your gave value = " + to_string(s-1));
+	}
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
 

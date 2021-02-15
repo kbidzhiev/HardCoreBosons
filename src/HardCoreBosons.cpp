@@ -15,10 +15,7 @@
 #include "test_runner.h"
 
 
-struct Parameters{
-	const double mass = 1.0;
 
-};
 using namespace std;
 
 int main() {
@@ -37,18 +34,23 @@ int main() {
 
 
 
-	for(double l = -1.0 ; l < 1.0; l += 0.1){
+	for (double time = 0.0; time < 1.0; time += 0.1) {
+		correlator << "\"time=" << time << "\"\n" ;
+		for (double coordinate = -2.0; coordinate < 2.0; coordinate += 0.1) {
 
-		SpaceTime st(X_coordinate(3.0),T_time(l));
-		Cplx result = Grep(st);
+			//SpaceTime st(X_coordinate(coordinate), T_time(time));
+			Cplx result = Grep({X_coordinate(coordinate), T_time(time)});
 
-//		SpaceTime st(X_coordinate(0.1),T_time(0.1));
-//		auto [result,w] = Determinants (l, st);
-//		Cplx coeff = G0 (st) * 2.0/(l * l + 1.0) ;
-//		result *= (coeff - 1.0);
-//		result += w;
+//			SpaceTime st(X_coordinate(0.1),T_time(0.1));
+//			auto [result,w] = Determinants (l, st);
+//			Cplx coeff = G0 (st) * 2.0/(l * l + 1.0) ;
+//			result *= (coeff - 1.0);
+//			result += w;
 
-		correlator << l << "\t" << real(result)<< "\t" << imag(result) << "\t" << l  << endl;
+			correlator << coordinate << "\t" << real(result) << "\t" << imag(result)
+					<< "\t" << time << endl;
+		}
+		correlator << "\n\n" ;
 	}
 
 	return 0;
