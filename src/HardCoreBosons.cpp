@@ -36,7 +36,7 @@ int main() {
 
 	for (double time = 0.0; time < 1.0; time += 0.1) {
 		correlator << "\"time=" << time << "\"\n" ;
-		for (double coordinate = -2.0; coordinate < 2.0; coordinate += 0.1) {
+		for (double coordinate = -2.0; coordinate <= 2.0; coordinate += 0.1) {
 
 			//SpaceTime st(X_coordinate(coordinate), T_time(time));
 			Cplx result = Grep({X_coordinate(coordinate), T_time(time)});
