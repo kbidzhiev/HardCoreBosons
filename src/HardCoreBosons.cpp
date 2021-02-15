@@ -37,12 +37,12 @@ int main() {
 
 
 
-	for(double l = 0.001 ; l < 0.2; l += 0.001){
+	for(double l = -1.0 ; l < 1.0; l += 0.1){
 
-		SpaceTime st(X_coordinate(KF() * 3),T_time(l));
+		SpaceTime st(X_coordinate(3.0),T_time(l));
 		Cplx result = Grep(st);
 
-//		SpaceTime st(X_coordinate(-4.7),T_time(0.01));
+//		SpaceTime st(X_coordinate(0.1),T_time(0.1));
 //		auto [result,w] = Determinants (l, st);
 //		Cplx coeff = G0 (st) * 2.0/(l * l + 1.0) ;
 //		result *= (coeff - 1.0);
