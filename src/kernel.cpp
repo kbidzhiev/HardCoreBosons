@@ -8,7 +8,7 @@
 
 
 using Eigen::MatrixXcd;
-using boost::math::quadrature::trapezoidal;
+//using boost::math::quadrature::trapezoidal;
 
 double KF(){
 	return M_PI * RHO;
