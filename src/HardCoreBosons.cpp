@@ -27,8 +27,8 @@ void LambdaCurve(){
 	kernel.open(filename, mode);
 	kernel.precision(15);
 
-	SpaceTime st(X_coordinate(1.0),T_time(0.1));
-		for (double Lambda = -10; Lambda <= 10; Lambda += 0.1){
+	SpaceTime st(X_coordinate(-15.5),T_time(0.01));
+		for (double Lambda = -10; Lambda <= 10; Lambda += 0.01){
 
 			auto [detv,detw] = Determinants(Lambda, st);
 			Cplx coeff = G0 (st) * 2.0/(Lambda * Lambda + 1.0) ;
@@ -43,15 +43,12 @@ void LambdaCurve(){
 		return detv + detw;
 	};
 	double error = 100;
-	cout << gauss_kronrod<double, 31>::integrate(f, -50, 50,  10, 1e-9, &error) << endl;
-	cout << "error =" <<  error << endl;
+	Cplx gauss_res = gauss_kronrod<double, 61>::integrate(f, -50.0, 50.0, 15, 1e-9, &error) ;
+	Cplx trap_res  = trapezoidal(f, -50.0, 50.0);
+	cout << "gauss = " << gauss_res << " t123123"
+			"rap = " << trap_res << "dif(g-t) = " << abs(gauss_res - trap_res) << endl;
+	//(0.0503884,0.309736)
 
-//	(-2.4779,-3.15332)
-//	error =0.0180585
-
-	// 5 smaller interval
-//	(-2.13641,-2.7455)
-//	error =5.79921e-10
 }
 
 
@@ -81,20 +78,53 @@ void CorrelatorCurve(){
 	}
 }
 
+void TsliceCurve(double time_){
+	ofstream tslice; //here I'm defining output streams, i.e. files
+	ios_base::openmode mode;
+	mode = std::ofstream::out; //Erase previous file (if present)
+	string filename = "tslice_" + to_string((int)time_) + ".dat";
+	tslice.open(filename, mode);
+	tslice.precision(15);
+
+	const double X_LIMITS = 10.0 * KF();
+	const double T_LIMITS = time_  * Energy(Q_momenta(KF()));
+
+	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += 0.001) {
+		cout << coordinate << endl;
+		Cplx result = Grep( { X_coordinate(coordinate), T_time(T_LIMITS) });
+		tslice << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
+	}
+
+}
+
+void XsliceCurve(double x){
+	ofstream xslice; //here I'm defining output streams, i.e. files
+	ios_base::openmode mode;
+	mode = std::ofstream::out; //Erase previous file (if present)
+	string filename = "xslice_" + to_string((int)x) + ".dat";
+	xslice.open(filename, mode);
+	xslice.precision(15);
+
+	const double X_LIMITS = x * KF();
+	const double T_LIMITS = 1.0  * Energy(Q_momenta(KF()));
+
+	for (double time = 0.1*T_LIMITS; time < T_LIMITS; time += 0.01) {
+		xslice << "\"t=" << time << "\"\n";
+		Cplx result = Grep( { X_coordinate(X_LIMITS), T_time(time) });
+		xslice << time << "\t" << real(result) << "\t" << imag(result) << endl;
+	}
+}
+
+
 
 int main() {
 	LOG_DURATION("DET");
 
-
-
-
-
-
-	LambdaCurve();
-
+	//LambdaCurve();
 	//CorrelatorCurve();
 
-
+	//XsliceCurve(1);
+	TsliceCurve(0.1);
 
 
 	return 0;

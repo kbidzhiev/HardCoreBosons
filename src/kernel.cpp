@@ -3,10 +3,9 @@
 #include <vector>
 #include <omp.h>
 #include "profile.h"
-#include <future>
 
 
-#include "../../cpp_libs/eigen/Eigen/Dense"
+
 
 using Eigen::MatrixXcd;
 using boost::math::quadrature::trapezoidal;
@@ -139,7 +138,7 @@ Cplx Grep(SpaceTime st){
 	 * */
 	Cplx result = gauss_kronrod<double, 31>::integrate(f, -50, 50,  10, 1e-9, &error);
 
-	cout << "error = " <<  error << endl;
+	cout << "error value = " <<  error << endl;
 
 	return result;
 }
