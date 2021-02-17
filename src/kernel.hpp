@@ -2,13 +2,15 @@
 
 #include <complex>
 #include <utility>
-#include <boost/math/quadrature/gauss.hpp>
-#include <boost/math/quadrature/trapezoidal.hpp>
-#include <boost/math/quadrature/gauss_kronrod.hpp>
+//#include <boost/math/quadrature/gauss.hpp>
+////#include <boost/math/quadrature/trapezoidal.hpp>
+//#include <boost/math/quadrature/gauss_kronrod.hpp>
 
-//#include "~/Programs/cpp_libs/boost/boost/math/quadrature/gauss.hpp"
-//#include "~/Programs/cpp_libs/boost/boost/math/quadrature/trapezoidal.hpp"
-//#include "~/Programs/cpp_libs/boost/boost/math/quadrature/gauss_kronrod.hpp"
+#include "../../cpp_libs/boost/boost/math/quadrature/gauss.hpp"
+#include "../../cpp_libs/boost/boost/math/quadrature/trapezoidal.hpp"
+#include "../../cpp_libs/boost/boost/math/quadrature/gauss_kronrod.hpp"
+
+
 
 
 #include "../../cpp_libs/eigen/Eigen/Dense"

@@ -44,9 +44,9 @@ void LambdaCurve(){
 	};
 	double error = 100;
 	Cplx gauss_res = gauss_kronrod<double, 61>::integrate(f, -50.0, 50.0, 15, 1e-9, &error) ;
-	Cplx trap_res  = trapezoidal(f, -50.0, 50.0);
-	cout << "gauss = " << gauss_res << " t123123"
-			"rap = " << trap_res << "dif(g-t) = " << abs(gauss_res - trap_res) << endl;
+	//Cplx trap_res  = trapezoidal(f, -50.0, 50.0);
+	//cout << "gauss = " << gauss_res << " t123123"
+	//		"rap = " << trap_res << "dif(g-t) = " << abs(gauss_res - trap_res) << endl;
 	//(0.0503884,0.309736)
 
 }
