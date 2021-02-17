@@ -18,40 +18,84 @@
 
 using namespace std;
 
-int main() {
-	LOG_DURATION("DET");
+void LambdaCurve(){
 
+	ofstream kernel; //here I'm defining output streams, i.e. files
+	ios_base::openmode mode;
+	mode = std::ofstream::out; //Erase previous file (if present)
+	string filename = "kernel" + to_string(2 * g.weights().size()) + ".dat";
+	kernel.open(filename, mode);
+	kernel.precision(15);
+
+	SpaceTime st(X_coordinate(1.0),T_time(0.1));
+		for (double Lambda = -10; Lambda <= 10; Lambda += 0.1){
+
+			auto [detv,detw] = Determinants(Lambda, st);
+			Cplx coeff = G0 (st) * 2.0/(Lambda * Lambda + 1.0) ;
+			detv *= (coeff - 1.0);
+			kernel << Lambda << "\t" << real(detv + detw) << "\t" << imag(detv + detw)
+								 << endl;
+		}
+	auto f = [&](double Lambda) {
+		auto [detv, detw] = Determinants(Lambda, st);
+		Cplx coeff = G0(st) * 2.0 / (Lambda * Lambda + 1.0);
+		detv *= (coeff - 1.0);
+		return detv + detw;
+	};
+	double error = 100;
+	cout << gauss_kronrod<double, 31>::integrate(f, -50, 50,  10, 1e-9, &error) << endl;
+	cout << "error =" <<  error << endl;
+
+//	(-2.4779,-3.15332)
+//	error =0.0180585
+
+	// 5 smaller interval
+//	(-2.13641,-2.7455)
+//	error =5.79921e-10
+}
+
+
+void CorrelatorCurve(){
 	ofstream correlator; //here I'm defining output streams, i.e. files
 	ios_base::openmode mode;
 	mode = std::ofstream::out; //Erase previous file (if present)
 	string filename = "Correlator" + to_string(2 * g.weights().size()) + ".dat";
 	correlator.open(filename, mode);
 	correlator.precision(15);
-	//correlator << "#x \t correlator \t time \n";
 
-	//SpaceTime st(X_coordinate(20.),T_time(1.));
+	const double X_LIMITS = 1.0 * KF();
+	const double T_LIMITS = 1.0  * Energy(Q_momenta(KF()));
 
+	for (double time = 0.1*T_LIMITS; time < T_LIMITS; time += 0.01) {
+		correlator << "\"t=" << time << "\"\n" ;
 
-
-
-	for (double time = 0.0; time < 1.0; time += 0.1) {
-		correlator << "\"time=" << time << "\"\n" ;
-		for (double coordinate = -2.0; coordinate <= 2.0; coordinate += 0.1) {
+		for (double coordinate = X_LIMITS; coordinate <= X_LIMITS; coordinate += 0.1) {
 
 			//SpaceTime st(X_coordinate(coordinate), T_time(time));
 			Cplx result = Grep({X_coordinate(coordinate), T_time(time)});
-
-//			SpaceTime st(X_coordinate(0.1),T_time(0.1));
-//			auto [result,w] = Determinants (l, st);
-//			Cplx coeff = G0 (st) * 2.0/(l * l + 1.0) ;
-//			result *= (coeff - 1.0);
-//			result += w;
 
 			correlator << coordinate << "\t" << real(result) << "\t" << imag(result)
 					<< "\t" << time << endl;
 		}
 		correlator << "\n\n" ;
 	}
+}
+
+
+int main() {
+	LOG_DURATION("DET");
+
+
+
+
+
+
+	LambdaCurve();
+
+	//CorrelatorCurve();
+
+
+
 
 	return 0;
 }

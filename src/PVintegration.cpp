@@ -1,6 +1,6 @@
 #include "kernel.hpp"
 
-#include <boost/math/quadrature/gauss_kronrod.hpp>
+
 
 const gauss<double, 20> gPV;// Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 
@@ -30,7 +30,7 @@ double WeightPV (const size_t i) {
 
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
 
-
+//	return 0;
 
 	auto f = [&](const double &p_momenta){
 		/*
@@ -68,6 +68,7 @@ Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
 
 	}
 
+	//cout << "PV done !" << endl;
 	return value_pole + left_and_right;
 
 

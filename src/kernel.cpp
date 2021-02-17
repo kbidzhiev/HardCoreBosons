@@ -4,7 +4,7 @@
 #include <omp.h>
 #include "profile.h"
 #include <future>
-#include <boost/math/quadrature/trapezoidal.hpp>
+
 
 #include "../../cpp_libs/eigen/Eigen/Dense"
 
@@ -37,10 +37,6 @@ Cplx Eminus (Q_momenta q_momenta,  SpaceTime spacetime){
 	result *= exp(Cplx_i * 0.5 * Tau(q_momenta, spacetime));
 	return result;
 }
-
-//Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime spacetime){
-//	return 0;
-//}
 
 
 Cplx G0 (SpaceTime spacetime){
@@ -135,7 +131,16 @@ Cplx Grep(SpaceTime st){
 			return detv + detw;
 	};
 
-	Cplx result = trapezoidal(f, -150.0, 150.0);
+	double error = 100;
+	/*
+	 * execution time for LambdaCurve()
+	 * depth = 10;  time = 4 s;
+	 * depth = 5 ;  time =
+	 * */
+	Cplx result = gauss_kronrod<double, 31>::integrate(f, -50, 50,  10, 1e-9, &error);
+
+	cout << "error = " <<  error << endl;
+
 	return result;
 }
 

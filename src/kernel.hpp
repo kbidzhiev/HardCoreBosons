@@ -3,7 +3,8 @@
 #include <complex>
 #include <utility>
 #include <boost/math/quadrature/gauss.hpp>
-
+#include <boost/math/quadrature/trapezoidal.hpp>
+#include <boost/math/quadrature/gauss_kronrod.hpp>
 #include <stdexcept>
 #include <string>
 
@@ -19,7 +20,7 @@ const double RHO = 0.5;
 
 
 
-const gauss<double, 6> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
+const gauss<double, 30> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 
 
 struct T_time {
