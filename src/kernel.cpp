@@ -138,7 +138,7 @@ Cplx Grep(SpaceTime st){
 	 * */
 	Cplx result = gauss_kronrod<double, 31>::integrate(f, -50, 50,  10, 1e-9, &error);
 
-	cout << "error value = " <<  error << endl;
+	//cout << "error value = " <<  error << endl;
 
 	return result;
 }
