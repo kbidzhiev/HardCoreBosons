@@ -28,9 +28,24 @@ double WeightPV (const size_t i) {
 			gPV.weights()[i - middle_point];
 };
 
-Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
+Cplx Erf(const Cplx z){
 
-//	return 0;
+	auto f = [&](double s){
+		return exp( - z * z * s * s);
+	};
+
+	Cplx result = gauss_kronrod<double, 31>::integrate(f, 0, 1, 1e-10);
+	return result * 2 * z / sqrt(M_PI);
+}
+
+Cplx PrincipalValue2(Q_momenta q_momenta,  SpaceTime st){
+	Cplx result  = M_PI * Cplx_i * exp(-Cplx_i * Tau(q_momenta, st));
+	Cplx erf_arg = (st.x - q_momenta.value * st.t) * (1.0 + Cplx_i) / (2.0 * sqrt(st.t));
+	result *= (1- Erf(erf_arg));
+	return result;
+}
+
+Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
 
 	auto f = [&](const double &p_momenta){
 		/*
