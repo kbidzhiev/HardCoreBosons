@@ -1,5 +1,4 @@
-/123123
-/============================================================================
+//============================================================================
 // Name        : HardCoreBosons_new.cpp
 // Author      : 
 // Version     :
@@ -116,6 +115,18 @@ void XsliceCurve(double x){
 	}
 }
 
+void PV(){
+	Q_momenta q(10.5);
+	SpaceTime st(X_coordinate(1.7),T_time(10.6));
+	Cplx old_value = PrincipalValue_old(q, st)/M_PI;
+	Cplx new_value = PrincipalValue(q, st)/M_PI;
+
+	Cplx erf_arg = (st.x - q.value * st.t) * (-1.0 + Cplx_i) / (2.0 * sqrt(st.t));
+
+	cout << old_value << '\n' << new_value << endl;
+	cout << "erf = " << Erf(erf_arg);
+
+}
 
 
 int main() {
@@ -126,7 +137,7 @@ int main() {
 
 	//XsliceCurve(1);
 	//TsliceCurve(0.1);
-
+	//PV();
 
 	return 0;
 }

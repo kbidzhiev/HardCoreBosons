@@ -3,7 +3,7 @@
 #include <complex>
 #include <utility>
 #include <boost/math/quadrature/gauss.hpp>
-//#include <boost/math/quadrature/trapezoidal.hpp>
+#include <boost/math/quadrature/trapezoidal.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 
 //#include "../../cpp_libs/boost/boost/math/quadrature/gauss.hpp"
@@ -19,6 +19,7 @@
 
 using namespace std;
 using namespace boost::math::quadrature;
+using boost::math::quadrature::trapezoidal;
 
 using Cplx = complex<double>;
 
@@ -83,7 +84,9 @@ double Energy(Q_momenta q_momenta);
 double Tau(Q_momenta q_momenta,  SpaceTime st);
 double Theta (Q_momenta q_momenta);
 Cplx Eminus (Q_momenta q_momenta,  SpaceTime st);
+Cplx Erf(const Cplx z);
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st);
+Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st);
 Cplx G0 (SpaceTime st);
 pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime st);
 Cplx Grep(SpaceTime st);

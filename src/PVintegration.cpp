@@ -30,22 +30,25 @@ double WeightPV (const size_t i) {
 
 Cplx Erf(const Cplx z){
 
+//	return 0.0;
 	auto f = [&](double s){
 		return exp( - z * z * s * s);
 	};
 
-	Cplx result = gauss_kronrod<double, 31>::integrate(f, 0, 1, 1e-10);
-	return result * 2 * z / sqrt(M_PI);
-}
-
-Cplx PrincipalValue2(Q_momenta q_momenta,  SpaceTime st){
-	Cplx result  = M_PI * Cplx_i * exp(-Cplx_i * Tau(q_momenta, st));
-	Cplx erf_arg = (st.x - q_momenta.value * st.t) * (1.0 + Cplx_i) / (2.0 * sqrt(st.t));
-	result *= (1- Erf(erf_arg));
-	return result;
+	Cplx result = trapezoidal(f, 0.0, 1.0);
+			//gauss_kronrod<double, 61>::integrate(f, 0.0, 1.0, 1e-10);
+	return result * 2.0 * z / sqrt(M_PI);
 }
 
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
+//	return 0.0;
+	Cplx result  = - M_PI * Cplx_i * exp( -Cplx_i * Tau(q_momenta, st));
+	Cplx erf_arg = (st.x - q_momenta.value * st.t) * (-1.0 + Cplx_i) / (2.0 * sqrt(st.t));
+	result *= (Erf(erf_arg));
+	return result;
+}
+
+Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st){
 
 	auto f = [&](const double &p_momenta){
 		/*
