@@ -136,8 +136,8 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	//XsliceCurve(1.0);
-	TsliceCurve(50.0);
+	XsliceCurve(1.0);
+	//TsliceCurve(50.0);
 	//PV();
 
 	return 0;
