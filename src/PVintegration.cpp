@@ -13,20 +13,7 @@ const double step = 1.0; //integration domain (i : i + step)
 using namespace boost::math::quadrature;
 
 
-double Ksi (const size_t i){
-	size_t middle_point = gPV.abscissa().size();
-		return i < middle_point ?
-			- gPV.abscissa()[middle_point - i - 1] :
- 			  gPV.abscissa()[i - middle_point];
-}
 
-
-double WeightPV (const size_t i) {
-	size_t middle_point = gPV.weights().size();
-	return i < middle_point ?
-			gPV.weights()[middle_point - i - 1] :
-			gPV.weights()[i - middle_point];
-};
 
 Cplx Erf(const Cplx z){
 
@@ -38,11 +25,27 @@ Cplx Erf(const Cplx z){
 }
 
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
-//	return 0.0;
+
 	Cplx result  = - M_PI * Cplx_i * exp( -Cplx_i * Tau(q_momenta, st));
 	Cplx erf_arg = (st.x - q_momenta.value * st.t) * (-1.0 + Cplx_i) / (2.0 * sqrt(st.t));
 	result *= (Erf(erf_arg));
 	return result;
+}
+
+
+
+double Ksi (const size_t i){
+	size_t middle_point = gPV.abscissa().size();
+		return i < middle_point ?
+			- gPV.abscissa()[middle_point - i - 1] :
+ 			  gPV.abscissa()[i - middle_point];
+}
+
+double WeightPV (const size_t i) {
+	size_t middle_point = gPV.weights().size();
+	return i < middle_point ?
+			gPV.weights()[middle_point - i - 1] :
+			gPV.weights()[i - middle_point];
 }
 
 Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st){
@@ -57,7 +60,7 @@ Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st){
 		return exp_q_plus_p - exp_q_minus_p;
 	};
 
-
+	// First we evaluate PV integral in the [-1,1] vicinity of the pole
 	Cplx value_pole = 0;
 	const int NUMBER_OF_POINTS = 2 * gPV.weights().size();
 	for (int i = 0; i < NUMBER_OF_POINTS; i++) {
@@ -74,18 +77,11 @@ Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st){
 	complex<long double > df = 1.0 + Cplx_i;
 
 	double trunc = TRUNC;
-
-
 	for (double i = 0; abs(df) > trunc ;  ){
 		df = gauss_kronrod<double, 31>::integrate(u, i, i + step, convergence); //15, 31, 41, 51 and 61
 		left_and_right += df;
 		i += step;
-
 	}
 
-	//cout << "PV done !" << endl;
 	return value_pole + left_and_right;
-
-
-
 }

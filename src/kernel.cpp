@@ -109,7 +109,6 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 				V(j, i) = V(i, j);
 				W(j, i) = W(i, j);
 			}
-
 		}
 	}
 
