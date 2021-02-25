@@ -106,7 +106,7 @@ void XsliceCurve(double x){
 	xslice.precision(15);
 
 	const double X_LIMITS = x ;
-	const double T_LIMITS = 20.0 ;
+	const double T_LIMITS = 50.0 ;
 
 	for (double time = 0.001*T_LIMITS; time < T_LIMITS; time += 0.01) {
 		//xslice << "\"t=" << time << "\"\n";
