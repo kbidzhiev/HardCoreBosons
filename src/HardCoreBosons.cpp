@@ -134,9 +134,9 @@ int main() {
 	LOG_DURATION("DET");
 
 	//LambdaCurve();
-	//CorrelatorCurve();
+	CorrelatorCurve();
 
-	XsliceCurve(1.0);
+	//XsliceCurve(1.0);
 	//TsliceCurve(20.0);
 	//PV();
 
