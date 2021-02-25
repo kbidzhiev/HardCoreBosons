@@ -60,8 +60,8 @@ void CorrelatorCurve(){
 	correlator.open(filename, mode);
 	correlator.precision(15);
 
-	const double X_LIMITS = 5.0 * KF();
-	const double T_LIMITS = 5.0  * Energy(Q_momenta(KF()));
+	const double X_LIMITS = 5.0 ;// * KF();
+	const double T_LIMITS = 5.0 ;// * Energy(Q_momenta(KF()));
 
 	for (double time = 0.01*T_LIMITS; time < T_LIMITS; time += 0.1) {
 		correlator << "\"t=" << time << "\"\n" ;
@@ -86,11 +86,11 @@ void TsliceCurve(double time_){
 	tslice.open(filename, mode);
 	tslice.precision(15);
 
-	const double X_LIMITS = 5.0 * KF();
-	const double T_LIMITS = time_  * Energy(Q_momenta(KF()));
+	const double X_LIMITS = 5.0 ;
+	const double T_LIMITS = time_;  // Energy(Q_momenta(KF()));
 
 	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += 0.1) {
-		cout << coordinate << endl;
+		cout << coordinate << " / " << X_LIMITS  << endl;
 		Cplx result = Grep( { X_coordinate(coordinate), T_time(T_LIMITS) });
 		tslice << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
 	}
@@ -105,13 +105,14 @@ void XsliceCurve(double x){
 	xslice.open(filename, mode);
 	xslice.precision(15);
 
-	const double X_LIMITS = x * KF();
-	const double T_LIMITS = 1.0  * Energy(Q_momenta(KF()));
+	const double X_LIMITS = x ;
+	const double T_LIMITS = 10.0 ;
 
-	for (double time = 0.1*T_LIMITS; time < T_LIMITS; time += 0.01) {
-		xslice << "\"t=" << time << "\"\n";
+	for (double time = 0.001*T_LIMITS; time < T_LIMITS; time += 0.01) {
+		//xslice << "\"t=" << time << "\"\n";
 		Cplx result = Grep( { X_coordinate(X_LIMITS), T_time(time) });
 		xslice << time << "\t" << real(result) << "\t" << imag(result) << endl;
+		cout << "time = " << time << " /" << T_LIMITS << endl;
 	}
 }
 
@@ -133,10 +134,10 @@ int main() {
 	LOG_DURATION("DET");
 
 	//LambdaCurve();
-	CorrelatorCurve();
+	//CorrelatorCurve();
 
-	//XsliceCurve(1);
-	//TsliceCurve(0.1);
+	XsliceCurve(1.0);
+	//TsliceCurve(20.0);
 	//PV();
 
 	return 0;

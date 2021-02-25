@@ -30,13 +30,10 @@ double WeightPV (const size_t i) {
 
 Cplx Erf(const Cplx z){
 
-//	return 0.0;
 	auto f = [&](double s){
 		return exp( - z * z * s * s);
 	};
-
 	Cplx result = trapezoidal(f, 0.0, 1.0);
-			//gauss_kronrod<double, 61>::integrate(f, 0.0, 1.0, 1e-10);
 	return result * 2.0 * z / sqrt(M_PI);
 }
 
