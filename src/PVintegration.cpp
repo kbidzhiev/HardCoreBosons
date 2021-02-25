@@ -10,18 +10,20 @@ double TRUNC = 1e-3; // controls convergence for interval from "gauss_limits" to
 double convergence = 1e-4; //gauss_kronrod convergence criteria
 const double step = 1.0; //integration domain (i : i + step)
 
-using namespace boost::math::quadrature;
+using namespace boost::math;
+//using namespace boost::math::quadrature;
 
 
 
 
 Cplx Erf(const Cplx z){
-
-	auto f = [&](double s){
-		return exp( - z * z * s * s);
-	};
-	Cplx result = trapezoidal(f, 0.0, 1.0);
-	return result * 2.0 * z / sqrt(M_PI);
+	Cplx result = Faddeeva::erf(z);
+	return result;
+//	auto f = [&](double s){
+//		return exp( - z * z * s * s);
+//	};
+//	Cplx result = trapezoidal(f, 0.0, 1.0);
+//	return result * 2.0 * z / sqrt(M_PI);
 }
 
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){

@@ -106,7 +106,7 @@ void XsliceCurve(double x){
 	xslice.precision(15);
 
 	const double X_LIMITS = x ;
-	const double T_LIMITS = 50.0 ;
+	const double T_LIMITS = 20.0 ;
 
 	for (double time = 0.001*T_LIMITS; time < T_LIMITS; time += 0.01) {
 		//xslice << "\"t=" << time << "\"\n";
@@ -121,11 +121,11 @@ void PV(){
 	SpaceTime st(X_coordinate(1.7),T_time(10.6));
 	Cplx old_value = PrincipalValue_old(q, st)/M_PI;
 	Cplx new_value = PrincipalValue(q, st)/M_PI;
-
 	Cplx erf_arg = (st.x - q.value * st.t) * (-1.0 + Cplx_i) / (2.0 * sqrt(st.t));
 
 	cout << old_value << '\n' << new_value << endl;
-	cout << "erf = " << Erf(erf_arg);
+	cout << "erf          = " << Erf(erf_arg) << '\n';
+	cout << "erf(wolfram) = (1.00787,-0.0223579)" << endl;
 
 }
 
@@ -136,8 +136,8 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	XsliceCurve(1.0);
-	//TsliceCurve(20.0);
+	//XsliceCurve(1.0);
+	TsliceCurve(50.0);
 	//PV();
 
 	return 0;
