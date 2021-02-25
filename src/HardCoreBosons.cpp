@@ -61,7 +61,7 @@ void CorrelatorCurve(){
 	correlator.precision(15);
 
 	const double X_LIMITS = 5.0 ;// * KF();
-	const double T_LIMITS = 5.0 ;// * Energy(Q_momenta(KF()));
+	const double T_LIMITS = 15.0 ;// * Energy(Q_momenta(KF()));
 
 	for (double time = 0.01*T_LIMITS; time < T_LIMITS; time += 0.1) {
 		correlator << "\"t=" << time << "\"\n" ;
