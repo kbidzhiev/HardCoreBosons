@@ -2,15 +2,15 @@
 
 #include <complex>
 #include <utility>
+#include <stdexcept>
+#include <string>
+
 #include <boost/math/quadrature/gauss.hpp>
 #include <boost/math/quadrature/trapezoidal.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 #include "Faddeeva.hh"
-
-
 #include "../../cpp_libs/eigen/Eigen/Dense"
-#include <stdexcept>
-#include <string>
+
 
 using namespace std;
 using namespace boost::math::quadrature;
@@ -25,7 +25,9 @@ const double RHO = 0.5;
 
 
 
-const gauss<double, 30> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
+const gauss<double, 20> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
+
+
 
 struct T_time {
 	double value;
@@ -73,6 +75,5 @@ Cplx G0 (SpaceTime st);
 pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime st);
 Cplx Grep(SpaceTime st);
 
-
-
-
+void Fourier2D();
+void Fourier1D();

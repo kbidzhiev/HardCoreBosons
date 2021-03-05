@@ -35,4 +35,10 @@
 
 # Output data files
 *.dat
+
+# Gnuplot file 
+*.gp
 /Debug/
+
+
+

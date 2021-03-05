@@ -50,14 +50,14 @@ double Q (const size_t i) {
 	return i < middle_point ?
 			- KF() * g.abscissa()[middle_point - i - 1] :
 			  KF() * g.abscissa()[i - middle_point];
-};
+}
 
 double Weight (const size_t i) {
 	size_t middle_point = g.weights().size();
 	return i < middle_point ?
 			KF() * g.weights()[middle_point - i - 1] :
 			KF() * g.weights()[i - middle_point];
-};
+}
 
 pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 

@@ -15,7 +15,6 @@
 #include "test_runner.h"
 
 
-
 using namespace std;
 
 void LambdaCurve(){
@@ -50,7 +49,6 @@ void LambdaCurve(){
 	//(0.0503884,0.309736)
 
 }
-
 
 void CorrelatorCurve(){
 	ofstream correlator; //here I'm defining output streams, i.e. files
@@ -94,7 +92,6 @@ void TsliceCurve(double time_){
 		Cplx result = Grep( { X_coordinate(coordinate), T_time(T_LIMITS) });
 		tslice << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
 	}
-
 }
 
 void XsliceCurve(double x){
@@ -106,7 +103,7 @@ void XsliceCurve(double x){
 	xslice.precision(15);
 
 	const double X_LIMITS = x ;
-	const double T_LIMITS = 50.0 ;
+	const double T_LIMITS = 10.0 ;
 
 	for (double time = 0.001*T_LIMITS; time < T_LIMITS; time += 0.01) {
 		//xslice << "\"t=" << time << "\"\n";
@@ -136,9 +133,11 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	XsliceCurve(1.0);
-	//TsliceCurve(50.0);
+	//XsliceCurve(1.0);
+	//TsliceCurve(20.0);
 	//PV();
+
+	Fourier1D();
 
 	return 0;
 }
