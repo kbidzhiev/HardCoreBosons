@@ -137,7 +137,9 @@ int main() {
 	//TsliceCurve(20.0);
 	//PV();
 
-	Fourier1D();
+	//Fourier1D();
+	Fourier2D();
+
 
 	return 0;
 }

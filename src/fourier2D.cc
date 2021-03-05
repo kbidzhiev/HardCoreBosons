@@ -15,8 +15,8 @@ using namespace std;
 
 void Fourier2D(){
 
-	size_t N1 = 100;
-	size_t N2 = 100;
+	size_t N1 = 1000;
+	size_t N2 = 1000;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
