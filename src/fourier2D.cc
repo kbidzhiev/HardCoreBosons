@@ -33,6 +33,12 @@ void Fourier2D(){
 	double tmax1 = 10;
 	double tmax2 = 10;
 	size_t counter = 0;
+	auto Cylinder = [&](double x, double y){
+		if (x*x + y*y <= 1.0){
+			return 1.0;
+		} else
+			return 0.0;
+	};
 	for (size_t i = 0; i < N1; ++i) {
 		t1[i] = i * tmax1 / N1;
 		for (size_t j = 0; j < N2; ++j) {
@@ -42,7 +48,7 @@ void Fourier2D(){
 			<< " ; t= " << j << " / " << N2 << ";\t"
 			<< ++counter << " / " << N - N1  << endl;
 
-			data[i * N2 + j] = Grep(st);
+			data[i * N2 + j] = Cylinder(t1[i]-5.0, t2[j] - 5.0);//Grep(st);
 					//(sin(w1 * t1[i]) + sin(w2 * t1[i]))
 					//* (sin(w3 * t2[j]) + sin(w4 * t2[j]));
 		}
@@ -68,10 +74,10 @@ void Fourier2D(){
 			fh1 << t2[j] << " \t";
 			fh1 << data[i * N2 + j].real() << " \t";
 			fh1 << data[i * N2 + j].imag() << "\n";
-			fh2 << f1[i] << " \t";
-			fh2 << f2[j] << " \t";
-			fh2 << data_fft[i * N2 + j].real() << " \t";
-			fh2 << data_fft[i * N2 + j].imag() << "\n";
+			fh2 << f1[i]/(2 * M_PI) << " \t";
+			fh2 << f2[j]/(2 * M_PI) << " \t";
+			fh2 << data_fft[i * N2 + j].real() * (tmax1 * tmax2) << " \t";
+			fh2 << data_fft[i * N2 + j].imag() * (tmax1 * tmax2) << "\n";
 		}
 		fh1 << "\n";
 		fh2 << "\n";
@@ -84,20 +90,28 @@ void Fourier2D(){
 
 
 void Fourier1D(){
-    size_t N = 10'000;
+    size_t N = 100'000;
     dcvector data(N);
     dcvector data_fft(N);
     dvector t(N);
     dvector f(N);
+    auto Step = [](double x){
+    	if ( x >= -0.5  && x <= 0.5 ) return 1;
+    	else return 0;
+    };
+    auto Bell = [](double x){
+    	return exp(-x*x * 3.14 );
+    };
 
     // Create some test data
     //double w1 = 2*M_PI;
     //double w2 = 2*M_PI*3;
-    double tmax = 5.0;
+    double tmax = 100.0;
     for(size_t i = 0; i < N; ++i) {
-        t[i] = i*tmax/N;
+        t[i] = i*tmax/N ;
         SpaceTime st(X_coordinate(t[i]),T_time(10.0));
-        data[i] = Grep(st);//sin(w1*t[i]) + sin(w2*t[i]);
+
+        data[i] = Step(t[i]);//Grep(st);//sin(w1*t[i]) + sin(w2*t[i]);
         cout << "i = " << i << " / " << N << endl;
     }
 
@@ -117,8 +131,8 @@ void Fourier1D(){
     for(size_t i = 0; i < N; ++i) {
         fh1 << t[i] << " \t";
         fh1 << data[i].real() << " \t" << data[i].imag()<< "\n";
-        fh2 << f[i] << " \t";
-        fh2 << data_fft[i].real() << " \t" << data_fft[i].imag()<< "\n";
+        fh2 << f[i]/(2*M_PI) << " \t";
+        fh2 << 2*tmax*data_fft[i].real() << " \t" << 2*tmax*data_fft[i].imag()<< "\n";
     }
     fh1.close();
     fh2.close();
