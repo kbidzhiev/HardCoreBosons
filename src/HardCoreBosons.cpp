@@ -135,11 +135,11 @@ int main() {
 	//CorrelatorCurve();
 
 	//XsliceCurve(1.0); // x = 1;
-	TsliceCurve(5.0);//5 second
+	//TsliceCurve(5.0);//5 second
 	//PV();
 
 	//Fourier1D();
-	//Fourier2D();
+	Fourier2D();
 
 
 	return 0;
