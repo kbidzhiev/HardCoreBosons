@@ -31,7 +31,7 @@ void Fourier2D(){
 	//double w2 = 2 * M_PI * 3;
 	//double w3 = 2 * M_PI * 5;
 	//double w4 = 2 * M_PI * 7;
-	double xmax1 = 20.0;
+	double xmax1 = 50.0;
 	double tmax2 = 50.0;
 	size_t counter = 0;
 	auto Box = [&](double x, double y){
