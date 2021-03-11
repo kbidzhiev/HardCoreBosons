@@ -80,11 +80,12 @@ void TsliceCurve(double time_){
 	ofstream tslice; //here I'm defining output streams, i.e. files
 	ios_base::openmode mode;
 	mode = std::ofstream::out; //Erase previous file (if present)
-	string filename = "tslice_" + to_string((int)time_) + ".dat";
+	string filename = "tslice_" + to_string((int)time_)
+			+ "_" + to_string(2 * g.weights().size()) + ".dat";
 	tslice.open(filename, mode);
 	tslice.precision(15);
 
-	const double X_LIMITS = 5.0 ;
+	const double X_LIMITS = 25.0 ;
 	const double T_LIMITS = time_;  // Energy(Q_momenta(KF()));
 
 	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += 0.1) {
@@ -133,12 +134,12 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	//XsliceCurve(1.0);
-	//TsliceCurve(20.0);
+	//XsliceCurve(1.0); // x = 1;
+	TsliceCurve(5.0);//5 second
 	//PV();
 
 	//Fourier1D();
-	Fourier2D();
+	//Fourier2D();
 
 
 	return 0;
