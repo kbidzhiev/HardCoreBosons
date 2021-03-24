@@ -58,8 +58,9 @@ void Fourier2D(){
 			t2[j] = j * tmax2 / N2 ;//- tmax2 / 2.0;
 			SpaceTime st(X_coordinate(x1[i]),T_time(t2[j]));
 			cout << "x= " << i+1 << " / " << N1
-			  << " ; t= " << j+1 << " / " << N2 << ";\t"
-			  << ++counter << " / " << N  << endl;
+			  << " ; t= " << j+1 << " / " << N2
+			  << " ;\t" << ++counter << " / " << N
+			  << endl;
 
 			data[i * N2 + j] = t2[j] >= 0.5 ? Grep(st) : 0;
 			//Box(x1[i], t2[j] );//Asymptotics(x1[i],t2[j]);//Grep(st);//Box(x1[i], t2[j] - 5.0);
