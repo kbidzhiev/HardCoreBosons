@@ -82,7 +82,7 @@ void TsliceCurve(double time_){
 	mode = std::ofstream::out; //Erase previous file (if present)
 	string filename = "tslice_" + to_string((int)time_)
 			+ "_" + to_string(2 * g.weights().size()) + ".dat";
-	tslice.open(filename, mode);
+	tslice.open("Data/"+filename, mode);
 	tslice.precision(15);
 
 	const double X_LIMITS = 25.0 ;
@@ -104,9 +104,9 @@ void XsliceCurve(double x){
 	xslice.precision(15);
 
 	const double X_LIMITS = x ;
-	const double T_LIMITS = 10.0 ;
+	const double T_LIMITS = 20.0 ;
 
-	for (double time = 0.001*T_LIMITS; time < T_LIMITS; time += 0.01) {
+	for (double time = 0.25; time < T_LIMITS; time += 0.01) {
 		//xslice << "\"t=" << time << "\"\n";
 		Cplx result = Grep( { X_coordinate(X_LIMITS), T_time(time) });
 		xslice << time << "\t" << real(result) << "\t" << imag(result) << endl;
@@ -134,12 +134,12 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	//XsliceCurve(1.0); // x = 1;
+	//XsliceCurve(0.0); // x = 1;
 	//TsliceCurve(5.0);//5 second
 	//PV();
 
-	//Fourier1D();
-	Fourier2D();
+	Fourier1D();
+	//Fourier2D();
 
 
 	return 0;
