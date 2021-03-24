@@ -22,7 +22,7 @@ void LambdaCurve(){
 	ofstream kernel; //here I'm defining output streams, i.e. files
 	ios_base::openmode mode;
 	mode = std::ofstream::out; //Erase previous file (if present)
-	string filename = "kernel" + to_string(2 * g.weights().size()) + ".dat";
+	string filename = "kernel" + to_string(GAUSS_RANK) + ".dat";
 	kernel.open(filename, mode);
 	kernel.precision(15);
 
@@ -54,7 +54,7 @@ void CorrelatorCurve(){
 	ofstream correlator; //here I'm defining output streams, i.e. files
 	ios_base::openmode mode;
 	mode = std::ofstream::out; //Erase previous file (if present)
-	string filename = "Correlator" + to_string(2 * g.weights().size()) + ".dat";
+	string filename = "Correlator" + to_string(GAUSS_RANK) + ".dat";
 	correlator.open(filename, mode);
 	correlator.precision(15);
 
@@ -81,7 +81,7 @@ void TsliceCurve(double time_){
 	ios_base::openmode mode;
 	mode = std::ofstream::out; //Erase previous file (if present)
 	string filename = "tslice_" + to_string((int)time_)
-			+ "_" + to_string(2 * g.weights().size()) + ".dat";
+			+ "_" + to_string(GAUSS_RANK) + ".dat";
 	tslice.open("Data/"+filename, mode);
 	tslice.precision(15);
 
@@ -138,8 +138,8 @@ int main() {
 	//TsliceCurve(5.0);//5 second
 	//PV();
 
-	Fourier1D();
-	//Fourier2D();
+	//Fourier1D();
+	Fourier2D();
 
 
 	return 0;

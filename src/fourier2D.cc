@@ -31,8 +31,8 @@ void Fourier2D(){
 	//double w2 = 2 * M_PI * 3;
 	//double w3 = 2 * M_PI * 5;
 	//double w4 = 2 * M_PI * 7;
-	double xmax1 = 10.0;
-	double tmax2 = 10.0;
+	double xmax1 = 40.0;
+	double tmax2 = 20.0;
 	size_t counter = 0;
 	auto Box = [&](double x, double y){
 		if (x > 0 && y > 0){
@@ -56,14 +56,15 @@ void Fourier2D(){
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2;
 			t2[j] = j * tmax2 / N2 - tmax2 / 2.0;
-			//SpaceTime st(X_coordinate(x1[i]),T_time(t2[j]));
+			SpaceTime st(X_coordinate(x1[i]),T_time(t2[j]));
 			cout << "x= " << i+1 << " / " << N1
-			<< " ; t= " << j+1 << " / " << N2 << ";\t"
-			<< ++counter << " / " << N  << endl;
+			  << " ; t= " << j+1 << " / " << N2 << ";\t"
+			  << ++counter << " / " << N  << endl;
 
-			data[i * N2 + j] = Box(x1[i], t2[j] );//Asymptotics(x1[i],t2[j]);//Grep(st);//Box(x1[i], t2[j] - 5.0);
-					//(sin(w1 * x1[i]) + sin(w2 * x1[i]))
-					//* (sin(w3 * t2[j]) + sin(w4 * t2[j]));
+			data[i * N2 + j] = t2[j] >= 0.5 ? Grep(st) : 0;
+			//Box(x1[i], t2[j] );//Asymptotics(x1[i],t2[j]);//Grep(st);//Box(x1[i], t2[j] - 5.0);
+			//(sin(w1 * x1[i]) + sin(w2 * x1[i]))
+			//* (sin(w3 * t2[j]) + sin(w4 * t2[j]));
 		}
 	}
 
@@ -164,7 +165,7 @@ void Fourier1D(){
     fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
     for(size_t i = 0; i < N; ++i) {
         fh1 << t[i] << " \t";
-        fh1 << data[i].real() << " \t" << data[i].imag()<< "\n";
+        fh1 << data[i].real() << "\t" << data[i].imag()<< "\n";
         fh2 << f[i]/(2*M_PI) << " \t";
         fh2 << data_fft[i].real()*2*xmax << " \t" << data_fft[i].imag()*2*xmax<< "\n";
     }
