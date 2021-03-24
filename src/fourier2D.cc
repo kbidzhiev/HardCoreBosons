@@ -34,12 +34,12 @@ void Fourier2D(){
 	double xmax1 = 40.0;
 	double tmax2 = 20.0;
 	size_t counter = 0;
-	auto Box = [&](double x, double y){
-		if (x > 0 && y > 0){
-			return 1.0;
-		} else
-			return 0.0;
-	};
+//	auto Box = [&](double x, double y){
+//		if (x > 0 && y > 0){
+//			return 1.0;
+//		} else
+//			return 0.0;
+//	};
 
 //	auto Asymptotics =[&](double x, double t){
 //		Cplx log_term = log(2*t) + Cplx_i * M_PI * 0.5;
@@ -55,7 +55,7 @@ void Fourier2D(){
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2;
-			t2[j] = j * tmax2 / N2 - tmax2 / 2.0;
+			t2[j] = j * tmax2 / N2 ;//- tmax2 / 2.0;
 			SpaceTime st(X_coordinate(x1[i]),T_time(t2[j]));
 			cout << "x= " << i+1 << " / " << N1
 			  << " ; t= " << j+1 << " / " << N2 << ";\t"
