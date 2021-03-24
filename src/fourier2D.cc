@@ -41,14 +41,14 @@ void Fourier2D(){
 			return 0.0;
 	};
 
-	auto Asymptotics =[&](double x, double t){
-		Cplx log_term = log(2*t) + Cplx_i * M_PI * 0.5;
-		Cplx result = -0.5*x*x/log_term -Cplx_i * 0.5 *t;
-		result = exp(result);
-		result /= (sqrt(log_term) * sqrt(Cplx_i * t));
-		result *= 3.5;// 3.5 is all the constants;
-		return result;
-	};
+//	auto Asymptotics =[&](double x, double t){
+//		Cplx log_term = log(2*t) + Cplx_i * M_PI * 0.5;
+//		Cplx result = -0.5*x*x/log_term -Cplx_i * 0.5 *t;
+//		result = exp(result);
+//		result /= (sqrt(log_term) * sqrt(Cplx_i * t));
+//		result *= 3.5;// 3.5 is all the constants;
+//		return result;
+//	};
 
 
 //#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
@@ -124,24 +124,24 @@ void Fourier1D(){
     dcvector data_fft(N);
     dvector t(N);
     dvector f(N);
-    auto Step = [](double x){
-//		if (x >= 0)
-//			return 1.0;
-//		else
-//			return 0.0;
-
-    	if ( x >= 0  && x <= 1.0 ) return 1;
-    	else return 0;
-    };
-    auto Bell = [](double x){
-    	return exp(-x*x * 3.14 );
-    };
+//    auto Step = [](double x){
+////		if (x >= 0)
+////			return 1.0;
+////		else
+////			return 0.0;
+//
+//    	if ( x >= 0  && x <= 1.0 ) return 1;
+//    	else return 0;
+//    };
+//    auto Bell = [](double x){
+//    	return exp(-x*x * 3.14 );
+//    };
 
     // Create some test data
     //double w1 = 2*M_PI;
     //double w2 = 2*M_PI*3;
     double xmax = 100.0;
-    double time = 10.0;
+    double time = 20.0;
     for(size_t i = 0; i < N; ++i) {
         t[i] = i*xmax/N - xmax/2;
         SpaceTime st(X_coordinate(t[i]),T_time(time));
@@ -158,8 +158,8 @@ void Fourier1D(){
     // Save
     std::ofstream fh1;
     std::ofstream fh2;
-    fh1.open("Data/Gx" + to_string((int)time) + ".dat");
-    fh2.open("Data/Gp" + to_string((int)time) + ".dat");
+    fh1.open("Data/Gp/Gx" + to_string((int)time) + ".dat");
+    fh2.open("Data/Gp/Gp" + to_string((int)time) + ".dat");
     fh1 << "# \tx \tRe[f(x)] \tIm[f(x)]\n";
     fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
     for(size_t i = 0; i < N; ++i) {
