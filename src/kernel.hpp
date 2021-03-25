@@ -78,3 +78,4 @@ Cplx Grep(SpaceTime st);
 
 void Fourier2D();
 void Fourier1D();
+void Gpt();
