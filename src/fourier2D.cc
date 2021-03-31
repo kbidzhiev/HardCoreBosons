@@ -12,6 +12,15 @@ using namespace std;
 
 //https://github.com/lschw/fftw_cpp
 
+Cplx Asymptotics (double x, double t) {
+	Cplx log_term = log(2 * t) + Cplx_i * M_PI * 0.5;
+	Cplx result = -0.5 * x * x / log_term - Cplx_i * 0.5 * t;
+	result = exp(result);
+	result /= (sqrt(log_term) * sqrt(Cplx_i * t));
+	result *= 3.5; // 3.5 \approx all the constants;
+	return result;
+};
+
 void Fourier2D() {
 
 	size_t N1 = 1000;
@@ -39,14 +48,7 @@ void Fourier2D() {
 //			return 0.0;
 //	};
 
-//	auto Asymptotics =[&](double x, double t){
-//		Cplx log_term = log(2*t) + Cplx_i * M_PI * 0.5;
-//		Cplx result = -0.5*x*x/log_term -Cplx_i * 0.5 *t;
-//		result = exp(result);
-//		result /= (sqrt(log_term) * sqrt(Cplx_i * t));
-//		result *= 3.5;// 3.5 is all the constants;
-//		return result;
-//	};
+
 
 //#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t i = 0; i < N1; ++i) {
@@ -99,12 +101,10 @@ void Fourier2D() {
 			{
 				fh2 << k1[i] / (2 * M_PI) << " \t";
 				fh2 << w2[j] / (2 * M_PI) << " \t";
-				fh2
-						<< ValueFilter(data_fft[i * N2 + j].real())
-								* (4 * xmax1 * tmax2) << " \t";
-				fh2
-						<< ValueFilter(data_fft[i * N2 + j].imag())
-								* (4 * xmax1 * tmax2) << "\n";
+				fh2 << ValueFilter(data_fft[i * N2 + j].real())
+						* (4 * xmax1 * tmax2) << " \t";
+				fh2	<< ValueFilter(data_fft[i * N2 + j].imag())
+						* (4 * xmax1 * tmax2) << "\n";
 
 			}
 		}
@@ -122,28 +122,15 @@ void Fourier1D() {
 	dcvector data_fft(N);
 	dvector t(N);
 	dvector f(N);
-//    auto Step = [](double x){
-////		if (x >= 0)
-////			return 1.0;
-////		else
-////			return 0.0;
-//
-//    	if ( x >= 0  && x <= 1.0 ) return 1;
-//    	else return 0;
-//    };
-//    auto Bell = [](double x){
-//    	return exp(-x*x * 3.14 );
-//    };
 
-	// Create some test data
-	//double w1 = 2*M_PI;
-	//double w2 = 2*M_PI*3;
-	double xmax = 100.0;
-	double time = 20.0;
+	double xmax = 50.0;
+	double time = 10.0;
 	for (size_t i = 0; i < N; ++i) {
 		t[i] = i * xmax / N - xmax / 2;
 		SpaceTime st(X_coordinate(t[i]), T_time(time));
-		data[i] = Grep(st);    //sin(w1*t[i]) + sin(w2*t[i]);
+		//data[i] = Asymptotics (st.x, st.t);
+		data[i] = Grep(st) ;  // Here we do Fourier for a fixed time t = 10
+		// no need to introduce small time truncation
 		cout << "i = " << i << " / " << N << endl;
 	}
 
@@ -156,8 +143,8 @@ void Fourier1D() {
 	// Save
 	std::ofstream fh1;
 	std::ofstream fh2;
-	fh1.open("Data/Gp/Gx" + to_string((int) time) + ".dat");
-	fh2.open("Data/Gp/Gp" + to_string((int) time) + ".dat");
+	fh1.open("Data/Gp/Gx_time" + to_string((int) time) + "Gauss" + to_string(GAUSS_RANK) +".dat");
+	fh2.open("Data/Gp/Gp_time" + to_string((int) time) + "Gauss" + to_string(GAUSS_RANK) +".dat");
 	fh1 << "# \tx \tRe[f(x)] \tIm[f(x)]\n";
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 	for (size_t i = 0; i < N; ++i) {
@@ -174,7 +161,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 10;
+	size_t N = 100;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector t(N);
@@ -188,12 +175,12 @@ void Gpt() {
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 
 	double xmax = 10.0;
-	double timemax = 0.5;
-	for (double time = 0.001; time < timemax; time += 0.001) {
+	double timemax = 20.;
+	for (double time = 0.0; time < timemax; time += 0.1) {
 		for (size_t i = 0; i < N; ++i) {
 			t[i] = i * xmax / N - xmax / 2;
 			SpaceTime st(X_coordinate(t[i]), T_time(time));
-			data[i] = Grep(st);    //sin(w1*t[i]) + sin(w2*t[i]);
+			data[i] = time >= 0.1 ? Grep(st) : 0;    //sin(w1*t[i]) + sin(w2*t[i]);
 			cout << "i = " << i << " / " << N
 					<<" time = " << time << " / " << timemax
 					<< endl;

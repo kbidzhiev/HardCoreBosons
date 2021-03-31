@@ -85,7 +85,7 @@ void TsliceCurve(double time_){
 	tslice.open("Data/"+filename, mode);
 	tslice.precision(15);
 
-	const double X_LIMITS = 25.0 ;
+	const double X_LIMITS = 10.0 ;
 	const double T_LIMITS = time_;  // Energy(Q_momenta(KF()));
 
 	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += 0.1) {
@@ -138,8 +138,8 @@ int main() {
 	//TsliceCurve(5.0);//5 second
 	//PV();
 
-	//Fourier1D();
-	Fourier2D();
+	Fourier1D();
+	//Fourier2D();
 	//Gpt();
 
 
