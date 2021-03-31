@@ -12,7 +12,13 @@ using namespace std;
 
 //https://github.com/lschw/fftw_cpp
 
+
+double EF = KF() * KF() ; // fermi energy
+
 Cplx Asymptotics (double x, double t) {
+	x *= KF();
+	t *= EF;
+
 	Cplx log_term = log(2 * t) + Cplx_i * M_PI * 0.5;
 	Cplx result = -0.5 * x * x / log_term - Cplx_i * 0.5 * t;
 	result = exp(result);
@@ -23,8 +29,8 @@ Cplx Asymptotics (double x, double t) {
 
 void Fourier2D() {
 
-	size_t N1 = 1000;
-	size_t N2 = 1000;
+	size_t N1 = 500;
+	size_t N2 = 500;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
@@ -60,9 +66,9 @@ void Fourier2D() {
 					<< N2 << " ;\t" << ++counter << " / " << N << endl;
 
 			data[i * N2 + j] = t2[j] >= 0.5 ? Grep(st) : 0;
-			//Box(x1[i], t2[j] );//Asymptotics(x1[i],t2[j]);//Grep(st);//Box(x1[i], t2[j] - 5.0);
-			//(sin(w1 * x1[i]) + sin(w2 * x1[i]))
-			//* (sin(w3 * t2[j]) + sin(w4 * t2[j]));
+			//data[i * N2 + j] = t2[j] >= 0.5 ? Asymptotics(x1[i],t2[j]) : 0;
+
+
 		}
 	}
 
@@ -126,12 +132,11 @@ void Fourier1D() {
 	double xmax = 50.0;
 	double time = 20.0;
 
-	double KF = RHO * M_PI; // fermi momentrum
-	double EF = KF * KF ; // fermi energy
+
 	for (size_t i = 0; i < N; ++i) {
 		t[i] = i * xmax / N - xmax / 2;
 		SpaceTime st(X_coordinate(t[i]), T_time(time));
-		//data[i] = Asymptotics (KF * st.x, EF * st.t);
+		//data[i] = Asymptotics (st.x, st.t);
 		data[i] = Grep(st) ;  // Here we do Fourier for a fixed time t = 10
 		// no need to introduce small time truncation
 		cout << "i = " << i << " / " << N << endl;
