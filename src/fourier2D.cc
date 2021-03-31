@@ -124,11 +124,14 @@ void Fourier1D() {
 	dvector f(N);
 
 	double xmax = 50.0;
-	double time = 10.0;
+	double time = 20.0;
+
+	double KF = RHO * M_PI; // fermi momentrum
+	double EF = KF * KF ; // fermi energy
 	for (size_t i = 0; i < N; ++i) {
 		t[i] = i * xmax / N - xmax / 2;
 		SpaceTime st(X_coordinate(t[i]), T_time(time));
-		//data[i] = Asymptotics (st.x, st.t);
+		//data[i] = Asymptotics (KF * st.x, EF * st.t);
 		data[i] = Grep(st) ;  // Here we do Fourier for a fixed time t = 10
 		// no need to introduce small time truncation
 		cout << "i = " << i << " / " << N << endl;
