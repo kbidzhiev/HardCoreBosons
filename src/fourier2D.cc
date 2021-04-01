@@ -93,8 +93,8 @@ void Fourier2D() {
 	// Save
 	std::ofstream fh1;
 	std::ofstream fh2;
-	fh1.open("Data/data2d.dat");
-	fh2.open("Data/data2d_fft.dat");
+	fh1.open("Data/data2d_Gauss"+ to_string(GAUSS_RANK)+ ".dat");
+	fh2.open("Data/data2d_fft_Gauss"+ to_string(GAUSS_RANK)+ ".dat");
 	fh1 << "# x \tt \tRe[f(x, t)] \tIm[f(x,t)]\n";
 	fh2 << "# k \tw \tRe[f(k, w)] \tIm[f(x,t)]\n";
 	for (size_t i = 0; i < N1; ++i) {
