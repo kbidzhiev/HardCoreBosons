@@ -141,7 +141,7 @@ int main() {
 	//Fourier1D();
 	Fourier2D();
 	//Gpt();
-
+	//foo();
 
 	return 0;
 }

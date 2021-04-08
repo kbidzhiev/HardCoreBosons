@@ -5,6 +5,10 @@
 #include "fftw_2d_cpp.hh"
 #include "fftw_cpp.hh"
 
+#include <stdio.h>
+#include <math.h>
+
+
 using namespace std;
 
 //#include <complex.h>
@@ -15,7 +19,24 @@ using namespace std;
 
 double EF = KF() * KF() ; // fermi energy
 
+double Box (SpaceTime st){
+	if ( -0.5 < st.x && st.x < 0.5
+			&& -0.5 < st.t && st.t < 0.5 ){
+		return 1;
+	} else return 0;
+}
+
+double Gauss (SpaceTime st){
+	return exp(-0.5*(st.x*st.x + st.t*st.t));
+}
+
+
 Cplx Asymptotics (double x, double t) {
+	bool conjugate_flag = false;
+	if (t<0){
+		t = -t;
+		conjugate_flag = true;
+	}
 	x *= KF();
 	t *= EF;
 
@@ -24,13 +45,16 @@ Cplx Asymptotics (double x, double t) {
 	result = exp(result);
 	result /= (sqrt(log_term) * sqrt(Cplx_i * t));
 	result *= 3.5; // 3.5 \approx all the constants;
+	if (conjugate_flag){
+		result = conj(result);
+	}
 	return result;
 };
 
 void Fourier2D() {
 
-	size_t N1 = 500;
-	size_t N2 = 500;
+	size_t N1 = 100;
+	size_t N2 = 100;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
@@ -39,47 +63,35 @@ void Fourier2D() {
 	dvector k1(N1);
 	dvector w2(N2);
 
-	// Create test data
-	//double w1 = 2 * M_PI;
-	//double w2 = 2 * M_PI * 3;
-	//double w3 = 2 * M_PI * 5;
-	//double w4 = 2 * M_PI * 7;
-	double xmax1 = 40.0;
+
+	double xmax1 = 20.0;
 	double tmax2 = 20.0;
 	size_t counter = 0;
-//	auto Box = [&](double x, double y){
-//		if (x > 0 && y > 0){
-//			return 1.0;
-//		} else
-//			return 0.0;
-//	};
-
 
 
 //#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
-			x1[i] = i * xmax1 / N1 - xmax1 / 2;
-			t2[j] = j * tmax2 / N2;	//- tmax2 / 2.0;
+			x1[i] = i * xmax1 / N1;// - xmax1 / 2.0;
+			t2[j] = j * tmax2 / N2;// - tmax2 / 2.0;
 			SpaceTime st(X_coordinate(x1[i]), T_time(t2[j]));
 			cout << "x= " << i + 1 << " / " << N1 << " ; t= " << j + 1 << " / "
 					<< N2 << " ;\t" << ++counter << " / " << N << endl;
 
-			data[i * N2 + j] = t2[j] >= 0.5 ? Grep(st) : 0;
+			data[i * N2 + j] = t2[j] >= 0.25 ? Grep(st) : 0;
 			//data[i * N2 + j] = t2[j] >= 0.5 ? Asymptotics(x1[i],t2[j]) : 0;
-
-
+			//data[i * N2 + j] = Gauss(st);//Box(st.x, st.t);
 		}
 	}
 
 	auto ValueFilter = [](double x) {
 
-//    	double cutoff = 10.0;
-//    	if (abs(x)<1e-14) return 0.0;
-//    	else if (abs(x) > cutoff){
-//    		if (x > cutoff) return cutoff;
-//    		else  return -cutoff;
-//    	}
+    	double cutoff = 10.0;
+    	if (abs(x)<1e-14) return 0.0;
+    	else if (abs(x) > cutoff){
+    		if (x > cutoff) return cutoff;
+    		else  return -cutoff;
+    	}
 		return x;
 	};
 
@@ -93,8 +105,13 @@ void Fourier2D() {
 	// Save
 	std::ofstream fh1;
 	std::ofstream fh2;
-	fh1.open("Data/data2d_Gauss"+ to_string(GAUSS_RANK)+ ".dat");
-	fh2.open("Data/data2d_fft_Gauss"+ to_string(GAUSS_RANK)+ ".dat");
+	std::ofstream fourier_momentum0;
+	std::ofstream fourier_momentum1;
+	fh1.open("Data/data2d_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+	fh2.open("Data/data2d_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+	fourier_momentum0.open("Data/momentum0_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+	fourier_momentum1.open("Data/momentum1_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+
 	fh1 << "# x \tt \tRe[f(x, t)] \tIm[f(x,t)]\n";
 	fh2 << "# k \tw \tRe[f(k, w)] \tIm[f(x,t)]\n";
 	for (size_t i = 0; i < N1; ++i) {
@@ -111,6 +128,14 @@ void Fourier2D() {
 						* (4 * xmax1 * tmax2) << " \t";
 				fh2	<< ValueFilter(data_fft[i * N2 + j].imag())
 						* (4 * xmax1 * tmax2) << "\n";
+				if(k1[i] / (2 * M_PI) == 0){
+					fourier_momentum0 << w2[j] / (2 * M_PI) << " \t"
+							<< ValueFilter(data_fft[i * N2 + j].real())
+							* (4 * xmax1 * tmax2) << " \t"
+							<< ValueFilter(data_fft[i * N2 + j].imag())
+							* (4 * xmax1 * tmax2) << "\n" ;
+				}
+
 
 			}
 		}
@@ -119,25 +144,26 @@ void Fourier2D() {
 	}
 	fh1.close();
 	fh2.close();
+	fourier_momentum0.close();
 	cout << "DONE" << endl;
 }
 
 void Fourier1D() {
-	size_t N = 1000;
+	size_t N = 100;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector t(N);
 	dvector f(N);
 
-	double xmax = 50.0;
-	double time = 1.0;
+	double xmax = 100.0;
+	double time = 0.0;
 
 
 	for (size_t i = 0; i < N; ++i) {
-		t[i] = i * xmax / N - xmax / 2;
+		t[i] = i * xmax / N;// - xmax / 2;
 		SpaceTime st(X_coordinate(t[i]), T_time(time));
-		//data[i] = Asymptotics (st.x, st.t);
-		data[i] = Grep(st) ;  // Here we do Fourier for a fixed time
+		data[i] = Gauss(st);//Asymptotics (st.x, st.t);
+		//data[i] = Grep(st) ;  // Here we do Fourier for a fixed time
 		// no need to introduce small time truncation
 		cout << "i = " << i << " / " << N << endl;
 	}
@@ -221,4 +247,29 @@ void Gpt() {
 
 	cout << "Fourier Gpt DONE" << endl;
 }
+
+
+void foo(){
+    fftw_complex *in, *out;
+    fftw_plan p;
+    int i, j, w = 16, h = 16;
+    double a = 2;
+    in = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * w * h);
+    out = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * w * h);
+    for (i = 0; i < w; i++)
+        for (j = 0; j < h; j++) {
+            in[i*h+j][0] = exp(-1.*((i-w/2)*(i-w/2)+(j-h/2)*(j-h/2))/(a*a));
+            in[i*h+j][1] = 0;
+        }
+    p = fftw_plan_dft_2d(w, h, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+    fftw_execute(p);
+    for (i = 0; i < w; i++)
+      for (j = 0; j < h; j++)
+        printf("%4d %4d: %+9.4f %+9.4f i\n", i, j, out[i*h+j][0], out[i*h+j][1]);
+    fftw_destroy_plan(p); fftw_cleanup();
+    fftw_free(in); fftw_free(out);
+}
+
+
+
 
