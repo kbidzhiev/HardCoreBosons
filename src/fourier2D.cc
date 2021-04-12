@@ -86,7 +86,7 @@ void Fourier2D() {
 			//data[i * N2 + j] = Gauss(st);
 			//data[i * N2 + j] = Box(st);
 
-			double truncation = 0.25;
+			double truncation = 1.0;
 			Cplx result = Grep(st);
 			if (t2[j] >= truncation) {
 				data[i * N2 + j] = result;
