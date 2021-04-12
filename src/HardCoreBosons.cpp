@@ -139,9 +139,9 @@ int main() {
 	//PV();
 
 	//Fourier1D();
-	//Fourier2D();
+	Fourier2D();
 	//Gpt();
-	foo();
+	//foo();
 
 	return 0;
 }
