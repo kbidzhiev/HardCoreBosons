@@ -53,8 +53,8 @@ Cplx Asymptotics (double x, double t) {
 
 void Fourier2D() {
 
-	size_t N1 = 100;
-	size_t N2 = 100;
+	size_t N1 = 200;
+	size_t N2 = 200;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
@@ -64,8 +64,8 @@ void Fourier2D() {
 	dvector w2(N2);
 
 
-	double xmax1 = 20.0;
-	double tmax2 = 20.0;
+	double xmax1 = 40.0;
+	double tmax2 = 40.0;
 	size_t counter = 0;
 
 
@@ -86,7 +86,7 @@ void Fourier2D() {
 			//data[i * N2 + j] = Gauss(st);
 			//data[i * N2 + j] = Box(st);
 
-			double truncation = 1.0;
+			double truncation = 0.1;
 			Cplx result = Grep(st);
 			if (t2[j] >= truncation) {
 				data[i * N2 + j] = result;
