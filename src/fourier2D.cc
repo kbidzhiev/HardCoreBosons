@@ -31,12 +31,10 @@ double Gauss (SpaceTime st){
 }
 
 
-Cplx Asymptotics (double x, double t) {
-	bool conjugate_flag = false;
-	if (t<0){
-		t = -t;
-		conjugate_flag = true;
-	}
+Cplx Asymptotics (SpaceTime st) {
+	double x = st.x;
+	double t = st.t;
+
 	x *= KF();
 	t *= EF;
 
@@ -45,9 +43,7 @@ Cplx Asymptotics (double x, double t) {
 	result = exp(result);
 	result /= (sqrt(log_term) * sqrt(Cplx_i * t));
 	result *= 3.5; // 3.5 \approx all the constants;
-	if (conjugate_flag){
-		result = conj(result);
-	}
+
 	return result;
 };
 
@@ -86,8 +82,9 @@ void Fourier2D() {
 			//data[i * N2 + j] = Gauss(st);
 			//data[i * N2 + j] = Box(st);
 
-			double truncation = 0.1;
-			Cplx result = Grep(st);
+			double truncation = 5.0;
+			//Cplx result = Grep(st);
+			Cplx result = Asymptotics(st);
 			if (t2[j] >= truncation) {
 				data[i * N2 + j] = result;
 			} else if (t2[j] <= -truncation){
