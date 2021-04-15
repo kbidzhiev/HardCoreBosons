@@ -61,7 +61,7 @@ void Fourier2D() {
 
 
 	double xmax1 = 40.0;
-	double tmax2 = 40.0;
+	double tmax2 = 20.0;
 	size_t counter = 0;
 
 
@@ -69,7 +69,7 @@ void Fourier2D() {
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2.0;
-			t2[j] = j * tmax2 / N2 - tmax2 / 2.0;
+			t2[j] = j * tmax2 / N2;// - tmax2 / 2.0;
 
 			SpaceTime st(X_coordinate(x1[i]), T_time(t2[j]));
 			if (t2[j] < 0) 	st.t = -st.t;
@@ -82,9 +82,10 @@ void Fourier2D() {
 			//data[i * N2 + j] = Gauss(st);
 			//data[i * N2 + j] = Box(st);
 
-			double truncation = 5.0;
-			//Cplx result = Grep(st);
-			Cplx result = Asymptotics(st);
+			double truncation = 0.5;
+			Cplx result = Grep(st);
+			//Cplx result = Asymptotics(st);
+			//Cplx result = Box(st);
 			if (t2[j] >= truncation) {
 				data[i * N2 + j] = result;
 			} else if (t2[j] <= -truncation){
@@ -119,7 +120,6 @@ void Fourier2D() {
 	std::ofstream fh1;
 	std::ofstream fh2;
 	std::ofstream fourier_momentum0;
-	std::ofstream fourier_momentum1;
 	fh1.open("Data/data2d_Gauss" + to_string(GAUSS_RANK)+ ".dat");
 	fh2.open("Data/data2d_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
 	fourier_momentum0.open("Data/momentum0_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
