@@ -17,7 +17,7 @@ using namespace std;
 //https://github.com/lschw/fftw_cpp
 
 
-double EF = KF() * KF() ; // fermi energy
+double EF = KF() * KF() / 2.0 ; // fermi energy
 
 double Box (SpaceTime st){
 	if ( -0.5 < st.x && st.x < 0.5
@@ -49,8 +49,8 @@ Cplx Asymptotics (SpaceTime st) {
 
 void Fourier2D() {
 
-	size_t N1 = 200;
-	size_t N2 = 200;
+	size_t N1 = 800;
+	size_t N2 = 800;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
@@ -61,7 +61,7 @@ void Fourier2D() {
 
 
 	double xmax1 = 40.0;
-	double tmax2 = 20.0;
+	double tmax2 = 40.0;
 	size_t counter = 0;
 
 
@@ -69,10 +69,10 @@ void Fourier2D() {
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2.0;
-			t2[j] = j * tmax2 / N2;// - tmax2 / 2.0;
+			t2[j] = j * tmax2 / N2 - tmax2 / 2.0;
 
 			SpaceTime st(X_coordinate(x1[i]), T_time(t2[j]));
-			if (t2[j] < 0) 	st.t = -st.t;
+			if (t2[j] < 0) 	st.t = -st.t; // t2[j] is still negative, but st.t is positive;
 
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
 				 << "t= " << j + 1 << " / " << N2 << " ;\t" << ++counter << " / " << N << endl;
@@ -82,8 +82,10 @@ void Fourier2D() {
 			//data[i * N2 + j] = Gauss(st);
 			//data[i * N2 + j] = Box(st);
 
-			double truncation = 0.5;
-			Cplx result = Grep(st);
+
+
+			const double truncation = 0.1;
+			const Cplx result = Grep(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
 			if (t2[j] >= truncation) {
@@ -95,12 +97,25 @@ void Fourier2D() {
 			}
 
 
+//			if (t2[j] >= 0) {
+//				data[i * N2 + j] = Gauss(st);
+//			}  else {
+//				data[i * N2 + j] = 0;
+//			}
+
+
+
 		}
 	}
 
 	auto ValueFilter = [](double x) {
+//		if (abs(x) > 0.8){
+//			return x;
+//		} else {
+//			return 0.0;
+//		}
 
-//    	double cutoff = 10.0;
+//    	double cutoff = 0.5;
 //    	if (abs(x)<1e-16) return 0.0;
 //    	else if (abs(x) > cutoff){
 //    		if (x > cutoff) return cutoff;
@@ -120,9 +135,11 @@ void Fourier2D() {
 	std::ofstream fh1;
 	std::ofstream fh2;
 	std::ofstream fourier_momentum0;
+	std::ofstream function;
 	fh1.open("Data/data2d_Gauss" + to_string(GAUSS_RANK)+ ".dat");
 	fh2.open("Data/data2d_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
 	fourier_momentum0.open("Data/momentum0_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+	function.open("Data/function_Gauss" + to_string(GAUSS_RANK)+ ".dat");
 
 	fh1 << "# x \tt \tRe[f(x, t)] \tIm[f(x,t)]\n";
 	fh2 << "# k \tw \tRe[f(k, w)] \tIm[f(x,t)]\n";
@@ -130,25 +147,32 @@ void Fourier2D() {
 		for (size_t j = 0; j < N2; ++j) {
 			fh1 << x1[i] << " \t";
 			fh1 << t2[j] << " \t";
-			fh1 << data[i * N2 + j].real() << " \t";
-			fh1 << data[i * N2 + j].imag() << "\n";
+			fh1 << ValueFilter(data[i * N2 + j].real()) << " \t";
+			fh1 << ValueFilter(data[i * N2 + j].imag()) << "\n";
 			//if (k1[i]>=0 && w2[j]>=0)
 			{
-				fh2 << k1[i] / (2 * M_PI) << " \t";
-				fh2 << w2[j] / (2 * M_PI) << " \t";
-				fh2 << ValueFilter(data_fft[i * N2 + j].real())
-						* (4 * xmax1 * tmax2) << " \t";
-				fh2	<< ValueFilter(data_fft[i * N2 + j].imag())
-						* (4 * xmax1 * tmax2) << "\n";
-				if(k1[i] / (2 * M_PI) == 0){
-					fourier_momentum0 << w2[j] / (2 * M_PI) << " \t"
-							<< ValueFilter(data_fft[i * N2 + j].real())
-							* (4 * xmax1 * tmax2) << " \t"
-							<< ValueFilter(data_fft[i * N2 + j].imag())
-							* (4 * xmax1 * tmax2) << "\n" ;
+				fh2 << k1[i]/KF() << " \t";
+				fh2 << w2[j]/EF << " \t";
+				fh2 << pow(-1, i+j) * ValueFilter(
+						data_fft[i * N2 + j].real() * xmax1 * tmax2 / (2.0 * M_PI)
+						)<< " \t";
+				fh2	<< pow(-1, i+j) * ValueFilter(
+						data_fft[i * N2 + j].imag() * xmax1 * tmax2 / (2.0 * M_PI)
+						)<< "\n";
+				if(k1[i]  == 0){
+					fourier_momentum0 << w2[j]  << " \t"
+						<< pow(-1, i+j) * ValueFilter(
+							data_fft[i * N2 + j].real() * xmax1 * tmax2 / (2.0 * M_PI)
+							)<< " \t"
+						<< pow(-1, i+j) * ValueFilter(
+							data_fft[i * N2 + j].imag() * xmax1 * tmax2 / (2.0 * M_PI)
+							) << "\n" ;
 				}
-
-
+				if(x1[i]  == 0){
+					function << t2[j]  << " \t"
+						<< ValueFilter(data[i * N2 + j].real()) << " \t"
+						<< ValueFilter(data[i * N2 + j].imag()) << "\n" ;
+				}
 			}
 		}
 		fh1 << "\n";
@@ -161,18 +185,18 @@ void Fourier2D() {
 }
 
 void Fourier1D() {
-	size_t N = 201;
+	size_t N = 501;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector t(N);
 	dvector f(N);
 
-	double xmax = 20.0;
+	double xmax = 100.0;
 	double time = 0.0;
 
 
 	for (size_t i = 0; i < N; ++i) {
-		t[i] = i * xmax / N - xmax / 2;
+		t[i] = i * xmax / N - xmax / 2.0;
 		SpaceTime st(X_coordinate(t[i]), T_time(time));
 		data[i] = Gauss(st);//Asymptotics (st.x, st.t);
 		//data[i] = Grep(st) ;  // Here we do Fourier for a fixed time
@@ -196,9 +220,9 @@ void Fourier1D() {
 	for (size_t i = 0; i < N; ++i) {
 		fh1 << t[i] << " \t";
 		fh1 << data[i].real() << "\t" << data[i].imag() << "\n";
-		fh2 << f[i] / (2 * M_PI) << " \t";
-		fh2 << data_fft[i].real() * 2 * xmax << " \t"
-			<< data_fft[i].imag() * 2 * xmax << "\n";
+		fh2 << f[i]  << " \t";
+		fh2 << pow(-1,i) * data_fft[i].real() * xmax/ pow(2 * M_PI, 0.5) << " \t"
+			<< pow(-1,i) * data_fft[i].imag() * xmax/ pow(2 * M_PI, 0.5) << "\n";
 	}
 	fh1.close();
 	fh2.close();
