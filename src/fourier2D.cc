@@ -49,8 +49,8 @@ Cplx Asymptotics (SpaceTime st) {
 
 void Fourier2D() {
 
-	size_t N1 = 800;
-	size_t N2 = 800;
+	size_t N1 = 400;
+	size_t N2 = 400;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
@@ -63,7 +63,7 @@ void Fourier2D() {
 	double xmax1 = 40.0;
 	double tmax2 = 40.0;
 	size_t counter = 0;
-
+	Cplx tmp;
 
 //#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t i = 0; i < N1; ++i) {
@@ -85,15 +85,19 @@ void Fourier2D() {
 
 
 			const double truncation = 0.1;
-			const Cplx result = Grep(st);
+			//const Cplx result = Grep(st);
+			const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
+
 			if (t2[j] >= truncation) {
 				data[i * N2 + j] = result;
+				tmp = result;
 			} else if (t2[j] <= -truncation){
 				data[i * N2 + j] = conj(result);
+				tmp = conj(result);
 			} else {
-				data[i * N2 + j] = 0;
+				data[i * N2 + j] = tmp;
 			}
 
 
