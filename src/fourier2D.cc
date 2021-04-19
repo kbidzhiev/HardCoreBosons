@@ -26,8 +26,8 @@ double Box (SpaceTime st){
 	} else return 0;
 }
 
-double Gauss (SpaceTime st){
-	return exp(-0.5*(st.x*st.x + st.t*st.t));
+Cplx Gauss (SpaceTime st){
+	return exp(-0.5*(st.x*st.x + st.t*st.t) + 0.0*Cplx_i * (st.x + st.t));
 }
 
 
@@ -85,19 +85,21 @@ void Fourier2D() {
 
 
 			const double truncation = 0.1;
-			//const Cplx result = Grep(st);
-			const Cplx result = Gauss(st);
+			const Cplx result = Grep(st);
+			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
 
 			if (t2[j] >= truncation) {
 				data[i * N2 + j] = result;
-				tmp = result;
+				//tmp = result;
 			} else if (t2[j] <= -truncation){
 				data[i * N2 + j] = conj(result);
 				tmp = conj(result);
-			} else {
+			} else if (t2[j] <= 0 && t2[j] > -truncation ){
 				data[i * N2 + j] = tmp;
+			} else {
+				data[i * N2 + j] = conj(tmp);
 			}
 
 
