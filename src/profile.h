@@ -19,8 +19,8 @@ public:
     auto finish = steady_clock::now();
     auto dur = finish - start;
     cerr << message
-       << duration_cast<seconds>(dur).count()
-       << " s" << endl;
+       << duration_cast<nanoseconds>(dur).count()
+       << " nano s" << endl;
   }
 private:
   string message;

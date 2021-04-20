@@ -10,7 +10,7 @@
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 #include "Faddeeva.hh"
 #include "../../cpp_libs/eigen/Eigen/Dense"
-
+#include "profile.h"
 
 using namespace std;
 using namespace boost::math::quadrature;
@@ -68,7 +68,7 @@ double Energy(Q_momenta q_momenta);
 double Tau(Q_momenta q_momenta,  SpaceTime st);
 double Theta (Q_momenta q_momenta);
 Cplx Eminus (Q_momenta q_momenta,  SpaceTime st);
-Cplx Erf(const Cplx z);
+//Cplx Erf(const Cplx z);
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st);
 Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st);
 Cplx G0 (SpaceTime st);

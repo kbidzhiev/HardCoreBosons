@@ -122,7 +122,7 @@ void PV(){
 	Cplx erf_arg = (st.x - q.value * st.t) * (-1.0 + Cplx_i) / (2.0 * sqrt(st.t));
 
 	cout << old_value << '\n' << new_value << endl;
-	cout << "erf          = " << Erf(erf_arg) << '\n';
+	cout << "erf          = " << Faddeeva::erf(erf_arg) << '\n';
 	cout << "erf(wolfram) = (1.00787,-0.0223579)" << endl;
 
 }
