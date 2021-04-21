@@ -65,7 +65,7 @@ void Fourier2D() {
 	size_t counter = 0;
 	Cplx tmp;
 
-//#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
+#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2.0;
