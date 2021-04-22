@@ -61,7 +61,7 @@ void Fourier2D() {
 
 
 	double xmax1 = 40.0;
-	double tmax2 = 40.0;
+	double tmax2 = 20.0;
 	size_t counter = 0;
 
 
@@ -69,7 +69,7 @@ void Fourier2D() {
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2.0;
-			t2[j] = j * tmax2 / N2 - tmax2 / 2.0;
+			t2[j] = j * tmax2 / N2;;
 
 			SpaceTime st(X_coordinate(x1[i]), T_time(abs(t2[j])));
 			//the line replaced by abs in T_time ctr
@@ -79,46 +79,39 @@ void Fourier2D() {
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
 				 << "t= " << j + 1 << " / " << N2 << " ;\t" << ++counter << " / " << N << endl;
 
-			//data[i * N2 + j] = abs(t2[j]) >= 0.25 ? Grep(st) : 0;
-			//data[i * N2 + j] = t2[j] >= 0.5 ? Asymptotics(x1[i],t2[j]) : 0;
-			//data[i * N2 + j] = Gauss(st);
-			//data[i * N2 + j] = Box(st);
-
-
-
-			const double truncation = 0.01;
+			const double truncation = 0.02;
 			Cplx tmp; // Do different threads interrupt this variable ?????
-			const Cplx result = Grep(st);
+			//const Cplx result = Grep(st);
 			//const Cplx result = Gauss(st);
-			//Cplx result = Asymptotics(st);
+			Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
 
-//			if (t2[j] >= truncation) {
-//				data[i * N2 + j] = result;
-//				//tmp = result;
-//			} else if (t2[j] <= -truncation){
-//				data[i * N2 + j] = result;// conj(result)
-//				tmp = data[i * N2 + j];
-//			} else if (t2[j] <= 0 && t2[j] > -truncation ){
-//				data[i * N2 + j] = tmp;
-//			} else {
-//				data[i * N2 + j] = conj(tmp);
-//			}
+			auto Symmetric = [&]() {
+				//Here I isolate vicinity of 0 into 4 regions
+				if (t2[j] <= -truncation) { 				// (-T: -truncation]
+					data[i * N2 + j] = conj(result); 			// conj(result)
+					tmp = data[i * N2 + j];
+				} else if (t2[j] > -truncation && t2[j] < 0) { //(-truncation : 0)
+					data[i * N2 + j] = 0; //tmp;
+				} else if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
+					data[i * N2 + j] = 0;  //conj(tmp); // conj(tmp)
+				} else {									// [truncation: T)
+					data[i * N2 + j] = result;
+				}
+			};
 
+			auto Positive = [&]() {
+				//Here I isolate vicinity of 0 into 4 regions
+				if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
+					data[i * N2 + j] = 0;  //conj(tmp); // conj(tmp)
+				} else {									// [truncation: T)
+					data[i * N2 + j] = result;
+				}
+			};
 
-			//Here I isolate vicinity of 0 into 4 regions
-			if(t2[j] <= -truncation){ 						// (-T: -truncation]
-				data[i * N2 + j] = result;// conj(result)
-				tmp = data[i * N2 + j];
-			} else if (t2[j] > -truncation && t2[j] < 0 ){ //(-truncation : 0)
-				data[i * N2 + j] = tmp;
-			} else if (t2[j] >= 0 && t2[j] < truncation){  //[0: //truncation)
-				data[i * N2 + j] = tmp; // conj(tmp)
-			} else {										// [truncation: T)
-				data[i * N2 + j] = result;
-			}
 
 		}
+
 	}
 
 	auto ValueFilter = [](double x) {
