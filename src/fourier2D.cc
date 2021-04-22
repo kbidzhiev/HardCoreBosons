@@ -81,9 +81,9 @@ void Fourier2D() {
 
 			const double truncation = 0.02;
 			Cplx tmp; // Do different threads interrupt this variable ?????
-			//const Cplx result = Grep(st);
+			const Cplx result = Grep(st);
 			//const Cplx result = Gauss(st);
-			Cplx result = Asymptotics(st);
+			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
 
 			auto Symmetric = [&]() {
