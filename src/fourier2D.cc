@@ -63,16 +63,18 @@ void Fourier2D() {
 	double xmax1 = 40.0;
 	double tmax2 = 40.0;
 	size_t counter = 0;
-	Cplx tmp;
 
-#pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
+
+#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2.0;
 			t2[j] = j * tmax2 / N2 - tmax2 / 2.0;
 
-			SpaceTime st(X_coordinate(x1[i]), T_time(t2[j]));
-			if (t2[j] < 0) 	st.t = -st.t; // t2[j] is still negative, but st.t is positive;
+			SpaceTime st(X_coordinate(x1[i]), T_time(abs(t2[j])));
+			//the line replaced by abs in T_time ctr
+			//if (t2[j] < 0) 	st.t = -st.t; // t2[j] is still negative, but st.t is positive;
+
 
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
 				 << "t= " << j + 1 << " / " << N2 << " ;\t" << ++counter << " / " << N << endl;
@@ -85,31 +87,36 @@ void Fourier2D() {
 
 
 			const double truncation = 0.01;
+			Cplx tmp; // Do different threads interrupt this variable ?????
 			const Cplx result = Grep(st);
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
 
-			if (t2[j] >= truncation) {
-				data[i * N2 + j] = result;
-				//tmp = result;
-			} else if (t2[j] <= -truncation){
-				data[i * N2 + j] = conj(result);
-				tmp = conj(result);
-			} else if (t2[j] <= 0 && t2[j] > -truncation ){
-				data[i * N2 + j] = tmp;
-			} else {
-				data[i * N2 + j] = conj(tmp);
-			}
-
-
-//			if (t2[j] >= 0) {
-//				data[i * N2 + j] = Gauss(st);
-//			}  else {
-//				data[i * N2 + j] = 0;
+//			if (t2[j] >= truncation) {
+//				data[i * N2 + j] = result;
+//				//tmp = result;
+//			} else if (t2[j] <= -truncation){
+//				data[i * N2 + j] = result;// conj(result)
+//				tmp = data[i * N2 + j];
+//			} else if (t2[j] <= 0 && t2[j] > -truncation ){
+//				data[i * N2 + j] = tmp;
+//			} else {
+//				data[i * N2 + j] = conj(tmp);
 //			}
 
 
+			//Here I isolate vicinity of 0 into 4 regions
+			if(t2[j] <= -truncation){ 						// (-T: -truncation]
+				data[i * N2 + j] = result;// conj(result)
+				tmp = data[i * N2 + j];
+			} else if (t2[j] > -truncation && t2[j] < 0 ){ //(-truncation : 0)
+				data[i * N2 + j] = tmp;
+			} else if (t2[j] >= 0 && t2[j] < truncation){  //[0: //truncation)
+				data[i * N2 + j] = tmp; // conj(tmp)
+			} else {										// [truncation: T)
+				data[i * N2 + j] = result;
+			}
 
 		}
 	}
