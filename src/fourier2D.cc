@@ -109,6 +109,7 @@ void Fourier2D() {
 				}
 			};
 
+			Positive();
 
 		}
 
