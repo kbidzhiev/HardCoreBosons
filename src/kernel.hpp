@@ -6,7 +6,6 @@
 #include <string>
 
 #include <boost/math/quadrature/gauss.hpp>
-#include <boost/math/quadrature/trapezoidal.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 #include "Faddeeva.hh"
 #include "../../cpp_libs/eigen/Eigen/Dense"
@@ -14,7 +13,6 @@
 
 using namespace std;
 using namespace boost::math::quadrature;
-using boost::math::quadrature::trapezoidal;
 
 using Cplx = complex<double>;
 
@@ -24,20 +22,21 @@ const double B_BETA = 1000;
 const double RHO = 0.5;
 
 
-const size_t GAUSS_RANK = 40;
+const size_t GAUSS_RANK = 61;
 
-const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 
+//const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
+const gauss_kronrod<double, GAUSS_RANK> g; // Precomputed 15, 31, 41, 51 and 61
 
 
 struct T_time {
 	double value;
-	explicit T_time(double new_value) {
+	explicit T_time(double new_value)
+		:value{new_value}{
 //		if (new_value < 0) {
 //			throw logic_error(
 //					"Time can not be negative. t = " + to_string(new_value));
 //		}
-		value = new_value;
 	}
 };
 
@@ -57,8 +56,8 @@ struct SpaceTime{
 	double x;
 	double t;
 	SpaceTime(X_coordinate x_coord, T_time t_time)
-		:x(x_coord.value)
-		,t(t_time.value){}
+		:x{x_coord.value}
+		,t{t_time.value}{}
 };
 
 
@@ -68,7 +67,6 @@ double Energy(Q_momenta q_momenta);
 double Tau(Q_momenta q_momenta,  SpaceTime st);
 double Theta (Q_momenta q_momenta);
 Cplx Eminus (Q_momenta q_momenta,  SpaceTime st);
-//Cplx Erf(const Cplx z);
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st);
 Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st);
 Cplx G0 (SpaceTime st);

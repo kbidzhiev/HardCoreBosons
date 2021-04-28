@@ -27,7 +27,7 @@ double Box (SpaceTime st){
 }
 
 Cplx Gauss (SpaceTime st){
-	return exp(-0.5*(st.x*st.x + st.t*st.t) + 0.0*Cplx_i * (st.x + st.t));
+	return exp(-0.5*(st.x*st.x + st.t*st.t) );
 }
 
 
@@ -69,7 +69,7 @@ void Fourier2D() {
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2.0;
-			t2[j] = j * tmax2 / N2;;
+			t2[j] = j * tmax2 / N2 + 2.0;
 
 			SpaceTime st(X_coordinate(x1[i]), T_time(abs(t2[j])));
 			//the line replaced by abs in T_time ctr
@@ -79,7 +79,7 @@ void Fourier2D() {
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
 				 << "t= " << j + 1 << " / " << N2 << " ;\t" << ++counter << " / " << N << endl;
 
-			const double truncation = 0.02;
+			const double truncation = 0.001;
 			Cplx tmp; // Do different threads interrupt this variable ?????
 			const Cplx result = Grep(st);
 			//const Cplx result = Gauss(st);
@@ -92,9 +92,9 @@ void Fourier2D() {
 					data[i * N2 + j] = conj(result); 			// conj(result)
 					tmp = data[i * N2 + j];
 				} else if (t2[j] > -truncation && t2[j] < 0) { //(-truncation : 0)
-					data[i * N2 + j] = 0; //tmp;
+					data[i * N2 + j] = tmp;
 				} else if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
-					data[i * N2 + j] = 0;  //conj(tmp); // conj(tmp)
+					data[i * N2 + j] = conj(tmp); // conj(tmp)
 				} else {									// [truncation: T)
 					data[i * N2 + j] = result;
 				}
@@ -109,7 +109,7 @@ void Fourier2D() {
 				}
 			};
 
-			Positive();
+			Symmetric();
 
 		}
 
@@ -199,14 +199,14 @@ void Fourier1D() {
 	dvector f(N);
 
 	double xmax = 100.0;
-	double time = 0.0;
+	double time = 50.0;
 
-
+#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < N; ++i) {
 		t[i] = i * xmax / N - xmax / 2.0;
 		SpaceTime st(X_coordinate(t[i]), T_time(time));
-		data[i] = Gauss(st);//Asymptotics (st.x, st.t);
-		//data[i] = Grep(st) ;  // Here we do Fourier for a fixed time
+		//data[i] = Gauss(st);//Asymptotics (st.x, st.t);
+		data[i] = Grep(st) ;  // Here we do Fourier for a fixed time
 		// no need to introduce small time truncation
 		cout << "i = " << i << " / " << N << endl;
 	}
