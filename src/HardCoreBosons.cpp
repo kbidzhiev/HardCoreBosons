@@ -138,8 +138,8 @@ int main() {
 	//TsliceCurve(5.0);//5 second
 	//PV();
 
-	Fourier1D();
-	//Fourier2D();
+	//Fourier1D();
+	Fourier2D();
 	//Gpt();
 	//foo();
 

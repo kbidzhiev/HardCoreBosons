@@ -61,15 +61,15 @@ void Fourier2D() {
 
 
 	double xmax1 = 40.0;
-	double tmax2 = 20.0;
+	double tmax2 = 40.0;
 	size_t counter = 0;
 
 
 #pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
-	for (size_t i = 0; i < N1; ++i) {
-		for (size_t j = 0; j < N2; ++j) {
+	for (size_t i = N1; i > 0; --i) {
+		for (size_t j = N2; j > N2; --j) {
 			x1[i] = i * xmax1 / N1 - xmax1 / 2.0;
-			t2[j] = j * tmax2 / N2 + 2.0;
+			t2[j] = j * tmax2 / N2 - tmax2 / 2.0;
 
 			SpaceTime st(X_coordinate(x1[i]), T_time(abs(t2[j])));
 			//the line replaced by abs in T_time ctr
@@ -79,9 +79,9 @@ void Fourier2D() {
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
 				 << "t= " << j + 1 << " / " << N2 << " ;\t" << ++counter << " / " << N << endl;
 
-			const double truncation = 0.001;
+			const double truncation = 0.0;
 			Cplx tmp; // Do different threads interrupt this variable ?????
-			const Cplx result = Grep(st);
+			const Cplx result = Grep(st) - G0(st);
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
@@ -91,10 +91,10 @@ void Fourier2D() {
 				if (t2[j] <= -truncation) { 				// (-T: -truncation]
 					data[i * N2 + j] = conj(result); 			// conj(result)
 					tmp = data[i * N2 + j];
-				} else if (t2[j] > -truncation && t2[j] < 0) { //(-truncation : 0)
-					data[i * N2 + j] = tmp;
-				} else if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
-					data[i * N2 + j] = conj(tmp); // conj(tmp)
+				//} else if (t2[j] > -truncation && t2[j] < 0) { //(-truncation : 0)
+				//	data[i * N2 + j] = tmp;
+				//} else if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
+				//	data[i * N2 + j] = conj(tmp); // conj(tmp)
 				} else {									// [truncation: T)
 					data[i * N2 + j] = result;
 				}
@@ -201,6 +201,7 @@ void Fourier1D() {
 	double xmax = 100.0;
 	double time = 50.0;
 
+	size_t counter;
 #pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < N; ++i) {
 		t[i] = i * xmax / N - xmax / 2.0;
@@ -208,7 +209,7 @@ void Fourier1D() {
 		//data[i] = Gauss(st);//Asymptotics (st.x, st.t);
 		data[i] = Grep(st) ;  // Here we do Fourier for a fixed time
 		// no need to introduce small time truncation
-		cout << "i = " << i << " / " << N << endl;
+		cout << "i = " << ++counter << " / " << N << endl;
 	}
 
 	// Fourier transform
