@@ -49,7 +49,7 @@ Cplx Asymptotics (SpaceTime st) {
 
 void Fourier2D() {
 
-	size_t N1 = 800;
+	size_t N1 = 400;
 	size_t N2 = 400;
 	size_t N = N1 * N2;
 	dcvector data(N);
@@ -60,16 +60,21 @@ void Fourier2D() {
 	dvector w2(N2);
 
 
-	double xmax1 = 40.0;
-	double tmax2 = 40.0;
+	const double xmax1 = 40.0;
+	const double tmax2 = 40.0;
 	size_t counter = 0;
+
+	const double dx = xmax1 / N1;
+	const double dt = tmax2 / N2;
+	const double shift_x = xmax1 / 2.0;
+	const double shift_t = tmax2 / 2.0;
 
 
 #pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
-			x1[i] = i * xmax1 / N1 - xmax1 / 2.0;
-			t2[j] = j * tmax2 / N2 - tmax2 / 2.0;
+			x1[i] = i * dx - shift_x;
+			t2[j] = j * dt - shift_t;
 
 			SpaceTime st(X_coordinate(x1[i]), T_time(abs(t2[j])));
 			//the line replaced by abs in T_time ctr
@@ -79,8 +84,8 @@ void Fourier2D() {
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
 				 << "t= " << j + 1 << " / " << N2 << " ;\t" << ++counter << " / " << N << endl;
 
-			const double truncation = 0.0;
-			Cplx tmp; // Do different threads interrupt this variable ?????
+			const double truncation = 0.1;
+			Cplx tmp;
 			const Cplx result = Grep(st) - G0(st);
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
@@ -91,10 +96,10 @@ void Fourier2D() {
 				if (t2[j] <= -truncation) { 				// (-T: -truncation]
 					data[i * N2 + j] = conj(result); 			// conj(result)
 					tmp = data[i * N2 + j];
-				//} else if (t2[j] > -truncation && t2[j] < 0) { //(-truncation : 0)
-				//	data[i * N2 + j] = tmp;
-				//} else if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
-				//	data[i * N2 + j] = conj(tmp); // conj(tmp)
+				} else if (t2[j] > -truncation && t2[j] < 0) { //(-truncation : 0)
+					data[i * N2 + j] = tmp;
+				} else if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
+					data[i * N2 + j] = conj(tmp); // conj(tmp)
 				} else {									// [truncation: T)
 					data[i * N2 + j] = result;
 				}
