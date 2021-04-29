@@ -167,14 +167,23 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 }
 
 
+Cplx GrepLambda(double Lambda,  SpaceTime st){
+	auto [detv,detw] = Determinants(Lambda, st);
+	Cplx coeff = G0 (st) * 2.0/(Lambda * Lambda + 1.0) ;
+	detv *= (coeff - 1.0);
+	return detv + detw;
+}
 
 Cplx Grep(SpaceTime st){
-	auto f = [&](double Lambda){
-			auto [detv,detw] = Determinants(Lambda, st);
-			Cplx coeff = G0 (st) * 2.0/(Lambda * Lambda + 1.0) ;
-			detv *= (coeff - 1.0);
-			return detv + detw;
-	};
+//	auto f = [&](double Lambda){
+//			auto [detv,detw] = Determinants(Lambda, st);
+//			Cplx coeff = G0 (st) * 2.0/(Lambda * Lambda + 1.0) ;
+//			detv *= (coeff - 1.0);
+//			return detv + detw;
+//	};
+	auto f= [&](double Lambda){
+		return GrepLambda(Lambda, st);
+	}
 
 	double error = 100;
 	/*

@@ -71,6 +71,7 @@ Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st);
 Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st);
 Cplx G0 (SpaceTime st);
 pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime st);
+Cplx GrepLambda(double Lambda,  SpaceTime st);
 Cplx Grep(SpaceTime st);
 
 void Fourier2D();
