@@ -183,7 +183,7 @@ Cplx Grep(SpaceTime st){
 //	};
 	auto f= [&](double Lambda){
 		return GrepLambda(Lambda, st);
-	}
+	};
 
 	double error = 100;
 	/*

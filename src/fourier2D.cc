@@ -73,7 +73,7 @@ void Fourier2D() {
 #pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
-			x1[i] = i * dx - shift_x;
+			x1[i] = 0.0;//i * dx - shift_x;
 			t2[j] = j * dt - shift_t;
 
 			SpaceTime st(X_coordinate(x1[i]), T_time(abs(t2[j])));
@@ -84,12 +84,14 @@ void Fourier2D() {
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
 				 << "t= " << j + 1 << " / " << N2 << " ;\t" << ++counter << " / " << N << endl;
 
-			const double truncation = 0.1;
+			const double truncation = 0.01;
 			Cplx tmp;
-			const Cplx result = Grep(st) - G0(st);
+			//const Cplx result = Grep(st) - G0(st);
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
+			double lambda = 1.0;
+			const Cplx result = GrepLambda(lambda, st);
 
 			auto Symmetric = [&]() {
 				//Here I isolate vicinity of 0 into 4 regions

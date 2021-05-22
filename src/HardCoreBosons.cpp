@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "kernel.hpp"
+#include "kernel_lattice.hpp"
 #include "profile.h"
 #include "test_runner.h"
 
