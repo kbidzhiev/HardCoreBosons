@@ -60,8 +60,8 @@ void Fourier2D() {
 	dvector w2(N2);
 
 
-	const double xmax1 = 40.0;
-	const double tmax2 = 40.0;
+	const double xmax1 = 30.0;
+	const double tmax2 = 30.0;
 	size_t counter = 0;
 
 	const double dx = xmax1 / N1;
@@ -86,7 +86,7 @@ void Fourier2D() {
 
 			const double truncation = 0.01;
 			Cplx tmp;
-			const Cplx result = Grep(st) //- G0(st);
+			const Cplx result = Grep(st); //- G0(st);
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
