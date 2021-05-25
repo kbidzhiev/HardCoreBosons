@@ -80,9 +80,10 @@ void Fourier2D() {
 			//the line replaced by abs in T_time ctr
 			//if (t2[j] < 0) 	st.t = -st.t; // t2[j] is still negative, but st.t is positive;
 
-
+			++counter;
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
-				 << "t= " << j + 1 << " / " << N2 << " ;\t" << ++counter << " / " << N << endl;
+				 << "t= " << j + 1 << " / " << N2 << " ;\t" << counter << " / " << N
+				 << "\t" <<(double)counter/((double)N) <<endl;
 
 			const double truncation = 0.01;
 			Cplx tmp;
