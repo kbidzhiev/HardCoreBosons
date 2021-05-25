@@ -71,6 +71,7 @@ double Q (const size_t i) {
 			KF() * g.abscissa()[i - g.abscissa().size() + 1];
 }
 
+
 double Weight (const size_t i) {
 	//size_t middle_point = g.weights().size() - 1;
 	return i < g.weights().size() - 1?
