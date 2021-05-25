@@ -19,7 +19,8 @@ double KF(){
 }
 
 double Mu_chempot(){
-	return KF()*KF() * 0.5 / MASS;
+	return 0;
+	//return KF()*KF() * 0.5 / MASS;
 }
 
 double Energy(Q_momenta q_momenta){
