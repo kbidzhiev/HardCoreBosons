@@ -50,6 +50,7 @@ Cplx G0 (SpaceTime spacetime){
 	return result;
 }
 
+
 double Q_G (const size_t i) {
 	//size_t middle_point = g.abscissa().size();
 	return i < g.abscissa().size() ?
@@ -78,6 +79,7 @@ double Weight (const size_t i) {
 			KF() * g.weights()[g.weights().size() -1 - i ] :
 			KF() * g.weights()[i - g.weights().size() + 1];
 }
+
 
 pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 

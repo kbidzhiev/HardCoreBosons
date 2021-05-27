@@ -140,9 +140,13 @@ int main() {
 	//PV();
 
 	//Fourier1D();
-	Fourier2D();
+	//Fourier2D();
 	//Gpt();
 	//foo();
+	Q_momenta q(3.14);
+	SpaceTime spacetime(X_coordinate(50.0), T_time(30.0));
+
+	cout << EPV_l (q, spacetime) << endl;
 
 	return 0;
 }

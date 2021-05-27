@@ -13,8 +13,6 @@ using namespace boost::math;
 //using namespace boost::math::quadrature;
 
 
-
-
 //Cplx Erf(const Cplx z){
 //	//Cplx result = Faddeeva::erf(z);
 //	return Faddeeva::erf(z);

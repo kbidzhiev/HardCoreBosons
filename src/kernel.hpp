@@ -4,10 +4,10 @@
 #include <utility>
 #include <stdexcept>
 #include <string>
-
+#include "Faddeeva.hh"
 #include <boost/math/quadrature/gauss.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
-#include "Faddeeva.hh"
+#include <boost/math/quadrature/trapezoidal.hpp>
 #include "../../cpp_libs/eigen/Eigen/Dense"
 #include "profile.h"
 
@@ -61,6 +61,8 @@ struct SpaceTime{
 };
 
 
+
+/////////// Continuum version ///////////
 double KF();
 double Mu_chempot();
 double Energy(Q_momenta q_momenta);
@@ -73,6 +75,22 @@ Cplx G0 (SpaceTime st);
 pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime st);
 Cplx GrepLambda(double Lambda,  SpaceTime st);
 Cplx Grep(SpaceTime st);
+
+/////////// Lattice version ///////////
+double Energy_l(Q_momenta q_momenta);
+double Tau_l(Q_momenta q_momenta,  SpaceTime st);
+double Theta_l(Q_momenta q_momenta);
+Cplx Eminus_l (Q_momenta q_momenta,  SpaceTime st);
+Cplx Eplus_l (Q_momenta q_momenta,  SpaceTime st);
+Cplx EPV_l (Q_momenta q_momenta,  SpaceTime st);
+Cplx Lplus_l (double eta, Q_momenta q_momenta,  SpaceTime st);
+Cplx Lminus_l (Q_momenta q_momenta,  SpaceTime st);
+Cplx G_l (SpaceTime st);
+Cplx F_l(double eta);
+double Gamma_l();
+
+
+
 
 void Fourier2D();
 void Fourier1D();
