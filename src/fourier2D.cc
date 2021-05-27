@@ -87,7 +87,7 @@ void Fourier2D() {
 
 			const double truncation = 0.01;
 			Cplx tmp;
-			const Cplx result = Grep(st); //- G0(st);
+			const Cplx result = Grep_l(st); //- G0(st);
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
