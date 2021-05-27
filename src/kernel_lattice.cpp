@@ -69,7 +69,7 @@ Cplx Lminus_l (Q_momenta q_momenta,  SpaceTime spacetime){
 }
 
 Cplx G_l (SpaceTime spacetime){
-	return exp(Cplx_i * 0.5 * M_PI * spacetime.x) * cyl_bessel_j(spacetime.x, 2.0 * spacetime.t);
+	return exp(Cplx_i * 0.5 * M_PI * spacetime.x) * cyl_bessel_j(spacetime.x, 2.0 * abs(spacetime.t));
 }
 
 double Gamma_l(){
