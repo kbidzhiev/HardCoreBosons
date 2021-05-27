@@ -76,7 +76,7 @@ void Fourier2D() {
 			x1[i] = i * dx - shift_x;
 			t2[j] = j * dt - shift_t;
 
-			SpaceTime st(X_coordinate(x1[i]), T_time(abs(t2[j])));
+			SpaceTime st(X_coordinate(abs(x1[i])), T_time(abs(t2[j])));
 			//the line replaced by abs in T_time ctr
 			//if (t2[j] < 0) 	st.t = -st.t; // t2[j] is still negative, but st.t is positive;
 
