@@ -70,7 +70,7 @@ void Fourier2D() {
 	const double shift_t = tmax2 / 2.0;
 
 
-//#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
+#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t i = 0; i < N1; ++i) {
 		for (size_t j = 0; j < N2; ++j) {
 			x1[i] = i * dx - shift_x;
