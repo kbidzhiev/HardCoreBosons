@@ -5,8 +5,8 @@
 
 
 
-//const size_t s = 2 * g.weights().size() ; //Gauss
-const size_t s = 2 * g.weights().size() - 1; //GKrondrod, we always have EVEN number of weights
+const size_t s = 2 * g_l.weights().size() ; //Gauss
+//const size_t s = 2 * g_l.weights().size() - 1; //GKrondrod, we always have EVEN number of weights
 
 
 using Eigen::MatrixXcd;
@@ -112,6 +112,20 @@ double Weight_l (const size_t i) {
 			KF() * g.weights()[i - g.weights().size() + 1];
 }
 
+double Q_G_l (const size_t i) {
+	//size_t middle_point = g.abscissa().size();
+	return i < g_l.abscissa().size() ?
+			- KF() * g_l.abscissa()[g_l.abscissa().size() - i - 1] :
+			  KF() * g_l.abscissa()[i - g_l.abscissa().size()];
+}
+
+double Weight_G_l (const size_t i) {
+	//size_t middle_point = g.weights().size();
+	return i < g_l.weights().size() ?
+			KF() * g_l.weights()[g_l.weights().size() - i - 1] :
+			KF() * g_l.weights()[i - g_l.weights().size()];
+}
+
 pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 	vector<Cplx> l_plus;
@@ -126,7 +140,7 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 	{
 //#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
-		Q_momenta q_i(Q_l(i));
+		Q_momenta q_i(Q_G_l(i));
 		l_plus[i] = Lplus_l(eta, q_i, spacetime);
 		l_minus[i] = Lminus_l(q_i, spacetime);
 //		cout << "i=" << i << ", Theta = " << Theta_l(q_i);
@@ -147,45 +161,46 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 		for (size_t j = i; j < s; j++) {
 			Cplx q;
-			Q_momenta q_i(Q_l(i));
-			Q_momenta k_j(Q_l(j));
+			Q_momenta q_i(Q_G_l(i));
+			Q_momenta k_j(Q_G_l(j));
 			Cplx r_plus = Gamma_l() * Rplus_l(eta, q_i, k_j, spacetime);
 					// l_plus[i]*l_plus[j]/(M_PI * (1.0 - cos(eta))) ;
 
 			//if(abs(r_plus)< 1e-16) {w = Cplx(0, 0);}
 			//W(i, j) = sqrt(Weight(i)) * w * sqrt(Weight(j));
 			if (i == j) {
-				q = (0.5 - 0.5 * cos(eta))/ (sin(0.5*Q_l(i))*sin(0.5*Q_l(i))) -
-						Cplx_i * sin(eta) * (spacetime.x + 2.0 * spacetime.t * sin (Q_l(i))) ;
-				q *= Theta_l(Q_momenta(Q_l(i)));
+				q = (0.5 - 0.5 * cos(eta))/ (sin(0.5*Q_G_l(i))*sin(0.5*Q_G_l(i))) -
+						Cplx_i * sin(eta) * (spacetime.x + 2.0 * spacetime.t * sin (Q_G_l(i))) ;
+				q *= Theta_l(Q_momenta(Q_G_l(i)));
 				q /= 2.0 * M_PI ;
 				q -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
 				q *= Gamma_l();
 
-				Q_plus(i, i) = sqrt(Weight_l(i)) *  q * sqrt(Weight_l(i)) + 1.0;
+				Q_plus(i, i) = sqrt(Weight_G_l(i)) *  q * sqrt(Weight_G_l(i)) + 1.0;
 
-				R_plus(i, i) = sqrt(Weight_l(i)) * (q - r_plus) * sqrt(Weight_l(i)) + 1.0; //new part
+				R_plus(i, i) = sqrt(Weight_G_l(i)) * (q - r_plus) * sqrt(Weight_G_l(i)) + 1.0; //new part
 			} else {
 				q = l_plus[i]*l_minus[j] - l_minus[i]*l_plus[j];
-				q /= 2.0 * M_PI * tan(Q_l(i) - Q_l(j));
+				q /= 2.0 * M_PI * tan(Q_G_l(i) - Q_G_l(j)); // Diagonal 0 is here 0
 				q-= 0.5 * (1.0-cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
 				q *= Gamma_l();
 
-				Q_plus(i, j) = sqrt(Weight_l(i)) * q * sqrt(Weight_l(j));
-				R_plus(i, j) = sqrt(Weight_l(i)) * (q - r_plus) * sqrt(Weight_l(j)); //new part
+				Q_plus(i, j) = sqrt(Weight_G_l(i)) * q * sqrt(Weight_G_l(j));
+				R_plus(i, j) = sqrt(Weight_G_l(i)) * (q - r_plus) * sqrt(Weight_G_l(j));
 
 				Q_plus(j, i) = Q_plus(i, j);
 				R_plus(j, i) = R_plus(i, j);
-//				if(j == 25){
-//					cout << spacetime.x << " " << spacetime.t << endl;
-//					cout << Q_l(j)<< endl;
-//					cout << cos(0.5*(Q_l(i) - Q_l(j)))/sin(0.5*(Q_l(i) - Q_l(j))) << endl;
-//					cout << EPV_l(k_j, spacetime)<< endl;
-//					cout << "q = " << q << " i = " << i << ", j = " << j  << endl;
-//					cout << "r = " << r_plus << " i = " << i << ", j = " << j  << endl;
-//					terminate();
-//				}
 			}
+				//if (j == 3 && i == 3)
+				{
+					//cout << spacetime.x << " " << spacetime.t << endl;
+					//cout << "Q_i = " << Q_G_l(i) << " Q_j = " << Q_G_l(j) << endl;
+					//cout << "Weight_G_l(i) = " << Weight_G_l(i) << endl;
+					//cout << "EPV "<< EPV_l(k_j, spacetime) << endl;
+					//cout << "l_minus[i]" << l_minus[i] << endl;
+					//cout << "q = " << q << " i = " << i << ", j = " << j << endl;
+					//cout << "r = " << r_plus << " i = " << i << ", j = " << j << endl;
+				}
 			//cout << "Q = " << Q_plus(i, j) << " i = " << i << ", j = " << j  << endl;
 			//cout << "R = " << R_plus(i, j) << " i = " << i << ", j = " << j  << endl;
 			//cout << eta << endl;
@@ -196,11 +211,13 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 	Cplx detQ;
 	Cplx detR;
+	//cout << Q_plus << endl;
+	//terminate();
 
 	{
-
 		detQ = Q_plus.determinant();
 		detR = R_plus.determinant();
+		//cout << "detQ = " << detQ << " detR = " << detR << endl;
 	}
 
 	return {detQ, detR};

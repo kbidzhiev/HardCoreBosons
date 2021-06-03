@@ -22,11 +22,14 @@ const double B_BETA = 1000;
 const double RHO = 0.5;
 
 
-const size_t GAUSS_RANK = 51;
+const size_t GAUSS_RANK = 7;
+const size_t GAUSS_RANK_l = 30;
 
 
 //const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 const gauss_kronrod<double, GAUSS_RANK> g; // Precomputed 15, 31, 41, 51 and 61
+const gauss<double, GAUSS_RANK_l> g_l; //7, 15, 20, 25 and 30
+
 
 
 struct T_time {
