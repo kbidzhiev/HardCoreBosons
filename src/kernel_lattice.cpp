@@ -30,7 +30,7 @@ double Tau_l(Q_momenta q_momenta,  SpaceTime spacetime){
 }
 
 double Theta_l(Q_momenta q_momenta){
-	double result = exp(B_BETA * (Energy(q_momenta) - Mu_chempot_l())) + 2.0;
+	double result = exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l())) + 2.0;
 	return 1./result;
 }
 
@@ -69,7 +69,7 @@ Cplx Lminus_l (Q_momenta q_momenta,  SpaceTime spacetime){
 }
 
 Cplx G_l (SpaceTime spacetime){
-	return exp(Cplx_i * 0.5 * M_PI * spacetime.x) * cyl_bessel_j(spacetime.x, 2.0 * spacetime.t);
+	return exp(Cplx_i * 0.5 * M_PI * spacetime.x) * cyl_bessel_j(abs(spacetime.x), 2.0 * spacetime.t);
 }
 
 double Gamma_l(){
@@ -82,6 +82,15 @@ Cplx F_l(double eta){
 	return result;
 }
 
+
+Cplx Rplus_l (double eta, Q_momenta q_momenta, Q_momenta k_momenta,  SpaceTime st){
+	Cplx first = (1.0 - cos(eta)) * Eplus_l(q_momenta, st) * Eplus_l(k_momenta, st)  ;
+	Cplx second = sin(eta) * (
+			Eplus_l(q_momenta, st)/Eminus_l(k_momenta, st) + Eplus_l(k_momenta, st) * Eminus_l(q_momenta, st)
+			);
+	Cplx third = (1.0 + cos(eta)) / (Eminus_l(q_momenta, st) * Eminus_l(k_momenta, st));
+	return (first + second + third )/ (4.0 * M_PI);
+}
 
 
 //
@@ -101,10 +110,6 @@ double Weight_l (const size_t i) {
 			KF() * g.weights()[i - g.weights().size() + 1];
 }
 
-
-
-
-
 pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 	vector<Cplx> l_plus;
@@ -122,7 +127,11 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 		Q_momenta q_i(Q_l(i));
 		l_plus[i] = Lplus_l(eta, q_i, spacetime);
 		l_minus[i] = Lminus_l(q_i, spacetime);
+//		cout << "i=" << i << ", Theta = " << Theta_l(q_i);
+//		cout << "i=" << i << ", E+ = " << Lplus_l(eta,q_i, spacetime) << endl;
+//		cout << "i=" << i << ", E- = " << Lminus_l(q_i, spacetime) << endl;
 	}
+	//terminate();
 
 	}
 	//time for 2 core proc
@@ -136,7 +145,9 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 		for (size_t j = i; j < s; j++) {
 			Cplx q;
-			Cplx r_plus = Gamma_l() * l_plus[i]*l_plus[j]/(M_PI * (1.0 -cos(eta))) ;
+			Cplx r_plus = Gamma_l() * l_plus[i]*l_plus[j]/
+
+					(M_PI * (1.0 - cos(eta))) ;
 			//if(abs(r_plus)< 1e-16) {w = Cplx(0, 0);}
 			//W(i, j) = sqrt(Weight(i)) * w * sqrt(Weight(j));
 			if (i == j) {
@@ -161,8 +172,14 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 				Q_plus(j, i) = Q_plus(i, j);
 				R_plus(j, i) = R_plus(i, j);
+				cout << "q = " << q << " i = " << i << ", j = " << j  << endl;
+				cout << "r = " << r_plus << " i = " << i << ", j = " << j  << endl;
 			}
+			//cout << "Q = " << Q_plus(i, j) << " i = " << i << ", j = " << j  << endl;
+			//cout << "R = " << R_plus(i, j) << " i = " << i << ", j = " << j  << endl;
+			//cout << eta << endl;
 		}
+		terminate();
 	}
 	}
 
