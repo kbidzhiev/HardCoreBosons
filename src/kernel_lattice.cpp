@@ -43,14 +43,16 @@ Cplx EPV_l (Q_momenta q_momenta,  SpaceTime spacetime){
 	auto f = [&](double x) {
 		Cplx exp_external = exp(-Cplx_i * Tau_l(q_momenta, spacetime));
 		Cplx exp_internal = exp(-Cplx_i * Tau_l(Q_momenta(x), spacetime));
-		return (exp_internal-exp_external)/tan(0.5*(x-q_momenta.value));
+		return (exp_internal-exp_external) * cos(0.5*(x-q_momenta.value))/sin(0.5*(x-q_momenta.value));
 	};
-	//cout << "tau_l " << Tau_l(q_momenta, spacetime) << endl;
-	//cout << "trapezoidal" << trapezoidal(f, -M_PI, M_PI) << endl;
-	double error;
-	//cout << "gauss" << gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error) << endl;
 
-	Cplx result = gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
+	//cout << "trapezoidal" << trapezoidal(f, -M_PI, M_PI) << endl;
+	//double error;
+	//cout << "gauss_kronrod" << gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error) << endl;
+	//cout << "gauss" << gauss<double, 30>::integrate(f, -M_PI, M_PI) << endl;
+
+	//Cplx result = gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
+	Cplx result = gauss<double, 30>::integrate(f, -M_PI, M_PI);
 	return result/(2.0*M_PI);
 }
 
@@ -145,9 +147,11 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 		for (size_t j = i; j < s; j++) {
 			Cplx q;
-			Cplx r_plus = Gamma_l() * l_plus[i]*l_plus[j]/
+			Q_momenta q_i(Q_l(i));
+			Q_momenta k_j(Q_l(j));
+			Cplx r_plus = Gamma_l() * Rplus_l(eta, q_i, k_j, spacetime);
+					// l_plus[i]*l_plus[j]/(M_PI * (1.0 - cos(eta))) ;
 
-					(M_PI * (1.0 - cos(eta))) ;
 			//if(abs(r_plus)< 1e-16) {w = Cplx(0, 0);}
 			//W(i, j) = sqrt(Weight(i)) * w * sqrt(Weight(j));
 			if (i == j) {
@@ -155,7 +159,7 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 						Cplx_i * sin(eta) * (spacetime.x + 2.0 * spacetime.t * sin (Q_l(i))) ;
 				q *= Theta_l(Q_momenta(Q_l(i)));
 				q /= 2.0 * M_PI ;
-				q -= 0.5 * (1.0-cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
+				q -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
 				q *= Gamma_l();
 
 				Q_plus(i, i) = sqrt(Weight_l(i)) *  q * sqrt(Weight_l(i)) + 1.0;
@@ -172,14 +176,21 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 				Q_plus(j, i) = Q_plus(i, j);
 				R_plus(j, i) = R_plus(i, j);
-				cout << "q = " << q << " i = " << i << ", j = " << j  << endl;
-				cout << "r = " << r_plus << " i = " << i << ", j = " << j  << endl;
+//				if(j == 25){
+//					cout << spacetime.x << " " << spacetime.t << endl;
+//					cout << Q_l(j)<< endl;
+//					cout << cos(0.5*(Q_l(i) - Q_l(j)))/sin(0.5*(Q_l(i) - Q_l(j))) << endl;
+//					cout << EPV_l(k_j, spacetime)<< endl;
+//					cout << "q = " << q << " i = " << i << ", j = " << j  << endl;
+//					cout << "r = " << r_plus << " i = " << i << ", j = " << j  << endl;
+//					terminate();
+//				}
 			}
 			//cout << "Q = " << Q_plus(i, j) << " i = " << i << ", j = " << j  << endl;
 			//cout << "R = " << R_plus(i, j) << " i = " << i << ", j = " << j  << endl;
 			//cout << eta << endl;
 		}
-		terminate();
+		//terminate();
 	}
 	}
 
