@@ -22,7 +22,7 @@ const double B_BETA = 1000;
 const double RHO = 0.5;
 
 
-const size_t GAUSS_RANK = 7;
+const size_t GAUSS_RANK = 30;
 const size_t GAUSS_RANK_l = 30;
 
 
