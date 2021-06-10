@@ -52,7 +52,7 @@ Cplx EPV_l (Q_momenta q_momenta,  SpaceTime spacetime){
 	//cout << "gauss" << gauss<double, 30>::integrate(f, -M_PI, M_PI) << endl;
 
 	//Cplx result = gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
-	Cplx result = gauss<double, 30>::integrate(f, -M_PI, M_PI);
+	Cplx result = trapezoidal(f, -M_PI, M_PI);//gauss<double, 30>::integrate(f, -M_PI, M_PI);
 	return result/(2.0*M_PI);
 }
 
@@ -72,7 +72,7 @@ Cplx EPV_derivative_l (Q_momenta q_momenta,  SpaceTime spacetime){
 	//cout << "gauss" << gauss<double, 30>::integrate(f, -M_PI, M_PI) << endl;
 
 	//Cplx result = gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
-	Cplx result = gauss<double, 30>::integrate(f, -M_PI, M_PI);
+	Cplx result = trapezoidal(f, -M_PI, M_PI);//gauss<double, 30>::integrate(f, -M_PI, M_PI);
 	return result/(2.0*M_PI);
 }
 

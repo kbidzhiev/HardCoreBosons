@@ -64,10 +64,10 @@ void Fourier2D() {
 	const double tmax2 = 15.0;
 	size_t counter = 0;
 
-	const double dx = xmax1 / N1;
+	const double dx = 1;//xmax1 / N1;
 	const double dt = tmax2 / N2;
 	const double shift_x = xmax1 / 2.0;
-	const double shift_t = 0;//tmax2 / 2.0;
+	const double shift_t = tmax2 / 2.0;
 
 
 #pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
@@ -88,7 +88,7 @@ void Fourier2D() {
 			const double truncation = 0.01;
 			Cplx tmp;
 			const Cplx result = Grep_l(st); //- G0(st);
-			cout << result << endl;
+			//cout << result << endl;
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
