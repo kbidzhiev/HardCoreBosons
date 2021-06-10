@@ -56,6 +56,26 @@ Cplx EPV_l (Q_momenta q_momenta,  SpaceTime spacetime){
 	return result/(2.0*M_PI);
 }
 
+Cplx EPV_derivative_l (Q_momenta q_momenta,  SpaceTime spacetime){
+	auto f = [&](double x) {
+		Cplx exp_external = Cplx_i *(-2.0 * spacetime.t * sin(q_momenta.value) + spacetime.x) *
+				exp(-Cplx_i * Tau_l(q_momenta, spacetime));
+		Cplx exp_internal = Cplx_i *(-2.0 * spacetime.t * sin(x) + spacetime.x) *
+				exp(-Cplx_i * Tau_l(Q_momenta(x), spacetime));
+		return (exp_internal-exp_external) *
+				cos(0.5*(x-q_momenta.value)) / sin(0.5*(x-q_momenta.value));
+	};
+
+	//cout << "trapezoidal" << trapezoidal(f, -M_PI, M_PI) << endl;
+	//double error;
+	//cout << "gauss_kronrod" << gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error) << endl;
+	//cout << "gauss" << gauss<double, 30>::integrate(f, -M_PI, M_PI) << endl;
+
+	//Cplx result = gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
+	Cplx result = gauss<double, 30>::integrate(f, -M_PI, M_PI);
+	return result/(2.0*M_PI);
+}
+
 
 Cplx Eplus_l (Q_momenta q_momenta,  SpaceTime spacetime){
 	return EPV_l(q_momenta, spacetime) * Eminus_l(q_momenta, spacetime);
@@ -150,10 +170,6 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 	//terminate();
 
 	}
-	//time for 2 core proc
-	//avr 2125209 	parallel
-	//avr 31592		consequential
-
 
 	{
 //#pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
@@ -164,15 +180,17 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 			Q_momenta q_i(Q_G_l(i));
 			Q_momenta k_j(Q_G_l(j));
 			Cplx r_plus = Gamma_l() * Rplus_l(eta, q_i, k_j, spacetime);
-					// l_plus[i]*l_plus[j]/(M_PI * (1.0 - cos(eta))) ;
 
 			//if(abs(r_plus)< 1e-16) {w = Cplx(0, 0);}
 			//W(i, j) = sqrt(Weight(i)) * w * sqrt(Weight(j));
 			if (i == j) {
-				q = (0.5 - 0.5 * cos(eta))/ (sin(0.5*Q_G_l(i))*sin(0.5*Q_G_l(i))) -
-						Cplx_i * sin(eta) * (spacetime.x + 2.0 * spacetime.t * sin (Q_G_l(i))) ;
-				q *= Theta_l(Q_momenta(Q_G_l(i)));
-				q /= 2.0 * M_PI ;
+				//q = (0.5 - 0.5 * cos(eta))/ (sin(0.5*Q_G_l(i))*sin(0.5*Q_G_l(i))) -
+				//		Cplx_i * sin(eta) * (spacetime.x + 2.0 * spacetime.t * sin (Q_G_l(i))) ;
+				Cplx cos_term = (0.5 - 0.5 * cos(eta)) * Eminus_l(q_i, spacetime) *
+						Eminus_l(q_i, spacetime) * EPV_derivative_l(q_i, spacetime) / M_PI;
+				Cplx sin_term =  0.5 * sin(eta) * Cplx_i *
+						(2.0 * spacetime.t * sin(q_i.value) - spacetime.x)/ M_PI;
+				q = (cos_term - sin_term) * Theta_l(q_i);
 				q -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
 				q *= Gamma_l();
 

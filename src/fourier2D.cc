@@ -61,13 +61,13 @@ void Fourier2D() {
 
 
 	const double xmax1 = 30.0;
-	const double tmax2 = 30.0;
+	const double tmax2 = 15.0;
 	size_t counter = 0;
 
 	const double dx = xmax1 / N1;
 	const double dt = tmax2 / N2;
 	const double shift_x = xmax1 / 2.0;
-	const double shift_t = tmax2 / 2.0;
+	const double shift_t = 0;//tmax2 / 2.0;
 
 
 #pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
