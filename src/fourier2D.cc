@@ -49,7 +49,7 @@ Cplx Asymptotics (SpaceTime st) {
 
 void Fourier2D() {
 
-	size_t N1 = 200;
+	size_t N1 = 30;
 	size_t N2 = 200;
 	size_t N = N1 * N2;
 	dcvector data(N);
@@ -64,7 +64,7 @@ void Fourier2D() {
 	const double tmax2 = 15.0;
 	size_t counter = 0;
 
-	const double dx = 1;//xmax1 / N1;
+	const double dx = xmax1 / N1;//Should be 1 for lattice
 	const double dt = tmax2 / N2;
 	const double shift_x = xmax1 / 2.0;
 	const double shift_t = tmax2 / 2.0;
