@@ -117,18 +117,9 @@ Cplx Rplus_l (double eta, Q_momenta q_momenta, Q_momenta k_momenta,  SpaceTime s
 Cplx Nu_diagonal_l(double eta, Q_momenta q_momenta, SpaceTime spacetime) {
 	Cplx cos_term = 0.5 * (1.0 - cos(eta)) * Eminus_l(q_momenta, spacetime)
 			* Eminus_l(q_momenta, spacetime) * EPV_derivative_l(q_momenta, spacetime) / M_PI;
-	cout << "\n\n";
-	cout << "Eminus = " << Eminus_l(q_momenta, spacetime) << endl;
-	cout << "EPV_der = " << EPV_derivative_l(q_momenta, spacetime) << endl;
-	cout << "cos term = " << cos_term << endl;
 	Cplx sin_term = 0.5 * sin(eta) * Cplx_i
 			* (2.0 * spacetime.t * sin(q_momenta.value) - spacetime.x) / M_PI;
-	cout << "sin term = " << sin_term << endl;
-
-
-	cout << "cos-sin terms =" << cos_term - sin_term << endl;
 	Cplx result = (cos_term - sin_term) * Theta_l(q_momenta);
-	cout << "cos-sin terms * THETA =" << result << endl;
 	result -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime) * Lminus_l(q_momenta, spacetime) * Lminus_l(q_momenta, spacetime)
 			/ (2.0 * M_PI);
 	result *= Gamma_l();
@@ -191,13 +182,15 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 			Cplx r_matrix_elem = Gamma_l() * Rplus_l(eta, q_i, k_j, spacetime);
 
 			if (i == j) {
-				Cplx cos_term = 0.5 * (1.0 - cos(eta)) * Eminus_l(q_i, spacetime) *
-						Eminus_l(q_i, spacetime) * EPV_derivative_l(q_i, spacetime) / M_PI;
-				Cplx sin_term =  0.5 * sin(eta) * Cplx_i *
-						(2.0 * spacetime.t * sin(q_i.value) - spacetime.x)/ M_PI;
-				q_matrix_elem = (cos_term - sin_term) * Theta_l(q_i);
-				q_matrix_elem -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[i]/(2.0 * M_PI);
-				q_matrix_elem *= Gamma_l();
+//				Cplx cos_term = 0.5 * (1.0 - cos(eta)) * Eminus_l(q_i, spacetime) *
+//						Eminus_l(q_i, spacetime) * EPV_derivative_l(q_i, spacetime) / M_PI;
+//				Cplx sin_term =  0.5 * sin(eta) * Cplx_i *
+//						(2.0 * spacetime.t * sin(q_i.value) - spacetime.x)/ M_PI;
+//				q_matrix_elem = (cos_term - sin_term) * Theta_l(q_i);
+//				q_matrix_elem -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[i]/(2.0 * M_PI);
+//				q_matrix_elem *= Gamma_l();
+
+				q_matrix_elem = Nu_diagonal_l(eta, q_i, spacetime);
 
 				One_plus_gammaQ(i, i) = sqrt(Weight_G_l(i)) * q_matrix_elem * sqrt(Weight_G_l(i)) + 1.0;
 
