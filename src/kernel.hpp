@@ -89,6 +89,7 @@ Cplx EPV_l (Q_momenta q_momenta,  SpaceTime st);
 Cplx EPV_derivative_l (Q_momenta q_momenta,  SpaceTime st);
 Cplx Lplus_l (double eta, Q_momenta q_momenta,  SpaceTime st);
 Cplx Lminus_l (Q_momenta q_momenta,  SpaceTime st);
+Cplx Nu_diagonal_l (double eta, Q_momenta q_momenta, SpaceTime st);
 Cplx Rplus_l (double eta, Q_momenta q_momenta, Q_momenta k_momenta,  SpaceTime st);
 Cplx G_l (SpaceTime st);
 Cplx F_l(double eta);

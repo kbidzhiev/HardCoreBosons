@@ -140,16 +140,17 @@ int main() {
 	//PV();
 
 	//Fourier1D();
-	Fourier2D();
+	//Fourier2D();
 	//Gpt();
 	//foo();
 
 
-//	Q_momenta q(1.14);
-//	SpaceTime spacetime(X_coordinate(50.0), T_time(50.0));
-//	cout << EPV_l (q, spacetime) << endl;
-//	cout << EPV_derivative_l ( q, spacetime) << endl;
-
+	double eta = 1.0;
+	Q_momenta q(1.14);
+	SpaceTime spacetime(X_coordinate(5.0), T_time(5.0));
+	cout << "E_PV_lattice =" << EPV_l (q, spacetime) << endl;
+	cout << "E_derivative_lattice =" << EPV_derivative_l (q, spacetime) << endl;
+	cout << "Diagonal element =" << Nu_diagonal_l(eta, q, spacetime);
 
 	return 0;
 }

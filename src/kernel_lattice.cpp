@@ -35,7 +35,7 @@ double Theta_l(Q_momenta q_momenta){
 }
 
 Cplx Eminus_l(Q_momenta q_momenta,  SpaceTime spacetime){
-	return exp(Cplx_i * 0.5 * Tau(q_momenta, spacetime));
+	return exp(Cplx_i * 0.5 * Tau_l(q_momenta, spacetime));
 }
 
 Cplx EPV_l (Q_momenta q_momenta,  SpaceTime spacetime){
@@ -114,8 +114,27 @@ Cplx Rplus_l (double eta, Q_momenta q_momenta, Q_momenta k_momenta,  SpaceTime s
 	return (first + second + third )/ (4.0 * M_PI);
 }
 
+Cplx Nu_diagonal_l(double eta, Q_momenta q_momenta, SpaceTime spacetime) {
+	Cplx cos_term = 0.5 * (1.0 - cos(eta)) * Eminus_l(q_momenta, spacetime)
+			* Eminus_l(q_momenta, spacetime) * EPV_derivative_l(q_momenta, spacetime) / M_PI;
+	cout << "\n\n";
+	cout << "Eminus = " << Eminus_l(q_momenta, spacetime) << endl;
+	cout << "EPV_der = " << EPV_derivative_l(q_momenta, spacetime) << endl;
+	cout << "cos term = " << cos_term << endl;
+	Cplx sin_term = 0.5 * sin(eta) * Cplx_i
+			* (2.0 * spacetime.t * sin(q_momenta.value) - spacetime.x) / M_PI;
+	cout << "sin term = " << sin_term << endl;
 
-//
+
+	cout << "cos-sin terms =" << cos_term - sin_term << endl;
+	Cplx result = (cos_term - sin_term) * Theta_l(q_momenta);
+	cout << "cos-sin terms * THETA =" << result << endl;
+	result -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime) * Lminus_l(q_momenta, spacetime) * Lminus_l(q_momenta, spacetime)
+			/ (2.0 * M_PI);
+	result *= Gamma_l();
+
+	return result;
+}
 
 
 double Q_l(const size_t i) {
@@ -184,14 +203,12 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 			//if(abs(r_plus)< 1e-16) {w = Cplx(0, 0);}
 			//W(i, j) = sqrt(Weight(i)) * w * sqrt(Weight(j));
 			if (i == j) {
-				//q = (0.5 - 0.5 * cos(eta))/ (sin(0.5*Q_G_l(i))*sin(0.5*Q_G_l(i))) -
-				//		Cplx_i * sin(eta) * (spacetime.x + 2.0 * spacetime.t * sin (Q_G_l(i))) ;
-				Cplx cos_term = (0.5 - 0.5 * cos(eta)) * Eminus_l(q_i, spacetime) *
+				Cplx cos_term = 0.5 * (1.0 - cos(eta)) * Eminus_l(q_i, spacetime) *
 						Eminus_l(q_i, spacetime) * EPV_derivative_l(q_i, spacetime) / M_PI;
 				Cplx sin_term =  0.5 * sin(eta) * Cplx_i *
 						(2.0 * spacetime.t * sin(q_i.value) - spacetime.x)/ M_PI;
 				q = (cos_term - sin_term) * Theta_l(q_i);
-				q -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
+				q -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[i]/(2.0 * M_PI);
 				q *= Gamma_l();
 
 				Q_plus(i, i) = sqrt(Weight_G_l(i)) *  q * sqrt(Weight_G_l(i)) + 1.0;
