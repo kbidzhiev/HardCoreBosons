@@ -169,91 +169,58 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 	vector<Cplx> l_plus;
 	vector<Cplx> l_minus;
-
 	l_plus.reserve(s);
 	l_minus.reserve(s);
-	MatrixXcd Q_plus(s, s);
-	MatrixXcd R_plus(s, s);
 
+	MatrixXcd One_plus_gammaQ(s, s);
+	MatrixXcd One_plus_gammaQ_minus_gammaR(s, s);
 
-	{
 //#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
 		Q_momenta q_i(Q_G_l(i));
-		l_plus[i] = Lplus_l(eta, q_i, spacetime);
+		l_plus[i]  = Lplus_l(eta, q_i, spacetime);
 		l_minus[i] = Lminus_l(q_i, spacetime);
-//		cout << "i=" << i << ", Theta = " << Theta_l(q_i);
-//		cout << "i=" << i << ", E+ = " << Lplus_l(eta,q_i, spacetime) << endl;
-//		cout << "i=" << i << ", E- = " << Lminus_l(q_i, spacetime) << endl;
-	}
-	//terminate();
-
 	}
 
-	{
 //#pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
 	for (size_t i = 0; i < s; i++) {
-
 		for (size_t j = i; j < s; j++) {
-			Cplx q;
+			Cplx q_matrix_elem;
 			Q_momenta q_i(Q_G_l(i));
 			Q_momenta k_j(Q_G_l(j));
-			Cplx r_plus = Gamma_l() * Rplus_l(eta, q_i, k_j, spacetime);
+			Cplx r_matrix_elem = Gamma_l() * Rplus_l(eta, q_i, k_j, spacetime);
 
-			//if(abs(r_plus)< 1e-16) {w = Cplx(0, 0);}
-			//W(i, j) = sqrt(Weight(i)) * w * sqrt(Weight(j));
 			if (i == j) {
 				Cplx cos_term = 0.5 * (1.0 - cos(eta)) * Eminus_l(q_i, spacetime) *
 						Eminus_l(q_i, spacetime) * EPV_derivative_l(q_i, spacetime) / M_PI;
 				Cplx sin_term =  0.5 * sin(eta) * Cplx_i *
 						(2.0 * spacetime.t * sin(q_i.value) - spacetime.x)/ M_PI;
-				q = (cos_term - sin_term) * Theta_l(q_i);
-				q -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[i]/(2.0 * M_PI);
-				q *= Gamma_l();
+				q_matrix_elem = (cos_term - sin_term) * Theta_l(q_i);
+				q_matrix_elem -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[i]/(2.0 * M_PI);
+				q_matrix_elem *= Gamma_l();
 
-				Q_plus(i, i) = sqrt(Weight_G_l(i)) *  q * sqrt(Weight_G_l(i)) + 1.0;
+				One_plus_gammaQ(i, i) = sqrt(Weight_G_l(i)) * q_matrix_elem * sqrt(Weight_G_l(i)) + 1.0;
 
-				R_plus(i, i) = sqrt(Weight_G_l(i)) * (q - r_plus) * sqrt(Weight_G_l(i)) + 1.0; //new part
+				One_plus_gammaQ_minus_gammaR(i, i) = sqrt(Weight_G_l(i)) *
+						(q_matrix_elem - r_matrix_elem) * sqrt(Weight_G_l(i)) + 1.0; //new part
 			} else {
-				q = l_plus[i]*l_minus[j] - l_minus[i]*l_plus[j];
-				q /= 2.0 * M_PI * tan(Q_G_l(i) - Q_G_l(j)); // Diagonal 0 is here 0
-				q-= 0.5 * (1.0-cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
-				q *= Gamma_l();
+				q_matrix_elem  = l_plus[i]*l_minus[j] - l_minus[i]*l_plus[j];
+				q_matrix_elem /= 2.0 * M_PI * tan(Q_G_l(i) - Q_G_l(j)); // Diagonal 0 is here 0
+				q_matrix_elem -= 0.5 * (1.0-cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
+				q_matrix_elem *= Gamma_l();
 
-				Q_plus(i, j) = sqrt(Weight_G_l(i)) * q * sqrt(Weight_G_l(j));
-				R_plus(i, j) = sqrt(Weight_G_l(i)) * (q - r_plus) * sqrt(Weight_G_l(j));
+				One_plus_gammaQ(i, j) = sqrt(Weight_G_l(i)) * q_matrix_elem * sqrt(Weight_G_l(j));
+				One_plus_gammaQ_minus_gammaR(i, j) = sqrt(Weight_G_l(i)) *
+						(q_matrix_elem - r_matrix_elem) * sqrt(Weight_G_l(j));
 
-				Q_plus(j, i) = Q_plus(i, j);
-				R_plus(j, i) = R_plus(i, j);
+				One_plus_gammaQ(j, i) = One_plus_gammaQ(i, j);
+				One_plus_gammaQ_minus_gammaR(j, i) = One_plus_gammaQ_minus_gammaR(i, j);
 			}
-				//if (j == 3 && i == 3)
-				{
-					//cout << spacetime.x << " " << spacetime.t << endl;
-					//cout << "Q_i = " << Q_G_l(i) << " Q_j = " << Q_G_l(j) << endl;
-					//cout << "Weight_G_l(i) = " << Weight_G_l(i) << endl;
-					//cout << "EPV "<< EPV_l(k_j, spacetime) << endl;
-					//cout << "l_minus[i]" << l_minus[i] << endl;
-					//cout << "q = " << q << " i = " << i << ", j = " << j << endl;
-					//cout << "r = " << r_plus << " i = " << i << ", j = " << j << endl;
-				}
-			//cout << "Q = " << Q_plus(i, j) << " i = " << i << ", j = " << j  << endl;
-			//cout << "R = " << R_plus(i, j) << " i = " << i << ", j = " << j  << endl;
-			//cout << eta << endl;
 		}
-		//terminate();
-	}
 	}
 
-	Cplx detQ;
-	Cplx detR;
-	//cout << Q_plus << endl;
-	//terminate();
-
-	{
-		detQ = Q_plus.determinant();
-		detR = R_plus.determinant();
-		//cout << "detQ = " << detQ << " detR = " << detR << endl;
-	}
+	Cplx detQ = One_plus_gammaQ.determinant();
+	Cplx detR = One_plus_gammaQ_minus_gammaR.determinant();
 
 	return {detQ, detR};
 }
