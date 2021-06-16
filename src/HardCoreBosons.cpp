@@ -144,7 +144,7 @@ int main() {
 	//Gpt();
 	//foo();
 //	double eta = 0.37;
-//	SpaceTime spacetime(X_coordinate(5.), T_time(7.0));
+//	SpaceTime spacetime(X_coordinate(3.), T_time(1.0));
 //	cout << G_l(spacetime) << endl;
 
 //	double eta = 1.0;

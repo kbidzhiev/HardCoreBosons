@@ -69,7 +69,7 @@ void Fourier2D() {
 	const double shift_x = xmax1 / 2.0;
 	const double shift_t = tmax2 / 2.0;
 
-	const double truncation = 0.25;
+	const double truncation = 0.0; //0.25
 	auto ExcludeVicinityOf0 = [&](double t) {
 		//Here I isolate vicinity of 0 into 4 regions
 		if (t <= -truncation || t >= truncation) { 			// (-T: -truncation]
