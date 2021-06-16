@@ -143,11 +143,21 @@ int main() {
 	Fourier2D();
 	//Gpt();
 	//foo();
-
+//	double eta = 0.37;
+//	SpaceTime spacetime(X_coordinate(5.), T_time(7.0));
+//	cout << G_l(spacetime) << endl;
 
 //	double eta = 1.0;
-//	Q_momenta q(1.14);
-//	SpaceTime spacetime(X_coordinate(5.0), T_time(5.0));
+//	Q_momenta k(1.14 );
+//	Q_momenta k_prime(1.14 - 1e-10);
+//	Cplx elem = Nu_matrix_elem(eta,  k,  k_prime,  spacetime);
+//	Cplx diag = Nu_diagonal_l( eta,  k,  spacetime);
+//
+//	cout << "elem = " << elem << "\ndiag = " << diag << endl;
+//	cout << setprecision(16) << "diff = " << elem -  diag << endl;
+//
+
+
 //	cout << "E_PV_lattice =" << EPV_l (q, spacetime) << endl;
 //	cout << "E_derivative_lattice =" << EPV_derivative_l (q, spacetime) << endl;
 //	cout << "Diagonal element =" << Nu_diagonal_l(eta, q, spacetime);

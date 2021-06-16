@@ -112,14 +112,14 @@ void Fourier2D() {
 			//double lambda = 1.0;
 			//const Cplx result = GrepLambda(lambda, st);
 
-			auto Symmetric = [&]() {
-				//Here I isolate vicinity of 0 into 4 regions
-				if (t2[j] <= 0) { 					// (-T: -truncation]
-					data[i * N2 + j] = conj(result); 			// conj(result)
-				}  else {										// [truncation: T)
-					data[i * N2 + j] = result;
-				}
-			};
+
+			//Here I isolate vicinity of 0 into 4 regions
+			if (t2[j] <= 0) { 						// (-T: -truncation]
+				data[i * N2 + j] = conj(result); 	// conj(result)
+			} else {								// [truncation: T)
+				data[i * N2 + j] = result;
+			}
+
 
 			auto Positive = [&]() {
 				//Here I isolate vicinity of 0 into 4 regions
@@ -130,7 +130,6 @@ void Fourier2D() {
 				}
 			};
 
-			Symmetric();
 
 		}
 

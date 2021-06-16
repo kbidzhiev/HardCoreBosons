@@ -23,7 +23,7 @@ const double RHO = 0.5;
 
 
 const size_t GAUSS_RANK = 30;
-const size_t GAUSS_RANK_l = 30;
+const size_t GAUSS_RANK_l = 4; // Use only ODD rank
 
 
 //const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
@@ -89,10 +89,11 @@ Cplx EPV_l (Q_momenta q_momenta,  SpaceTime st);
 Cplx EPV_derivative_l (Q_momenta q_momenta,  SpaceTime st);
 Cplx Lplus_l (double eta, Q_momenta q_momenta,  SpaceTime st);
 Cplx Lminus_l (Q_momenta q_momenta,  SpaceTime st);
+Cplx Nu_matrix_elem(double eta, Q_momenta k_momenta, Q_momenta k_prime_momenta, SpaceTime spacetime);
 Cplx Nu_diagonal_l (double eta, Q_momenta q_momenta, SpaceTime st);
 Cplx Rplus_l (double eta, Q_momenta q_momenta, Q_momenta k_momenta,  SpaceTime st);
 Cplx G_l (SpaceTime st);
-Cplx F_l(double eta);
+double F_l(double eta);
 double Gamma_l();
 Cplx Grep_l(SpaceTime st);
 

@@ -90,7 +90,7 @@ Cplx Lminus_l (Q_momenta q_momenta,  SpaceTime spacetime){
 	return Eminus_l(q_momenta, spacetime) * sqrt(Theta_l(q_momenta));
 }
 
-Cplx G_l (SpaceTime spacetime){
+Cplx G_l (SpaceTime spacetime){ //verified
 	return exp(Cplx_i * 0.5 * M_PI * spacetime.x) * cyl_bessel_j(abs(spacetime.x), 2.0 * spacetime.t);
 }
 
@@ -98,15 +98,16 @@ double Gamma_l(){
 	return 2.0;
 }
 
-Cplx F_l(double eta){
-	Cplx result = Gamma_l() / (Gamma_l() - exp(Cplx_i * eta));
-	result += 1.0/(exp(Cplx_i * eta)*Gamma_l() -1.0);
+double F_l(double eta){//verified
+	// I've found a simpler form
+	double result = Gamma_l() * Gamma_l() - 1.0;
+	result /= Gamma_l() * Gamma_l() + 1.0 - 2.0 * Gamma_l() * cos(eta);
 	return result;
 }
 
 
 Cplx Rplus_l (double eta, Q_momenta q_momenta, Q_momenta k_momenta,  SpaceTime st){
-	Cplx first = (1.0 - cos(eta)) * Eplus_l(q_momenta, st) * Eplus_l(k_momenta, st)  ;
+	Cplx first = (1.0 - cos(eta)) * Eplus_l(q_momenta, st) * Eplus_l(k_momenta, st);
 	Cplx second = sin(eta) * (
 			Eplus_l(q_momenta, st)/Eminus_l(k_momenta, st) + Eplus_l(k_momenta, st) * Eminus_l(q_momenta, st)
 			);
@@ -114,46 +115,49 @@ Cplx Rplus_l (double eta, Q_momenta q_momenta, Q_momenta k_momenta,  SpaceTime s
 	return (first + second + third )/ (4.0 * M_PI);
 }
 
-Cplx Nu_diagonal_l(double eta, Q_momenta q_momenta, SpaceTime spacetime) {
+Cplx Nu_diagonal_l(double eta, Q_momenta q_momenta, SpaceTime spacetime) { //verified
 	Cplx cos_term = 0.5 * (1.0 - cos(eta)) * Eminus_l(q_momenta, spacetime)
 			* Eminus_l(q_momenta, spacetime) * EPV_derivative_l(q_momenta, spacetime) / M_PI;
 	Cplx sin_term = 0.5 * sin(eta) * Cplx_i
 			* (2.0 * spacetime.t * sin(q_momenta.value) - spacetime.x) / M_PI;
-	Cplx result = (cos_term - sin_term) * Theta_l(q_momenta);
-	result -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime) * Lminus_l(q_momenta, spacetime) * Lminus_l(q_momenta, spacetime)
-			/ (2.0 * M_PI);
-	result *= Gamma_l();
+	return (cos_term - sin_term) * Theta_l(q_momenta);
+}
 
-	return result;
+Cplx Nu_matrix_elem(double eta, Q_momenta k_momenta, Q_momenta k_prime_momenta, SpaceTime spacetime) {
+	Cplx nu_matrix_elem  = Lplus_l(eta, k_momenta, spacetime)*Lminus_l(k_prime_momenta, spacetime)
+			- Lplus_l(eta, k_prime_momenta, spacetime)*Lminus_l(k_momenta, spacetime);
+	nu_matrix_elem /= 2.0 * M_PI * tan(0.5 * (k_momenta.value - k_prime_momenta.value )); // Diagonal 0 is here 0
+
+	return nu_matrix_elem;
 }
 
 
 double Q_l(const size_t i) {
 	//size_t middle_point = g.abscissa().size() - 1;
 	return i < g.abscissa().size() - 1 ?
-			-KF() * g.abscissa()[g.abscissa().size() - i - 1] :
-			KF() * g.abscissa()[i - g.abscissa().size() + 1];
+			-KF_l() * g.abscissa()[g.abscissa().size() - i - 1] :
+			KF_l() * g.abscissa()[i - g.abscissa().size() + 1];
 }
 
 double Weight_l (const size_t i) {
 	//size_t middle_point = g.weights().size() - 1;
 	return i < g.weights().size() - 1?
-			KF() * g.weights()[g.weights().size() -1 - i ] :
-			KF() * g.weights()[i - g.weights().size() + 1];
+			KF_l() * g.weights()[g.weights().size() -1 - i ] :
+			KF_l() * g.weights()[i - g.weights().size() + 1];
 }
 
 double Q_G_l (const size_t i) {
 	//size_t middle_point = g.abscissa().size();
 	return i < g_l.abscissa().size() ?
-			- KF() * g_l.abscissa()[g_l.abscissa().size() - i - 1] :
-			  KF() * g_l.abscissa()[i - g_l.abscissa().size()];
+			- KF_l() * g_l.abscissa()[g_l.abscissa().size() - i - 1] :
+			KF_l() * g_l.abscissa()[i - g_l.abscissa().size()];
 }
 
 double Weight_G_l (const size_t i) {
 	//size_t middle_point = g.weights().size();
 	return i < g_l.weights().size() ?
-			KF() * g_l.weights()[g_l.weights().size() - i - 1] :
-			KF() * g_l.weights()[i - g_l.weights().size()];
+			KF_l() * g_l.weights()[g_l.weights().size() - i - 1] :
+			KF_l() * g_l.weights()[i - g_l.weights().size()];
 }
 
 pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
@@ -173,38 +177,30 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 		l_minus[i] = Lminus_l(q_i, spacetime);
 	}
 
+
 //#pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
 	for (size_t i = 0; i < s; i++) {
 		for (size_t j = i; j < s; j++) {
 			Cplx q_matrix_elem;
 			Q_momenta q_i(Q_G_l(i));
 			Q_momenta k_j(Q_G_l(j));
-			Cplx r_matrix_elem = Gamma_l() * Rplus_l(eta, q_i, k_j, spacetime);
+			Cplx r_plus_elem = Gamma_l() * Rplus_l(eta, q_i, k_j, spacetime);
+			Cplx r_minus_elem = 0.5 * (1.0 - cos(eta)) * G_l(spacetime) * l_minus[i] * l_minus[j] / (2.0 * M_PI);
 
 			if (i == j) {
-//				Cplx cos_term = 0.5 * (1.0 - cos(eta)) * Eminus_l(q_i, spacetime) *
-//						Eminus_l(q_i, spacetime) * EPV_derivative_l(q_i, spacetime) / M_PI;
-//				Cplx sin_term =  0.5 * sin(eta) * Cplx_i *
-//						(2.0 * spacetime.t * sin(q_i.value) - spacetime.x)/ M_PI;
-//				q_matrix_elem = (cos_term - sin_term) * Theta_l(q_i);
-//				q_matrix_elem -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[i]/(2.0 * M_PI);
-//				q_matrix_elem *= Gamma_l();
-
-				q_matrix_elem = Nu_diagonal_l(eta, q_i, spacetime);
-
-				One_plus_gammaQ(i, i) = sqrt(Weight_G_l(i)) * q_matrix_elem * sqrt(Weight_G_l(i)) + 1.0;
-
-				One_plus_gammaQ_minus_gammaR(i, i) = sqrt(Weight_G_l(i)) *
-						(q_matrix_elem - r_matrix_elem) * sqrt(Weight_G_l(i)) + 1.0; //new part
+				q_matrix_elem = Nu_diagonal_l(eta, q_i, spacetime) - r_minus_elem;
+				q_matrix_elem *= Gamma_l();
+				One_plus_gammaQ(i, i) = 1.0 + Weight_G_l(i) * q_matrix_elem  ;
+				One_plus_gammaQ_minus_gammaR(i, i) = 1.0 + Weight_G_l(i) * (q_matrix_elem - r_plus_elem)  ;
 			} else {
 				q_matrix_elem  = l_plus[i]*l_minus[j] - l_minus[i]*l_plus[j];
-				q_matrix_elem /= 2.0 * M_PI * tan(0.5 * (Q_G_l(i) - Q_G_l(j))); // Diagonal 0 is here 0
-				q_matrix_elem -= 0.5 * (1.0 - cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
+				q_matrix_elem /= 2.0 * M_PI * tan(0.5 * (Q_G_l(i) - Q_G_l(j)));
+				q_matrix_elem -= r_minus_elem;
 				q_matrix_elem *= Gamma_l();
 
 				One_plus_gammaQ(i, j) = sqrt(Weight_G_l(i)) * q_matrix_elem * sqrt(Weight_G_l(j));
 				One_plus_gammaQ_minus_gammaR(i, j) = sqrt(Weight_G_l(i)) *
-						(q_matrix_elem - r_matrix_elem) * sqrt(Weight_G_l(j));
+						(q_matrix_elem - r_plus_elem) * sqrt(Weight_G_l(j));
 
 				One_plus_gammaQ(j, i) = One_plus_gammaQ(i, j);
 				One_plus_gammaQ_minus_gammaR(j, i) = One_plus_gammaQ_minus_gammaR(i, j);
@@ -221,19 +217,19 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 
 Cplx GrepEta_l(double eta,  SpaceTime st){
 	auto [detq,detr] = Determinants_l(eta, st);
-	detq *= G_l(st)  - 1.0;
+	detq *= G_l(st) - 1.0;
 	return detq + detr;
 }
 
 Cplx Grep_l(SpaceTime st){
 	auto f= [&](double eta){
-		return F_l(eta) * GrepEta_l(eta, st)/(2.0 * M_PI);
+		return F_l(eta) * GrepEta_l(eta, st);
 	};
 	double error = 100;
 
 	Cplx result = gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
 
-	return result;
+	return result/(2.0 * M_PI);
 }
 
 
