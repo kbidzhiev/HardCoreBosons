@@ -49,7 +49,7 @@ Cplx Asymptotics (SpaceTime st) {
 
 void Fourier2D() {
 
-	size_t N1 = 100;
+	size_t N1 = 30;
 	size_t N2 = 100;
 	size_t N = N1 * N2;
 	dcvector data(N);
@@ -61,7 +61,7 @@ void Fourier2D() {
 
 
 	const double xmax1 = 30.0;
-	const double tmax2 = 15.0;
+	const double tmax2 = 10.0;
 	size_t counter = 0;
 
 	const double dx = xmax1 / N1;//Should be 1 for lattice
@@ -104,28 +104,13 @@ void Fourier2D() {
 
 
 
-			const Cplx result = Grep(st); //- G0(st);
+			const Cplx result = Grep_l(st); //- G0(st);
 			//cout << result << endl;
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
 			//double lambda = 1.0;
 			//const Cplx result = GrepLambda(lambda, st);
-
-//			auto Symmetric = [&]() {
-//				//Here I isolate vicinity of 0 into 4 regions
-//				if (t2[j] <= -truncation) { 					// (-T: -truncation]
-//					data[i * N2 + j] = conj(result); 			// conj(result)
-//					tmp = conj(result);
-//				} else if (-truncation < t2[j] && t2[j] < 0) { //(-truncation : 0)
-//					data[i * N2 + j] = tmp;
-//				} else if (0 <= t2[j] && t2[j] < truncation) { //[0: //truncation)
-//					data[i * N2 + j] = conj(tmp); 				// conj(tmp)
-//				} else {										// [truncation: T)
-//					data[i * N2 + j] = result;
-//				}
-//			};
-
 
 			auto Symmetric = [&]() {
 				//Here I isolate vicinity of 0 into 4 regions
