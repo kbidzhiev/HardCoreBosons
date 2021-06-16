@@ -198,7 +198,7 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime spacetime){
 						(q_matrix_elem - r_matrix_elem) * sqrt(Weight_G_l(i)) + 1.0; //new part
 			} else {
 				q_matrix_elem  = l_plus[i]*l_minus[j] - l_minus[i]*l_plus[j];
-				q_matrix_elem /= 2.0 * M_PI * tan(Q_G_l(i) - Q_G_l(j)); // Diagonal 0 is here 0
+				q_matrix_elem /= 2.0 * M_PI * tan(0.5 * (Q_G_l(i) - Q_G_l(j))); // Diagonal 0 is here 0
 				q_matrix_elem -= 0.5 * (1.0-cos(eta)) * G_l(spacetime)*l_minus[i]*l_minus[j]/(2.0 * M_PI);
 				q_matrix_elem *= Gamma_l();
 

@@ -49,8 +49,8 @@ Cplx Asymptotics (SpaceTime st) {
 
 void Fourier2D() {
 
-	size_t N1 = 30;
-	size_t N2 = 200;
+	size_t N1 = 100;
+	size_t N2 = 100;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
@@ -69,42 +69,69 @@ void Fourier2D() {
 	const double shift_x = xmax1 / 2.0;
 	const double shift_t = tmax2 / 2.0;
 
+	const double truncation = 0.25;
+	auto ExcludeVicinityOf0 = [&](double t) {
+		//Here I isolate vicinity of 0 into 4 regions
+		if (t <= -truncation || t >= truncation) { 			// (-T: -truncation]
+			return t;
+		} else { //(-truncation : 0)
+			return truncation;
+		}
+	};
+
 
 #pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
-	for (size_t i = 0; i < N1; ++i) {
-		for (size_t j = 0; j < N2; ++j) {
-			x1[i] = i * dx - shift_x;
-			t2[j] = j * dt - shift_t;
+	for (size_t j = 0; j < N2; ++j) {
+		for (size_t i = 0; i < N1; ++i) {
 
-			SpaceTime st(X_coordinate(x1[i]), T_time(abs(t2[j])));
+
+//#pragma omp parallel for num_threads(omp_get_num_procs())
+			t2[j] = j * dt - shift_t;
+			x1[i] = i * dx - shift_x;
+
+
+
+			SpaceTime st(X_coordinate(x1[i]), T_time(abs(
+					ExcludeVicinityOf0(t2[j])
+					)));
 			//the line replaced by abs in T_time ctr
 			//if (t2[j] < 0) 	st.t = -st.t; // t2[j] is still negative, but st.t is positive;
 
 			++counter;
 			cout << "x= " << i + 1 << " / " << N1 << " ; "
 				 << "t= " << j + 1 << " / " << N2 << " ;\t" << counter << " / " << N
-				 << "\t" <<(double)counter/((double)N) <<endl;
+				 << "\t" <<(double)counter/N <<endl;
 
-			const double truncation = 0.01;
-			Cplx tmp;
-			const Cplx result = Grep_l(st); //- G0(st);
+
+
+			const Cplx result = Grep(st); //- G0(st);
 			//cout << result << endl;
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
 			//Cplx result = Box(st);
-			double lambda = 1.0;
+			//double lambda = 1.0;
 			//const Cplx result = GrepLambda(lambda, st);
+
+//			auto Symmetric = [&]() {
+//				//Here I isolate vicinity of 0 into 4 regions
+//				if (t2[j] <= -truncation) { 					// (-T: -truncation]
+//					data[i * N2 + j] = conj(result); 			// conj(result)
+//					tmp = conj(result);
+//				} else if (-truncation < t2[j] && t2[j] < 0) { //(-truncation : 0)
+//					data[i * N2 + j] = tmp;
+//				} else if (0 <= t2[j] && t2[j] < truncation) { //[0: //truncation)
+//					data[i * N2 + j] = conj(tmp); 				// conj(tmp)
+//				} else {										// [truncation: T)
+//					data[i * N2 + j] = result;
+//				}
+//			};
+
 
 			auto Symmetric = [&]() {
 				//Here I isolate vicinity of 0 into 4 regions
-				if (t2[j] <= -truncation) { 				// (-T: -truncation]
+				if (t2[j] <= 0) { 					// (-T: -truncation]
 					data[i * N2 + j] = conj(result); 			// conj(result)
-					tmp = data[i * N2 + j];
-				} else if (t2[j] > -truncation && t2[j] < 0) { //(-truncation : 0)
-					data[i * N2 + j] = tmp;
-				} else if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
-					data[i * N2 + j] = conj(tmp); // conj(tmp)
-				} else {									// [truncation: T)
+				}  else {										// [truncation: T)
 					data[i * N2 + j] = result;
 				}
 			};
