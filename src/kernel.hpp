@@ -23,7 +23,7 @@ const double RHO = 0.5;
 
 
 const size_t GAUSS_RANK = 30;
-const size_t GAUSS_RANK_l = 30; // Use only ODD rank
+const size_t GAUSS_RANK_l = 60; // Use only ODD rank
 
 
 //const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
