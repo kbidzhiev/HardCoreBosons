@@ -61,7 +61,7 @@ void Fourier2D() {
 
 
 	const double xmax1 = 30.0;
-	const double tmax2 = 20.0;
+	const double tmax2 = 10.0;
 	size_t counter = 0;
 
 	const double dx = xmax1 / N1;//Should be 1 for lattice

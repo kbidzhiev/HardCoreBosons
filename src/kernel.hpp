@@ -18,12 +18,12 @@ using Cplx = complex<double>;
 
 const Cplx Cplx_i = Cplx(0,1);
 const double MASS = 1.0;
-const double B_BETA = 1000;
+const double B_BETA = 100;
 const double RHO = 0.5;
 
 
 const size_t GAUSS_RANK = 30;
-const size_t GAUSS_RANK_l = 30; // Use only ODD rank
+const size_t GAUSS_RANK_l = 6; // Use only ODD rank
 
 
 //const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
@@ -95,6 +95,7 @@ Cplx Rplus_l (double eta, Q_momenta q_momenta, Q_momenta k_momenta,  SpaceTime s
 Cplx G_l (SpaceTime st);
 double F_l(double eta);
 double Gamma_l();
+pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime st);
 Cplx Grep_l(SpaceTime st);
 
 
