@@ -142,19 +142,19 @@ int main() {
 
 
 	//Fourier1D();
-	//Fourier2D();
+	Fourier2D();
 	//Gpt();
 	//foo();
-	double eta = 1.0;
-	Q_momenta q(0.7496442820045472);
-	Q_momenta k(-0.7496442820045472);
-	SpaceTime spacetime(X_coordinate(10.), T_time(3.));
-	auto [f,s] = Determinants_l(eta, spacetime);
-	cout << "f = " << f << "\n" << "s = " << s << endl;
-	Cplx rplus = Lplus_l (eta,  q, spacetime)*Lplus_l (eta,  k, spacetime);
-	rplus /= (M_PI * (1.0 - cos(eta)));
-	cout << "from formula " << rplus << endl;
-	cout << "from matrix elem " << Rplus_l (eta, q, k, spacetime) << endl;
+//	double eta = 1.0;
+//	Q_momenta q(0.7496442820045472);
+//	Q_momenta k(-0.7496442820045472);
+//	SpaceTime spacetime(X_coordinate(10.), T_time(3.));
+//	auto [f,s] = Determinants_l(eta, spacetime);
+//	cout << "f = " << f << "\n" << "s = " << s << endl;
+//	Cplx rplus = Lplus_l (eta,  q, spacetime)*Lplus_l (eta,  k, spacetime);
+//	rplus /= (M_PI * (1.0 - cos(eta)));
+//	cout << "from formula " << rplus << endl;
+//	cout << "from matrix elem " << Rplus_l (eta, q, k, spacetime) << endl;
 
 //	double eta = 1.0;
 //	Q_momenta k(1.14 );
@@ -167,7 +167,7 @@ int main() {
 //
 
 
-	cout << "E_PV_lattice =" << EPV_l (q, spacetime) << endl;
+//	cout << "E_PV_lattice =" << EPV_l (q, spacetime) << endl;
 //	cout << "E_derivative_lattice =" << EPV_derivative_l (q, spacetime) << endl;
 //	cout << "Diagonal element =" << Nu_diagonal_l(eta, q, spacetime);
 

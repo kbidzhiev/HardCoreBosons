@@ -170,11 +170,6 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime st){
 	MatrixXcd One_plus_gammaQ_minus_gammaR(s, s);
 
 
-	for (size_t i = 0; i < s; i++) {
-		cout << Q_G_l(i) << " " << Weight_G_l(i) << endl;
-
-	}
-//	terminate();
 
 //#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
@@ -208,19 +203,12 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime st){
 				One_plus_gammaQ(i, j) = sqrt(Weight_G_l(i)) * q_matrix_elem * sqrt(Weight_G_l(j));
 				One_plus_gammaQ_minus_gammaR(i, j) = sqrt(Weight_G_l(i)) *
 						(q_matrix_elem - r_plus_elem) * sqrt(Weight_G_l(j));
-
-
-
-
 				One_plus_gammaQ(j, i) = One_plus_gammaQ(i, j);
 				One_plus_gammaQ_minus_gammaR(j, i) = One_plus_gammaQ_minus_gammaR(i, j);
 			}
 		}
 	}
 
-	cout << One_plus_gammaQ << "\n\n" << One_plus_gammaQ_minus_gammaR << endl;
-
-	//	terminate();
 	Cplx detQ = One_plus_gammaQ.determinant();
 	Cplx detR = One_plus_gammaQ_minus_gammaR.determinant();
 
