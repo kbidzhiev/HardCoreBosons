@@ -141,16 +141,17 @@ int main() {
 
 
 
-	//Fourier1D();
-	Fourier2D();
+	Fourier1D();
+	//Fourier2D();
 	//Gpt();
 	//foo();
 //	double eta = 1.0;
 //	Q_momenta q(0.7496442820045472);
 //	Q_momenta k(-0.7496442820045472);
-//	SpaceTime spacetime(X_coordinate(10.), T_time(3.));
+//	SpaceTime spacetime(X_coordinate(0.), T_time(0.0));
 //	auto [f,s] = Determinants_l(eta, spacetime);
-//	cout << "f = " << f << "\n" << "s = " << s << endl;
+//	cout << "f = " << (G_l(spacetime) -1.0) * f << "\n" << "s = " << s << endl;
+//	cout << Grep_l(spacetime)<< endl;
 //	Cplx rplus = Lplus_l (eta,  q, spacetime)*Lplus_l (eta,  k, spacetime);
 //	rplus /= (M_PI * (1.0 - cos(eta)));
 //	cout << "from formula " << rplus << endl;

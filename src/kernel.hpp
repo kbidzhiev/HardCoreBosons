@@ -18,7 +18,7 @@ using Cplx = complex<double>;
 
 const Cplx Cplx_i = Cplx(0,1);
 const double MASS = 1.0;
-const double B_BETA = 100;
+const double B_BETA = 1000;
 const double RHO = 0.5;
 
 
@@ -96,6 +96,7 @@ Cplx G_l (SpaceTime st);
 double F_l(double eta);
 double Gamma_l();
 pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime st);
+Cplx GrepEta_l(double eta,  SpaceTime st);
 Cplx Grep_l(SpaceTime st);
 
 

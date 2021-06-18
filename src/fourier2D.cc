@@ -103,8 +103,8 @@ void Fourier2D() {
 				 << "\t" <<(double)counter/N <<endl;
 
 
-
-			const Cplx result = Grep_l(st); //- G0(st);
+			const Cplx result = GrepEta_l( 48.0*M_PI/97.0, st);
+			//const Cplx result = Grep_l(st); //- G0(st);
 			//cout << result << endl;
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
@@ -212,28 +212,39 @@ void Fourier2D() {
 }
 
 void Fourier1D() {
-	size_t N = 501;
+	size_t N = 101;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector t(N);
 	dvector f(N);
 
-	double xmax = 100.0;
-	double time = 50.0;
+	double xmax = 0.0;
+	double tmax = 60.0;
 
-	size_t counter;
+	size_t counter = 0;
 #pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < N; ++i) {
-		t[i] = i * xmax / N - xmax / 2.0;
-		SpaceTime st(X_coordinate(t[i]), T_time(time));
+		t[i] = i * tmax / N - tmax / 2.0;
+		SpaceTime st(X_coordinate(xmax), T_time(
+				abs(t[i]))
+				);
 		//data[i] = Gauss(st);//Asymptotics (st.x, st.t);
-		data[i] = Grep(st) ;  // Here we do Fourier for a fixed time
+		Cplx result = GrepEta_l(2.0, st);
+
+		if (t[i] <= 0) { 						// (-T: -truncation]
+			data[i] = conj(result); 	// conj(result)
+		} else {								// [truncation: T)
+			data[i] = result;
+		}
+
+
+		//data[i] = Grep(st) ;  // Here we do Fourier for a fixed time
 		// no need to introduce small time truncation
 		cout << "i = " << ++counter << " / " << N << endl;
 	}
 
 	// Fourier transform
-	FFT fft(N, xmax);
+	FFT fft(N, tmax);
 	fft.fft(data, data_fft);
 	fft.freq(f);
 	fft.shift_freq(f, data_fft);
@@ -241,16 +252,16 @@ void Fourier1D() {
 	// Save
 	std::ofstream fh1;
 	std::ofstream fh2;
-	fh1.open("Data/Gp/Gx_time" + to_string((int) time) + "Gauss" + to_string(GAUSS_RANK) +".dat");
-	fh2.open("Data/Gp/Gp_time" + to_string((int) time) + "Gauss" + to_string(GAUSS_RANK) +".dat");
+	fh1.open("Data/Gp/Gx_time" + to_string((int) tmax) + "Gauss" + to_string(GAUSS_RANK) +".dat");
+	fh2.open("Data/Gp/Gp_time" + to_string((int) tmax) + "Gauss" + to_string(GAUSS_RANK) +".dat");
 	fh1 << "# \tx \tRe[f(x)] \tIm[f(x)]\n";
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 	for (size_t i = 0; i < N; ++i) {
 		fh1 << t[i] << " \t";
 		fh1 << data[i].real() << "\t" << data[i].imag() << "\n";
 		fh2 << f[i]  << " \t";
-		fh2 << pow(-1,i) * data_fft[i].real() * xmax/ pow(2 * M_PI, 0.5) << " \t"
-			<< pow(-1,i) * data_fft[i].imag() * xmax/ pow(2 * M_PI, 0.5) << "\n";
+		fh2 << pow(-1,i) * data_fft[i].real() * tmax/ pow(2 * M_PI, 0.5) << " \t"
+			<< pow(-1,i) * data_fft[i].imag() * tmax/ pow(2 * M_PI, 0.5) << "\n";
 	}
 	fh1.close();
 	fh2.close();

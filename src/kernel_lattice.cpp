@@ -148,15 +148,15 @@ double Weight_l (const size_t i) {
 double Q_G_l (const size_t i) {
 	//size_t middle_point = g.abscissa().size();
 	return i < g_l.abscissa().size() ?
-			- M_PI * g_l.abscissa()[g_l.abscissa().size() - i - 1] :
-			M_PI * g_l.abscissa()[i - g_l.abscissa().size()];
+			- 0.5*M_PI * g_l.abscissa()[g_l.abscissa().size() - i - 1] :
+			0.5*M_PI * g_l.abscissa()[i - g_l.abscissa().size()];
 }
 
 double Weight_G_l (const size_t i) {
 	//size_t middle_point = g.weights().size();
 	return i < g_l.weights().size() ?
-			M_PI * g_l.weights()[g_l.weights().size() - i - 1] :
-			M_PI * g_l.weights()[i - g_l.weights().size()];
+			0.5*M_PI * g_l.weights()[g_l.weights().size() - i - 1] :
+			0.5*M_PI * g_l.weights()[i - g_l.weights().size()];
 }
 
 pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime st){
