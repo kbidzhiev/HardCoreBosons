@@ -18,11 +18,12 @@ using Cplx = complex<double>;
 
 const Cplx Cplx_i = Cplx(0,1);
 const double MASS = 1.0;
-const double B_BETA = 1000;
+const double B_BETA = 100;
 const double RHO = 0.5;
+const double MAGN_FIELD = -100;
 
 
-const size_t GAUSS_RANK = 30;
+const size_t GAUSS_RANK = 60;
 const size_t GAUSS_RANK_l = 60; // Use only ODD rank
 
 

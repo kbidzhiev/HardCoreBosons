@@ -30,8 +30,11 @@ double Tau_l(Q_momenta q_momenta,  SpaceTime st){//verified
 }
 
 double Theta_l(Q_momenta q_momenta){//verified
-	double result = exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l())) + 2.0;
-	return 1./result;
+	double result = exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l()));
+	result += 2 * cosh(B_BETA * MAGN_FIELD);
+	result = 1./result;
+	result *= exp(-B_BETA * MAGN_FIELD);
+	return result;
 }
 
 Cplx Eminus_l(Q_momenta q_momenta,  SpaceTime st){//verified
@@ -83,7 +86,7 @@ Cplx G_l (SpaceTime st){ //verified
 }
 
 double Gamma_l(){
-	return 2.0;
+	return 1.0 + exp(2 * MAGN_FIELD * B_BETA);
 }
 
 double F_l(double eta){//verified
@@ -134,29 +137,29 @@ Cplx Nu_matrix_elem(double eta, Q_momenta k_momenta, Q_momenta k_prime_momenta, 
 double Q_l(const size_t i) {
 	//size_t middle_point = g.abscissa().size() - 1;
 	return i < g.abscissa().size() - 1 ?
-			-KF_l() * g.abscissa()[g.abscissa().size() - i - 1] :
-			KF_l() * g.abscissa()[i - g.abscissa().size() + 1];
+			-M_PI * g.abscissa()[g.abscissa().size() - i - 1] :
+			M_PI * g.abscissa()[i - g.abscissa().size() + 1];
 }
 
 double Weight_l (const size_t i) {
 	//size_t middle_point = g.weights().size() - 1;
 	return i < g.weights().size() - 1?
-			KF_l() * g.weights()[g.weights().size() -1 - i ] :
-			KF_l() * g.weights()[i - g.weights().size() + 1];
+			M_PI * g.weights()[g.weights().size() -1 - i ] :
+			M_PI * g.weights()[i - g.weights().size() + 1];
 }
 
 double Q_G_l (const size_t i) {
 	//size_t middle_point = g.abscissa().size();
 	return i < g_l.abscissa().size() ?
-			- 0.5*M_PI * g_l.abscissa()[g_l.abscissa().size() - i - 1] :
-			0.5*M_PI * g_l.abscissa()[i - g_l.abscissa().size()];
+			-M_PI * g_l.abscissa()[g_l.abscissa().size() - i - 1] :
+			M_PI * g_l.abscissa()[i - g_l.abscissa().size()];
 }
 
 double Weight_G_l (const size_t i) {
 	//size_t middle_point = g.weights().size();
 	return i < g_l.weights().size() ?
-			0.5*M_PI * g_l.weights()[g_l.weights().size() - i - 1] :
-			0.5*M_PI * g_l.weights()[i - g_l.weights().size()];
+			M_PI * g_l.weights()[g_l.weights().size() - i - 1] :
+			M_PI * g_l.weights()[i - g_l.weights().size()];
 }
 
 pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime st){
