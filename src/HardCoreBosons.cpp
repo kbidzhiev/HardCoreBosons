@@ -141,8 +141,8 @@ int main() {
 
 
 
-	Fourier1D();
-	//Fourier2D();
+	//Fourier1D();
+	Fourier2D();
 	//Gpt();
 	//foo();
 //	double eta = 1.0;
