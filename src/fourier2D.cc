@@ -45,7 +45,7 @@ Cplx Asymptotics (SpaceTime st) {
 	result *= 3.5; // 3.5 \approx all the constants;
 
 	return result;
-};
+}
 
 void Fourier2D() {
 
