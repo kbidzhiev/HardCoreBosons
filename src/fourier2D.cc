@@ -103,8 +103,8 @@ void Fourier2D() {
 				 << "\t" <<(double)counter/N <<endl;
 
 
-			const Cplx result = GrepEta_l( 48.0*M_PI/97.0, st);
-			//const Cplx result = Grep_l(st); //- G0(st);
+			//const Cplx result = GrepEta_l( 48.0*M_PI/97.0, st);
+			const Cplx result = Grep_l(st); //- G0(st);
 			//cout << result << endl;
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
