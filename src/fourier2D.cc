@@ -115,7 +115,7 @@ void Fourier2D() {
 				 << "Grep= " << result << ";\t"
 				 << counter << " / " << N
 				 << "\t" <<(double)counter/N <<endl;
-			terminate();
+			//terminate();
 
 			//Here I isolate vicinity of 0 into 4 regions
 			if (t2[j] <= 0) { 						// (-T: -truncation]
