@@ -30,7 +30,7 @@ const double MAGN_FIELD = -5.;
 
 
 const size_t GAUSS_RANK = 60;
-const size_t GAUSS_RANK_l = 60; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
+const size_t GAUSS_RANK_l = 30; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
 const size_t GAUSS_INTEGRATION = 31; // Use only ODD rank // Precomputed 15, 31, 41, 51 and 61
 
 
