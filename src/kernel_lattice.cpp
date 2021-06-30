@@ -222,16 +222,16 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime st){
 Cplx GrepEta_l(double eta,  SpaceTime st){
 	auto [detq,detr] = Determinants_l(eta, st);
 	detq *= G_l(st) - 1.0;
-	return detq + detr;
+	return exp(Cplx_i * st.t * (Mu_chempot() - MAGN_FIELD)) * (detq + detr);
 }
 
 Cplx Grep_l(SpaceTime st){
 	auto f= [&](double eta){
 		return F_l(eta) * GrepEta_l(eta, st);
 	};
-	double error = 100;
-
-	Cplx result = gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
+	double error;
+	Cplx result = g_integration.integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
+	//Cplx result = gauss_kronrod<double, 31>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
 
 	return result/(2.0 * M_PI);
 }

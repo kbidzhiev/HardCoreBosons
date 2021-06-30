@@ -80,7 +80,7 @@ void Fourier2D() {
 	};
 
 
-#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
+//#pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
 	for (size_t j = 0; j < N2; ++j) {
 		for (size_t i = 0; i < N1; ++i) {
 
@@ -97,14 +97,10 @@ void Fourier2D() {
 			//the line replaced by abs in T_time ctr
 			//if (t2[j] < 0) 	st.t = -st.t; // t2[j] is still negative, but st.t is positive;
 
-			++counter;
-			cout << "x= " << i + 1 << " / " << N1 << " ; "
-				 << "t= " << j + 1 << " / " << N2 << " ;\t" << counter << " / " << N
-				 << "\t" <<(double)counter/N <<endl;
 
 
-			//const Cplx result = GrepEta_l( 48.0*M_PI/97.0, st);
-			const Cplx result = Grep_l(st); //- G0(st);
+			const Cplx result = 2 * M_PI * GrepEta_l(0, st);
+			//const Cplx result = Grep_l(st); //- G0(st);
 			//cout << result << endl;
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
@@ -112,6 +108,14 @@ void Fourier2D() {
 			//double lambda = 1.0;
 			//const Cplx result = GrepLambda(lambda, st);
 
+
+			++counter;
+			cout << "x= " << i + 1 << " / " << N1 << ";\t"
+				 << "t= " << j + 1 << " / " << N2 << ";\t"
+				 << "Grep= " << result << ";\t"
+				 << counter << " / " << N
+				 << "\t" <<(double)counter/N <<endl;
+			terminate();
 
 			//Here I isolate vicinity of 0 into 4 regions
 			if (t2[j] <= 0) { 						// (-T: -truncation]

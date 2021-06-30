@@ -2,7 +2,7 @@
 
 #include <complex>
 #include <utility>
-#include <stdexcept>
+//#include <stdexcept>
 #include <string>
 #include "Faddeeva.hh"
 #include <boost/math/quadrature/gauss.hpp>
@@ -20,17 +20,24 @@ const Cplx Cplx_i = Cplx(0,1);
 const double MASS = 1.0;
 const double B_BETA = 100;
 const double RHO = 0.5;
-const double MAGN_FIELD = -100;
+const double MAGN_FIELD = -5.;
+
+
+
+// 15 (-0.000856204,-0.00104287)
+// 31 (-0.000856204,-0.00104287)
+// 61 (-0.000856204,-0.00104287)
 
 
 const size_t GAUSS_RANK = 60;
-const size_t GAUSS_RANK_l = 60; // Use only ODD rank
+const size_t GAUSS_RANK_l = 60; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
+const size_t GAUSS_INTEGRATION = 31; // Use only ODD rank // Precomputed 15, 31, 41, 51 and 61
 
 
 //const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 const gauss_kronrod<double, GAUSS_RANK> g; // Precomputed 15, 31, 41, 51 and 61
 const gauss<double, GAUSS_RANK_l> g_l; //7, 15, 20, 25 and 30
-
+const gauss_kronrod<double, GAUSS_INTEGRATION> g_integration; // Precomputed 15, 31, 41, 51 and 61
 
 
 struct T_time {
