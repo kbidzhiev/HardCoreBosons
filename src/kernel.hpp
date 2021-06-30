@@ -22,6 +22,7 @@ const double B_BETA = 100;
 const double RHO = 0.5;
 const double MAGN_FIELD = 0.;
 
+// product of MAGN_FIELD * B_BETA should be less than 700
 
 
 // 15 (-0.000856204,-0.00104287)

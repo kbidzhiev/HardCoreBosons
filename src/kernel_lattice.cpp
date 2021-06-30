@@ -31,7 +31,7 @@ double Tau_l(Q_momenta q_momenta,  SpaceTime st){//verified
 
 double Theta_l(Q_momenta q_momenta){//verified
 	double result = exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l()));
-	result += 2 * cosh(B_BETA * MAGN_FIELD);
+	result += 2 * cosh(B_BETA * MAGN_FIELD); // cosh (710.5) gives overflow !
 	result = 1./result;
 	result *= exp(-B_BETA * MAGN_FIELD);
 	return result;
