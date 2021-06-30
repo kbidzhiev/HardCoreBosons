@@ -222,7 +222,7 @@ pair <Cplx, Cplx> Determinants_l(double eta, SpaceTime st){
 Cplx GrepEta_l(double eta,  SpaceTime st){
 	auto [detq,detr] = Determinants_l(eta, st);
 	detq *= G_l(st) - 1.0;
-	return exp(Cplx_i * st.t * (Mu_chempot() - MAGN_FIELD)) * (detq + detr);
+	return exp(Cplx_i * st.t * (Mu_chempot_l() - MAGN_FIELD)) * (detq + detr);
 }
 
 Cplx Grep_l(SpaceTime st){
