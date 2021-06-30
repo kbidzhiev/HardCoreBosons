@@ -99,8 +99,8 @@ void Fourier2D() {
 
 
 
-			const Cplx result = 2 * M_PI * GrepEta_l(0, st);
-			//const Cplx result = Grep_l(st); //- G0(st);
+			//const Cplx result = 2 * M_PI * GrepEta_l(0, st);
+			const Cplx result = Grep_l(st); //- G0(st);
 			//cout << result << endl;
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
@@ -125,14 +125,14 @@ void Fourier2D() {
 			}
 
 
-			auto Positive = [&]() {
-				//Here I isolate vicinity of 0 into 4 regions
-				if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
-					data[i * N2 + j] = 0;  //conj(tmp); // conj(tmp)
-				} else {									// [truncation: T)
-					data[i * N2 + j] = result;
-				}
-			};
+//			auto Positive = [&]() {
+//				//Here I isolate vicinity of 0 into 4 regions
+//				if (t2[j] >= 0 && t2[j] < truncation) { //[0: //truncation)
+//					data[i * N2 + j] = 0;  //conj(tmp); // conj(tmp)
+//				} else {									// [truncation: T)
+//					data[i * N2 + j] = result;
+//				}
+//			};
 
 
 		}
