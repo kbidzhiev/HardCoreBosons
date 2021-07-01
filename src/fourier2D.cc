@@ -99,7 +99,7 @@ void Fourier2D() {
 
 
 
-			const Cplx result = 2 * M_PI * GrepEta_l(0, st);
+			const Cplx result = 2 * M_PI * GrepEta_l(-M_PI * 0.5, st);
 			//const Cplx result = Grep_l(st); //- G0(st);
 			//cout << result << endl;
 			//const Cplx result = Gauss(st);
