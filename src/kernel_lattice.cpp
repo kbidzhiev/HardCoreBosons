@@ -22,7 +22,7 @@ double Mu_chempot_l(){
 }
 
 double Energy_l(Q_momenta q_momenta){//verified
-	return -2.0 * cos(q_momenta.value) ;
+	return -2.0 * cos(q_momenta.value);
 }
 
 double Tau_l(Q_momenta q_momenta,  SpaceTime st){//verified
@@ -30,11 +30,20 @@ double Tau_l(Q_momenta q_momenta,  SpaceTime st){//verified
 }
 
 double Theta_l(Q_momenta q_momenta){//verified
-	double result = exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l()));
-	result += 2 * cosh(B_BETA * MAGN_FIELD); // cosh (710.5) gives overflow !
-	result = 1./result;
-	result *= exp(-B_BETA * MAGN_FIELD);
-	return result;
+
+	if (MAGN_FIELD < -1){
+		return 1;
+	}
+	// exp (710.5) gives overflow and exp(-700) is underflow!
+	double result = 1.0 + exp(2 * B_BETA * MAGN_FIELD)
+			+ exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l() + MAGN_FIELD));
+	return 1./result;
+
+//	double result = exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l()));
+//	result += 2 * cosh(B_BETA * MAGN_FIELD); // cosh (710.5) gives overflow !
+//	result = 1./result;
+//	result *= exp(-B_BETA * MAGN_FIELD);
+//	return result;
 }
 
 Cplx Eminus_l(Q_momenta q_momenta,  SpaceTime st){//verified
@@ -86,6 +95,10 @@ Cplx G_l (SpaceTime st){ //verified
 }
 
 double Gamma_l(){
+	if (MAGN_FIELD < -1){
+		return 1;
+	}
+
 	return 1.0 + exp(2 * MAGN_FIELD * B_BETA);
 }
 

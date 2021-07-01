@@ -20,7 +20,7 @@ const Cplx Cplx_i = Cplx(0,1);
 const double MASS = 1.0;
 const double B_BETA = 100;
 const double RHO = 0.5;
-const double MAGN_FIELD = 0.;
+const double MAGN_FIELD = -2.;
 
 // product of MAGN_FIELD * B_BETA should be less than 700
 
@@ -31,7 +31,7 @@ const double MAGN_FIELD = 0.;
 
 
 const size_t GAUSS_RANK = 60;
-const size_t GAUSS_RANK_l = 80; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
+const size_t GAUSS_RANK_l = 60; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
 /*
  * increasing of GAUSS_RANK_l improves GrepEta_l(eta, spacetime).
  * for low GAUSS_RANK_l profiles for large (x,t) looks periodic
