@@ -81,8 +81,9 @@ void Fourier2D() {
 
 
 #pragma omp parallel for num_threads(omp_get_num_procs()) collapse(2)
-	for (size_t j = 0; j < N2; ++j) {
-		for (size_t i = 0; i < N1; ++i) {
+	for (size_t i = 0; i < N1; ++i) {
+		for (size_t j = 0; j < N2; ++j) {
+
 
 
 //#pragma omp parallel for num_threads(omp_get_num_procs())
