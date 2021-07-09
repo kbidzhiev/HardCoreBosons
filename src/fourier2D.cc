@@ -50,7 +50,7 @@ Cplx Asymptotics (SpaceTime st) {
 void Fourier2D() {
 
 	size_t N1 = 30;
-	size_t N2 = 100;
+	size_t N2 = 60;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
