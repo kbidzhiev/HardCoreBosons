@@ -20,7 +20,7 @@ const Cplx Cplx_i = Cplx(0,1);
 const double MASS = 1.0;
 const double B_BETA = 100;
 const double RHO = 0.5;
-const double MAGN_FIELD = -2.;
+const double MAGN_FIELD = 0.;
 
 // product of MAGN_FIELD * B_BETA should be less than 700
 
