@@ -37,7 +37,7 @@ const size_t GAUSS_RANK_l = 30; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
  * for low GAUSS_RANK_l profiles for large (x,t) looks periodic
  *
  * */
-const size_t GAUSS_INTEGRATION = 31; // Use only ODD rank // Precomputed 15, 31, 41, 51 and 61
+const size_t GAUSS_INTEGRATION = 41; // Use only ODD rank // Precomputed 15, 31, 41, 51 and 61
 
 //const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 const gauss_kronrod<double, GAUSS_RANK> g; // Precomputed 15, 31, 41, 51 and 61
