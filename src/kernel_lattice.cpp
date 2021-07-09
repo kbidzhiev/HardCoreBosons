@@ -30,9 +30,10 @@ double Tau_l(Q_momenta q_momenta,  SpaceTime st){//verified
 }
 
 double Theta_l(Q_momenta q_momenta){//verified
+	return 1.0;
 
-	double result = exp(Energy_l(q_momenta)-Mu_chempot_l()) + 1.0;
-	return 1./result;
+//	double result = exp(Energy_l(q_momenta)-Mu_chempot_l()) + 1.0;
+//	return 1./result;
 
 
 //	if (MAGN_FIELD < -1){
