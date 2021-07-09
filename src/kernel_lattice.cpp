@@ -31,13 +31,17 @@ double Tau_l(Q_momenta q_momenta,  SpaceTime st){//verified
 
 double Theta_l(Q_momenta q_momenta){//verified
 
-	if (MAGN_FIELD < -1){
-		return 1;
-	}
-	// exp (710.5) gives overflow and exp(-700) is underflow!
-	double result = 1.0 + exp(2 * B_BETA * MAGN_FIELD)
-			+ exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l() + MAGN_FIELD));
+	double result = exp(Energy_l(q_momenta)-Mu_chempot_l()) + 1.0;
 	return 1./result;
+
+
+//	if (MAGN_FIELD < -1){
+//		return 1;
+//	}
+//	// exp (710.5) gives overflow and exp(-700) is underflow!
+//	double result = 1.0 + exp(2 * B_BETA * MAGN_FIELD)
+//			+ exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l() + MAGN_FIELD));
+//	return 1./result;
 
 //	double result = exp(B_BETA * (Energy_l(q_momenta) - Mu_chempot_l()));
 //	result += 2 * cosh(B_BETA * MAGN_FIELD); // cosh (710.5) gives overflow !
@@ -95,18 +99,21 @@ Cplx G_l (SpaceTime st){ //verified
 }
 
 double Gamma_l(){
-	if (MAGN_FIELD < -1){
-		return 1;
-	}
-
-	return 1.0 + exp(2 * MAGN_FIELD * B_BETA);
+	return 1.0;
+//	if (MAGN_FIELD < -1){
+//		return 1;
+//	}
+//
+//	return 1.0 + exp(2 * MAGN_FIELD * B_BETA);
 }
 
 double F_l(double eta){//verified
 	// I've found a simpler form
-	double result = Gamma_l() * Gamma_l() - 1.0;
-	result /= Gamma_l() * Gamma_l() + 1.0 - 2.0 * Gamma_l() * cos(eta);
-	return result;
+
+	return 1.0;
+//	double result = Gamma_l() * Gamma_l() - 1.0;
+//	result /= Gamma_l() * Gamma_l() + 1.0 - 2.0 * Gamma_l() * cos(eta);
+//	return result;
 }
 
 
