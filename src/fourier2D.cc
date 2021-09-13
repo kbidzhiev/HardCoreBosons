@@ -344,7 +344,7 @@ void Gp0t() {
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 
 	double xmax = 20.0;
-	double timemax = 10.;
+	double timemax = 20.;
 	for (double time = 0.0; time < timemax; time += 1.0) {
 		complex<double> result = 0;
 #pragma omp parallel for num_threads(omp_get_num_procs())
