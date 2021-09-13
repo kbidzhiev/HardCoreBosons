@@ -143,7 +143,7 @@ int main() {
 
 	//Fourier1D();
 	//Fourier2D();
-	Gp0t();
+	Gpt();
 	//foo();
 //	double eta = 1.0;
 //	Q_momenta q(0.7496442820045472);

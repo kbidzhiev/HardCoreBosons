@@ -279,26 +279,36 @@ void Gpt() {
 	size_t N = 100;
 	dcvector data(N);
 	dcvector data_fft(N);
-	dvector t(N);
+	dvector x(N);
 	dvector f(N);
 	// Save
-	std::ofstream fh1;
-	std::ofstream fh2;
+	std::ofstream fh1, fh2, gpt_strm;
 	fh1.open("Data/Gp/Gxt.dat");
 	fh2.open("Data/Gp/Gpt.dat");
+	gpt_strm.open("Data/Gp/Gp0t.dat")
 	fh1 << "# \tx \tRe[f(x)] \tIm[f(x)]\n";
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
+	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
 	double xmax = 10.0;
 	double timemax = 20.;
-	for (double time = 0.0; time < timemax; time += 0.1) {
+	for (double time = 0.0; time < timemax; time += 1.0) {
+//		for (size_t i = 0; i < N; ++i) {
+//			t[i] = i * xmax / N - xmax / 2;
+//			SpaceTime st(X_coordinate(t[i]), T_time(time));
+//			data[i] = time >= 0.1 ? Grep(st) : 0;    //sin(w1*t[i]) + sin(w2*t[i]);
+//			cout << "i = " << i << " / " << N
+//					<<" time = " << time << " / " << timemax
+//					<< endl;
+		complex<double> result = 0;
+#pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
-			t[i] = i * xmax / N - xmax / 2;
-			SpaceTime st(X_coordinate(t[i]), T_time(time));
-			data[i] = time >= 0.1 ? Grep(st) : 0;    //sin(w1*t[i]) + sin(w2*t[i]);
-			cout << "i = " << i << " / " << N
-					<<" time = " << time << " / " << timemax
-					<< endl;
+			x[i] = i * xmax / N - xmax / 2;
+			SpaceTime st(X_coordinate (x[i]), T_time (time));
+			data[i] = time > 0 ? Grep(st) : 0;
+			result += data[i];
+			cout << "i = " << i << " / " << N << " time = " << time << " / "
+					<< timemax << endl;
 		}
 		FFT fft(N, xmax);
 		fft.fft(data, data_fft);
@@ -306,7 +316,7 @@ void Gpt() {
 		fft.shift_freq(f, data_fft);
 
 
-		int i = N / 2 -1;
+		int i = N / 2 -1; // this index corresponds to p = 0;
 		fh1 << time << " \t";
 		fh1 << data[i].real() << "\t" << data[i].imag() << endl;
 		fh2 << time << " \t";
@@ -314,6 +324,11 @@ void Gpt() {
 				<< data_fft[i].imag() * 2 * xmax << "\t"
 				<< f[i]/ (2 * M_PI)
 				<< endl;
+		gpt_strm << time << "\t"
+				<< data_fft[i].real() * 2 * xmax << " \t"
+				<< data_fft[i].imag() * 2 * xmax << "\t"
+				<< real(result) * 2 / (N ) << " \t"
+				<< imag(result) * 2 / (N) << endl;
 	}
 
 //	for (size_t i = 0; i < N; ++i) {
