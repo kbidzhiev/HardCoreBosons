@@ -331,7 +331,7 @@ void Gpt() {
 
 
 void Gp0t() {
-	size_t N = 100;
+	size_t N = 400;
 	dcvector data(N);
 	dvector x(N);
 	dvector f(N);
