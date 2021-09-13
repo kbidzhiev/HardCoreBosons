@@ -358,7 +358,6 @@ void Gp0t() {
 		}
 
 
-
 		int i = N / 2 -1;
 		fh1 << time << " \t"
 			<< data[i].real() << "\t"
