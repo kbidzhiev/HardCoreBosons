@@ -290,8 +290,8 @@ void Gpt() {
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
-	double xmax = 40.0;
-	double timemax = 30.;
+	double xmax = 60.0;
+	double timemax = 50.;
 	for (double time = 0.0; time < timemax; time += 1.0) {
 //		for (size_t i = 0; i < N; ++i) {
 //			t[i] = i * xmax / N - xmax / 2;
@@ -305,7 +305,8 @@ void Gpt() {
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
 			SpaceTime st(X_coordinate (x[i]), T_time (time));
-			data[i] = time > 0 ? Grep(st) : 0;
+			data[i] = time > 0 ? Grep(st)
+					: Grep(SpaceTime(X_coordinate (x[i]), T_time (time+0.01)));
 			result += data[i];
 			cout << "i = " << i << " / " << N << " time = " << time << " / "
 					<< timemax << endl;
