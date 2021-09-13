@@ -347,6 +347,7 @@ void Gp0t() {
 	double timemax = 10.;
 	for (double time = 0.0; time < timemax; time += 0.1) {
 		complex<double> result = 0;
+#pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
 			SpaceTime st(X_coordinate(x[i]), T_time(time));
