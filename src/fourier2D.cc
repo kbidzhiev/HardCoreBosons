@@ -345,7 +345,7 @@ void Gp0t() {
 
 	double xmax = 20.0;
 	double timemax = 10.;
-	for (double time = 0.0; time < timemax; time += 0.1) {
+	for (double time = 0.0; time < timemax; time += 1.0) {
 		complex<double> result = 0;
 #pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
@@ -364,8 +364,8 @@ void Gp0t() {
 			<< data[i].imag() << endl;
 
 		fh2 << time << " \t"
-			<< real(result) * 2 * xmax << " \t"
-			<< imag(result) * 2 * xmax
+			<< real(result) * 2 / (N * xmax) << " \t"
+			<< imag(result) * 2 / (N * xmax)
 			<< endl;
 	}
 
