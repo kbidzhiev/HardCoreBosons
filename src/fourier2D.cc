@@ -364,8 +364,8 @@ void Gp0t() {
 			<< data[i].imag() << endl;
 
 		fh2 << time << " \t"
-			<< real(result) * 2 / (N * xmax) << " \t"
-			<< imag(result) * 2 / (N * xmax)
+			<< real(result) * 2 / (N ) << " \t"
+			<< imag(result) * 2 / (N)
 			<< endl;
 	}
 
