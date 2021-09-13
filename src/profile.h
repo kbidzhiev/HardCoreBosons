@@ -17,8 +17,8 @@ public:
 	~LogDuration() {
 		auto finish = steady_clock::now();
 		auto dur = finish - start;
-		cerr << message << duration_cast<seconds>(dur).count()
-				<< " s" << endl;
+		cerr << message << duration_cast<minutes>(dur).count()
+				<< " min" << endl;
 	}
 private:
 	string message;
@@ -42,7 +42,7 @@ struct TotalDuration {
 	}
 	~TotalDuration() {
 		ostringstream os;
-		os << message << duration_cast<seconds>(value).count() << " s"
+		os << message << duration_cast<minutes>(value).count() << " min"
 				<< endl;
 		cerr << os.str();
 	}
