@@ -276,7 +276,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 200;
+	size_t N = 400;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
@@ -290,7 +290,7 @@ void Gpt() {
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
-	double xmax = 60.0;
+	double xmax = 80.0;
 	double timemax = 50.;
 	for (double time = 0.0; time < timemax; time += 1.0) {
 //		for (size_t i = 0; i < N; ++i) {
