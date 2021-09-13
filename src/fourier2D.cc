@@ -343,7 +343,7 @@ void Gp0t() {
 	fh1 << "# \tx \tRe[f(x)] \tIm[f(x)]\n";
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 
-	double xmax = 10.0;
+	double xmax = 20.0;
 	double timemax = 10.;
 	for (double time = 0.0; time < timemax; time += 0.1) {
 		complex<double> result = 0;
