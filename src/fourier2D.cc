@@ -293,7 +293,7 @@ void Gpt() {
 
 	double xmax = 80.0;
 	double timemax = 60.;
-	for (double time = 0.001; time < timemax; time *= 1.1) {
+	for (double time = 0.001; time < timemax; time *= 2.0) {
 //		for (size_t i = 0; i < N; ++i) {
 //			t[i] = i * xmax / N - xmax / 2;
 //			SpaceTime st(X_coordinate(t[i]), T_time(time));
