@@ -283,9 +283,9 @@ void Gpt() {
 	dvector f(N);
 	// Save
 	std::ofstream fh1, fh2, gpt_strm;
-	fh1.open("Data/Gp/Gxt.dat");
-	fh2.open("Data/Gp/Gpt.dat");
-	gpt_strm.open("Data/Gp/Gp0t.dat");
+	fh1.open("Gxt.dat");
+	fh2.open("Gpt.dat");
+	gpt_strm.open("Gp0t.dat");
 	fh1 << "# \tx \tRe[f(x)] \tIm[f(x)]\n";
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
