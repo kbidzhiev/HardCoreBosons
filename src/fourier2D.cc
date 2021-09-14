@@ -292,7 +292,7 @@ void Gpt() {
 
 	double xmax = 80.0;
 	double timemax = 50.;
-	for (double time = 0.0; time < timemax; time += 0.1) {
+	for (double time = 0.0; time < timemax; time += 0.01) {
 //		for (size_t i = 0; i < N; ++i) {
 //			t[i] = i * xmax / N - xmax / 2;
 //			SpaceTime st(X_coordinate(t[i]), T_time(time));
@@ -306,7 +306,7 @@ void Gpt() {
 			x[i] = i * xmax / N - xmax / 2;
 			SpaceTime st(X_coordinate (x[i]), T_time (time));
 			data[i] = time > 0 ? Grep(st)
-					: Grep(SpaceTime(X_coordinate (x[i]), T_time (time+0.01)));
+					: Grep(SpaceTime(X_coordinate (x[i]), T_time (time+0.001)));
 			result += data[i];
 			cout << "i = " << i << " / " << N << " time = " << time << " / "
 					<< timemax << endl;
