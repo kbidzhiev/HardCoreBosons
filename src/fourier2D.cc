@@ -291,7 +291,7 @@ void Gpt() {
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
 	double xmax = 80.0;
-	double timemax = 50.;
+	double timemax = 30.;
 	for (double time = 0.0; time < timemax; time += 0.1) {
 //		for (size_t i = 0; i < N; ++i) {
 //			t[i] = i * xmax / N - xmax / 2;
