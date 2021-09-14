@@ -290,6 +290,7 @@ void Gpt() {
 	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
+
 	double xmax = 80.0;
 	double timemax = 60.;
 	for (double time = 0.001; time < timemax; time *= 1.5) {
