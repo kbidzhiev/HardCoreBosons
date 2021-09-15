@@ -276,7 +276,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 10'000;
+	size_t N = 500;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
@@ -294,6 +294,7 @@ void Gpt() {
 
 	double xmax = 80.0;
 	double timemax = 60.;
+	complex<double> jacobian;
 	for (double time = 0.001; time < timemax; time *= 1.2) {
 		fh1 << "\"t=" << time << "\"" << endl;
 
@@ -307,6 +308,8 @@ void Gpt() {
 			SpaceTime st(X_coordinate (x[i] + Cplx_i*x[i]/(1+x[i]*x[i])), T_time (time));
 			data[i] = time > 0 ? Grep(st)
 					: Grep(SpaceTime(X_coordinate (x[i]), T_time (time+0.001)));
+			jacobian = 1 + + Cplx_i*(1-x[i]*x[i])/((1+x[i]*x[i])*(1+x[i]*x[i]));
+			data[i] *= jacobian;
 			result += data[i];
 			cout << "i = " << i << " / " << N << " time = " << time << " / "
 					<< timemax << endl;
