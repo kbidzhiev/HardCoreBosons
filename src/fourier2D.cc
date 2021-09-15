@@ -276,7 +276,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 100;
+	size_t N = 10000;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
