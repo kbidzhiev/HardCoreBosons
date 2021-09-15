@@ -295,7 +295,7 @@ void Gpt() {
 	double xmax = 300.0;
 	double timemax = 1000.;
 	complex<double> jacobian;
-	for (double time = timemax; time > 10; time /= 1.1) {
+	for (double time = timemax; time > 0.1; time /= 1.1) {
 		fh1 << "\"t=" << time << "\"" << endl;
 
 		vector<pair<complex<double>, double>> result_vec;
@@ -306,7 +306,7 @@ void Gpt() {
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
 
-			if(timemax >10){
+			if(timemax >0.1){
 				SpaceTime st(X_coordinate (x[i] ), T_time (time));
 				data[i] = Asymptotics (st);
 			} else {
