@@ -293,9 +293,9 @@ void Gpt() {
 
 
 	double xmax = 300.0;
-	double timemax = 300.;
+	double timemax = 1000.;
 	complex<double> jacobian;
-	for (double time = timemax; time > 0.001; time /= 1.1) {
+	for (double time = timemax; time > 10; time /= 1.1) {
 		fh1 << "\"t=" << time << "\"" << endl;
 
 		vector<pair<complex<double>, double>> result_vec;
@@ -305,11 +305,20 @@ void Gpt() {
 #pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
-			SpaceTime st(X_coordinate (x[i] + Cplx_i*x[i]/(1+x[i]*x[i])), T_time (time));
-			data[i] = time > 0 ? Grep(st)
-					: Grep(SpaceTime(X_coordinate (x[i]), T_time (time+0.001)));
-			jacobian = 1.0 + Cplx_i*(1-x[i]*x[i])/((1+x[i]*x[i])*(1+x[i]*x[i]));
-			data[i] *= jacobian;
+
+			if(timemax >10){
+				SpaceTime st(X_coordinate (x[i] ), T_time (time));
+				data[i] = Asymptotics (st);
+			} else {
+
+				SpaceTime st(
+						X_coordinate(x[i] + Cplx_i * x[i] / (1 + x[i] * x[i])), T_time(time));
+				data[i] = time > 0 ?
+							Grep(st) :
+							Grep(SpaceTime(X_coordinate(x[i]),T_time(time + 0.001)));
+				jacobian = 1.0 + Cplx_i * (1 - x[i] * x[i]) / ((1 + x[i] * x[i]) * (1 + x[i] * x[i]));
+				data[i] *= jacobian;
+			}
 			result += data[i];
 			cout << "i = " << i << " / " << N << " time = " << time << " / "
 					<< timemax << endl;
