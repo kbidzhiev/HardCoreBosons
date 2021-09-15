@@ -293,7 +293,7 @@ void Gpt() {
 
 
 	double xmax = 120.0;
-	double timemax = 80.;
+	double timemax = 100.;
 	complex<double> jacobian;
 	for (double time = 0.01; time < timemax; time *= 2.0) {
 		fh1 << "\"t=" << time << "\"" << endl;
