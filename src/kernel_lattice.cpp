@@ -25,7 +25,7 @@ double Energy_l(Q_momenta q_momenta){//verified
 	return -2.0 * cos(q_momenta.value);
 }
 
-double Tau_l(Q_momenta q_momenta,  SpaceTime st){//verified
+complex<double> Tau_l(Q_momenta q_momenta,  SpaceTime st){//verified
 	return st.t * Energy_l(q_momenta) - st.x * q_momenta.value;
 }
 

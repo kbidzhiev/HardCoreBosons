@@ -57,8 +57,8 @@ struct T_time {
 };
 
 struct X_coordinate{
-	double value;
-	explicit X_coordinate(double new_value)
+	complex<double> value;
+	explicit X_coordinate(complex<double> new_value)
 		:value{new_value}{}
 };
 
@@ -69,7 +69,7 @@ struct Q_momenta{
 };
 
 struct SpaceTime{
-	double x;
+	complex<double> x;
 	double t;
 	SpaceTime(X_coordinate x_coord, T_time t_time)
 		:x{x_coord.value}
@@ -82,7 +82,7 @@ struct SpaceTime{
 double KF();
 double Mu_chempot();
 double Energy(Q_momenta q_momenta);
-double Tau(Q_momenta q_momenta,  SpaceTime st);
+complex<double> Tau(Q_momenta q_momenta,  SpaceTime st);
 double Theta (Q_momenta q_momenta);
 Cplx Eminus (Q_momenta q_momenta,  SpaceTime st);
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st);
@@ -94,7 +94,7 @@ Cplx Grep(SpaceTime st);
 
 /////////// Lattice version ///////////
 double Energy_l(Q_momenta q_momenta);
-double Tau_l(Q_momenta q_momenta,  SpaceTime st);
+complex<double> Tau_l(Q_momenta q_momenta,  SpaceTime st);
 double Theta_l(Q_momenta q_momenta);
 Cplx Eminus_l (Q_momenta q_momenta,  SpaceTime st);
 Cplx Eplus_l (Q_momenta q_momenta,  SpaceTime st);

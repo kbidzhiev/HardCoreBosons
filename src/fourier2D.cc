@@ -19,12 +19,12 @@ using namespace std;
 
 double EF = KF() * KF() / 2.0 ; // fermi energy
 
-double Box (SpaceTime st){
-	if ( -0.5 < st.x && st.x < 0.5
-			&& -0.5 < st.t && st.t < 0.5 ){
-		return 1;
-	} else return 0;
-}
+//double Box (SpaceTime st){
+//	if ( -0.5 < st.x && st.x < 0.5
+//			&& -0.5 < st.t && st.t < 0.5 ){
+//		return 1;
+//	} else return 0;
+//}
 
 Cplx Gauss (SpaceTime st){
 	return exp(-0.5*(st.x*st.x + st.t*st.t) );
@@ -32,7 +32,7 @@ Cplx Gauss (SpaceTime st){
 
 
 Cplx Asymptotics (SpaceTime st) {
-	double x = st.x;
+	complex<double> x = st.x;
 	double t = st.t;
 
 	x *= KF();
@@ -276,7 +276,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 1'000'000;
+	size_t N = 1'000;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
@@ -295,23 +295,16 @@ void Gpt() {
 	double xmax = 80.0;
 	double timemax = 1.;
 	for (double time = 0.001; time < timemax; time *= 1.2) {
-//		for (size_t i = 0; i < N; ++i) {
-//			t[i] = i * xmax / N - xmax / 2;
-//			SpaceTime st(X_coordinate(t[i]), T_time(time));
-//			data[i] = time >= 0.1 ? Grep(st) : 0;    //sin(w1*t[i]) + sin(w2*t[i]);
-//			cout << "i = " << i << " / " << N
-//					<<" time = " << time << " / " << timemax
-//					<< endl;
-
 		fh1 << "\"t=" << time << "\"" << endl;
-		complex<double> result = 0;
+
 		vector<pair<complex<double>, double>> result_vec;
 		result_vec.reserve(N);
 
+		complex<double> result = 0;
 #pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
-			SpaceTime st(X_coordinate (x[i]), T_time (time));
+			SpaceTime st(X_coordinate (x[i] + Cplx_i*x[i]/(1+x[i]*x[i])), T_time (time));
 			data[i] = time > 0 ? Grep(st)
 					: Grep(SpaceTime(X_coordinate (x[i]), T_time (time+0.001)));
 			result += data[i];
@@ -337,9 +330,6 @@ void Gpt() {
 
 
 		int i = N / 2 -1; // this index corresponds to p = 0;
-//		fh1 << time << " \t";
-//		fh1 << data[i].real() << "\t" << data[i].imag() << endl;
-
 		fh2 << time << " \t";
 		fh2 << data_fft[i].real() * 2 * xmax << " \t"
 				<< data_fft[i].imag() * 2 * xmax << "\t"
@@ -352,13 +342,6 @@ void Gpt() {
 				<< imag(result) * 2 / (N) << endl;
 	}
 
-//	for (size_t i = 0; i < N; ++i) {
-//		fh1 << t[i] << " \t";
-//		fh1 << data[i].real() << "\t" << data[i].imag() << "\n";
-//		fh2 << f[i] / (2 * M_PI) << " \t";
-//		fh2 << data_fft[i].real() * 2 * xmax << " \t"
-//				<< data_fft[i].imag() * 2 * xmax << "\n";
-//	}
 	fh1.close();
 	fh2.close();
 

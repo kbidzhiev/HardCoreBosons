@@ -27,7 +27,7 @@ double Energy(Q_momenta q_momenta){
 	return (q_momenta.value) * (q_momenta.value) * 0.5 / MASS ;
 }
 
-double Tau(Q_momenta q_momenta,  SpaceTime spacetime){
+complex<double> Tau(Q_momenta q_momenta,  SpaceTime spacetime){
 	return spacetime.t * Energy(q_momenta) - spacetime.x * q_momenta.value;
 }
 
