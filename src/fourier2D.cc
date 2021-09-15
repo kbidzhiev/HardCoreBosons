@@ -295,7 +295,7 @@ void Gpt() {
 	double xmax = 120.0;
 	double timemax = 200.;
 	complex<double> jacobian;
-	for (double time = timemax; time < 0.01; time /= 1.5) {
+	for (double time = timemax; time > 0.01; time /= 1.5) {
 		fh1 << "\"t=" << time << "\"" << endl;
 
 		vector<pair<complex<double>, double>> result_vec;
