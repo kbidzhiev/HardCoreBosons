@@ -30,8 +30,8 @@ const double MAGN_FIELD = 0.;
 // 61 (-0.000856204,-0.00104287)
 
 
-const size_t GAUSS_RANK = 60;
-const size_t GAUSS_RANK_l = 60; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
+const size_t GAUSS_RANK = 20;
+const size_t GAUSS_RANK_l = 20; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
 /*
  * increasing of GAUSS_RANK_l improves GrepEta_l(eta, spacetime).
  * for low GAUSS_RANK_l profiles for large (x,t) looks periodic
