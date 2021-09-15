@@ -276,7 +276,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 1'000;
+	size_t N = 10'000;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
@@ -293,7 +293,7 @@ void Gpt() {
 
 
 	double xmax = 80.0;
-	double timemax = 1.;
+	double timemax = 60.;
 	for (double time = 0.001; time < timemax; time *= 1.2) {
 		fh1 << "\"t=" << time << "\"" << endl;
 
