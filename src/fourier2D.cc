@@ -292,7 +292,7 @@ void Gpt() {
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
 
-	double xmax = 300.0;
+	double xmax = 1000.0;
 	double timemax = 1000.;
 	complex<double> jacobian;
 	for (double time = timemax; time > 0.00001; time /= 1.1) {
