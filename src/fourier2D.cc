@@ -305,6 +305,9 @@ void Gpt() {
 
 		fh1 << "\"t=" << time << "\"" << endl;
 		complex<double> result = 0;
+		vector<pair<complex<double>, double>> result_vec;
+		result_vec.reserve(N);
+
 #pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
@@ -314,12 +317,18 @@ void Gpt() {
 			result += data[i];
 			cout << "i = " << i << " / " << N << " time = " << time << " / "
 					<< timemax << endl;
+			result_vec[i] = {data[i], time};
 
-			fh1 << x[i] << " \t"
-					<< data[i].real() << "\t"
-					<< data[i].imag() << "\t"
-					<< time << "\n";
+
 		}
+		for (size_t i = 0; i < N; ++i) {
+			x[i] = i * xmax / N - xmax / 2;
+			fh1 << x[i] << " \t"
+					<< result_vec[i].first.real()<< "\t"  //data[i].real()
+					<< result_vec[i].first.imag() << "\t"
+					<< result_vec[i].second << "\n";
+		}
+
 		fh1 << "\n\n" << endl;
 		FFT fft(N, xmax);
 		fft.fft(data, data_fft);
