@@ -276,7 +276,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 1000;
+	size_t N = 500;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
@@ -292,7 +292,7 @@ void Gpt() {
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
 
-	double xmax = 120.0;
+	double xmax = 200.0;
 	double timemax = 200.;
 	complex<double> jacobian;
 	for (double time = timemax; time > 0.01; time /= 1.5) {
