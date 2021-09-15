@@ -284,6 +284,7 @@ void Gpt() {
 	// Save
 	std::ofstream fh1, fh2, gpt_strm;
 	fh1.open("Gxt.dat");
+	fh1.precision(15);
 	fh2.open("Gpt.dat");
 	gpt_strm.open("Gp0t.dat");
 	fh1 << "# x \tRe[f(x)] \tIm[f(x)] \t time \n";
@@ -301,6 +302,8 @@ void Gpt() {
 //			cout << "i = " << i << " / " << N
 //					<<" time = " << time << " / " << timemax
 //					<< endl;
+
+		fh1 << "\"t=" << time << "\"" << endl;
 		complex<double> result = 0;
 #pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
