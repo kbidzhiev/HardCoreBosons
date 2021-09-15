@@ -308,7 +308,7 @@ void Gpt() {
 			SpaceTime st(X_coordinate (x[i] + Cplx_i*x[i]/(1+x[i]*x[i])), T_time (time));
 			data[i] = time > 0 ? Grep(st)
 					: Grep(SpaceTime(X_coordinate (x[i]), T_time (time+0.001)));
-			jacobian = 1 + + Cplx_i*(1-x[i]*x[i])/((1+x[i]*x[i])*(1+x[i]*x[i]));
+			jacobian = 1 + Cplx_i*(1-x[i]*x[i])/((1+x[i]*x[i])*(1+x[i]*x[i]));
 			data[i] *= jacobian;
 			result += data[i];
 			cout << "i = " << i << " / " << N << " time = " << time << " / "
