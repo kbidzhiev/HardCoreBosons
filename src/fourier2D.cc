@@ -35,8 +35,8 @@ Cplx Asymptotics (SpaceTime st) {
 	complex<double> x = st.x;
 	double t = st.t;
 
-	x *= KF();
-	t *= EF;
+	//x *= KF();
+	//t *= EF;
 
 	Cplx log_term = log(2 * t) + Cplx_i * M_PI * 0.5;
 	Cplx result = -0.5 * x * x / log_term - Cplx_i * 0.5 * t;
@@ -307,12 +307,11 @@ void Gpt() {
 			x[i] = i * xmax / N - xmax / 2;
 
 			if(timemax >0.01){
-				SpaceTime st(X_coordinate (x[i] ), T_time (time));
+				SpaceTime st(X_coordinate(x[i]), T_time(time));
 				data[i] = Asymptotics (st);
 			} else {
 
-				SpaceTime st(
-						X_coordinate(x[i] + Cplx_i * x[i] / (1 + x[i] * x[i])), T_time(time));
+				SpaceTime st(X_coordinate(x[i] + Cplx_i * x[i] / (1 + x[i] * x[i])), T_time(time));
 				data[i] = time > 0 ?
 							Grep(st) :
 							Grep(SpaceTime(X_coordinate(x[i]),T_time(time + 0.001)));
