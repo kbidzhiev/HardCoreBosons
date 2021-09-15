@@ -276,7 +276,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 1000;
+	size_t N = 100;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
@@ -286,8 +286,8 @@ void Gpt() {
 	fh1.open("Gxt.dat");
 	fh2.open("Gpt.dat");
 	gpt_strm.open("Gp0t.dat");
-	fh1 << "# \tx \tRe[f(x)] \tIm[f(x)]\n";
-	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
+	fh1 << "# x \tRe[f(x)] \tIm[f(x)] \t time \n";
+	fh2 << "# f \tRe[f(w)] \tIm[f(w)] \t time \n";
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
 
@@ -311,7 +311,13 @@ void Gpt() {
 			result += data[i];
 			cout << "i = " << i << " / " << N << " time = " << time << " / "
 					<< timemax << endl;
+
+			fh1 << x[i] << " \t"
+					<< data[i].real() << "\t"
+					<< data[i].imag() << "\t"
+					<< time << "\n";
 		}
+		fh1 << "\n\n" << endl;
 		FFT fft(N, xmax);
 		fft.fft(data, data_fft);
 		fft.freq(f);
@@ -319,8 +325,9 @@ void Gpt() {
 
 
 		int i = N / 2 -1; // this index corresponds to p = 0;
-		fh1 << time << " \t";
-		fh1 << data[i].real() << "\t" << data[i].imag() << endl;
+//		fh1 << time << " \t";
+//		fh1 << data[i].real() << "\t" << data[i].imag() << endl;
+
 		fh2 << time << " \t";
 		fh2 << data_fft[i].real() * 2 * xmax << " \t"
 				<< data_fft[i].imag() * 2 * xmax << "\t"
