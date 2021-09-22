@@ -1,0 +1,32 @@
+
+
+*******************************************************************************
+Thu Mar 11 11:06:34 2021
+
+
+FIT:    data read from "coeff.dat" u 1:2
+        format = x:z
+        x range restricted to [* : 100.000]
+        #datapoints = 5
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = k*x+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   k             b            
+   0 1.2864870003e+04   0.00e+00  3.55e+01    1.000000e+00   1.000000e+00
+   6 0.0000000000e+00  -inf       3.55e-05    5.010000e-04   2.505000e-01
+
+After 6 iterations the fit converged.
+final sum of squares of residuals : 0
+abs. change during last iteration : -7.55911e-21
+
+
+Hmmmm.... Sum of squared residuals is zero. Can't compute errors.
+
+Final set of parameters 
+======================= 
+
+k               = 0.000501       
+b               = 0.2505         
