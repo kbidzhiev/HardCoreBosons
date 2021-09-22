@@ -289,7 +289,7 @@ void Gpt() {
 	gpt_strm.open("Data/Gp0t.dat");
 	fh1 << "# x \tRe[f(x)] \tIm[f(x)] \t time \n";
 	fh2 << "# f \tRe[f(w)] \tIm[f(w)] \t time \n";
-	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
+	gpt_strm << "# t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
 
 	double xmax = 100;
