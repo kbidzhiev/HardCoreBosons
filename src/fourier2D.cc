@@ -302,7 +302,7 @@ void Gpt() {
 		result_vec.reserve(N);
 
 		complex<double> result = 0;
-//#pragma omp parallel for num_threads(omp_get_num_procs())
+#pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
 
