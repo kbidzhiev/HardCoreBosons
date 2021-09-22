@@ -146,15 +146,14 @@ void Integrating(){
 	double error ;
 	double kron = gauss_kronrod<double, 11>::integrate(f, -50, 50,  10, 1e-9, &error);
 	double g = gauss<double, 11>::integrate(f, -50, 50);
-
-	//double Q = gauss<double, 7>::integrate(f, 0, 1);
-
 	cout << kron << "\n" << g << endl;
-
 }
 
 int main() {
 	LOG_DURATION("Total");
+	//Integrating();// verifies diff on answers btw Gauss and Gauss_Kronrod
+
+
 
 	//LambdaCurve();
 	//CorrelatorCurve();
@@ -163,7 +162,7 @@ int main() {
 	//TsliceCurve(10.0);//
 	//PV();
 
-	Integrating();
+
 
 	//Fourier1D();
 	//Fourier2D();
