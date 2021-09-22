@@ -276,24 +276,24 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 1000;
+	size_t N = 100;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
 	dvector f(N);
 	// Save
 	std::ofstream fh1, fh2, gpt_strm;
-	fh1.open("Gxt.dat");
+	fh1.open("Data/Gxt.dat");
 	fh1.precision(15);
-	fh2.open("Gpt.dat");
-	gpt_strm.open("Gp0t.dat");
+	fh2.open("Data/Gpt.dat");
+	gpt_strm.open("Data/Gp0t.dat");
 	fh1 << "# x \tRe[f(x)] \tIm[f(x)] \t time \n";
 	fh2 << "# f \tRe[f(w)] \tIm[f(w)] \t time \n";
 	gpt_strm << "t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
 
 
-	double xmax = 1000.0;
-	double timemax = 1000.;
+	double xmax = 100;
+	double timemax = 100;
 	complex<double> jacobian;
 	for (double time = timemax; time > 0.01; time /= 1.1) {
 		fh1 << "\"t=" << time << "\"" << endl;
@@ -306,16 +306,16 @@ void Gpt() {
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
 
-			if(timemax >0.01){
+			if(timemax >0.01 && false){
 				SpaceTime st(X_coordinate(x[i]), T_time(time));
 				data[i] = Asymptotics (st);
 			} else {
 
-				SpaceTime st(X_coordinate(x[i] + Cplx_i * x[i] / (1 + x[i] * x[i])), T_time(time));
+				SpaceTime st(X_coordinate(x[i] + 0.0*Cplx_i * x[i] / (1 + x[i] * x[i])), T_time(time));
 				data[i] = time > 0 ?
 							Grep(st) :
 							Grep(SpaceTime(X_coordinate(x[i]),T_time(time + 0.001)));
-				jacobian = 1.0 + Cplx_i * (1 - x[i] * x[i]) / ((1 + x[i] * x[i]) * (1 + x[i] * x[i]));
+				jacobian = 1.0; //+ Cplx_i * (1 - x[i] * x[i]) / ((1 + x[i] * x[i]) * (1 + x[i] * x[i]));
 				data[i] *= jacobian;
 			}
 			result += data[i];

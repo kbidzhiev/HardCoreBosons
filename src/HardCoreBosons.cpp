@@ -86,12 +86,14 @@ void TsliceCurve(double time_){
 	tslice.open("Data/"+filename, mode);
 	tslice.precision(15);
 
-	const double X_LIMITS = 10.0 ;
+	const double X_LIMITS = 5.0 ;
 	const double T_LIMITS = time_;  // Energy(Q_momenta(KF()));
 
 	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += 1) {
 		cout << coordinate << " / " << X_LIMITS  << endl;
-		Cplx result = Grep_l( { X_coordinate(coordinate), T_time(T_LIMITS) });
+		SpaceTime sp = {X_coordinate(coordinate), T_time(T_LIMITS)};
+		//Cplx result = Asymptotics(sp);
+		Cplx result = Grep(sp);
 		tslice << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
 	}
 }
@@ -100,8 +102,9 @@ void XsliceCurve(double x){
 	ofstream xslice; //here I'm defining output streams, i.e. files
 	ios_base::openmode mode;
 	mode = std::ofstream::out; //Erase previous file (if present)
-	string filename = "xslice_" + to_string((int)x) + ".dat";
-	xslice.open(filename, mode);
+	string filename = "xslice_" + to_string((int)x)
+		+ "_" + to_string(GAUSS_RANK) + ".dat";
+	xslice.open("Data/"+filename, mode);
 	xslice.precision(15);
 
 	const double X_LIMITS = x ;
@@ -109,7 +112,9 @@ void XsliceCurve(double x){
 
 	for (double time = 0.25; time < T_LIMITS; time += 0.01) {
 		//xslice << "\"t=" << time << "\"\n";
-		Cplx result = Grep( { X_coordinate(X_LIMITS), T_time(time) });
+		SpaceTime sp = { X_coordinate(X_LIMITS), T_time(time) };
+		//Cplx result = Asymptotics(sp);
+		Cplx result = Grep(sp);
 		xslice << time << "\t" << real(result) << "\t" << imag(result) << endl;
 		cout << "time = " << time << " /" << T_LIMITS << endl;
 	}
@@ -128,6 +133,20 @@ void PV(){
 
 }
 
+void Integrating(){
+	using namespace boost::math::quadrature;
+	auto f=[](const double x){
+		return cos(x);
+	};
+	double error ;
+	double kron = gauss_kronrod<double, 61>::integrate(f, -50, 50,  10, 1e-9, &error);
+	double g = gauss<double, 61>::integrate(f, -50, 50);
+
+	//double Q = gauss<double, 7>::integrate(f, 0, 1);
+
+	cout << kron << "\n" << g << endl;
+
+}
 
 int main() {
 	LOG_DURATION("Total");
@@ -135,15 +154,18 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	//XsliceCurve(0.0); // x = 1;
-	//TsliceCurve(0.0);//5 second
+	//XsliceCurve(0.0); //
+	//TsliceCurve(10.0);//
 	//PV();
 
-
+	Integrating();
 
 	//Fourier1D();
 	//Fourier2D();
-	Gpt();
+
+
+	//USE GPt
+//	Gpt();
 	//foo();
 //	double eta = 1.0;
 //	Q_momenta q(0.7496442820045472);

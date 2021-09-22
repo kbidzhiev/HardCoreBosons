@@ -23,15 +23,12 @@ const double RHO = 0.5;
 const double MAGN_FIELD = 0.;
 
 // product of MAGN_FIELD * B_BETA should be less than 700
+// for avoiding an overflow
 
 
-// 15 (-0.000856204,-0.00104287)
-// 31 (-0.000856204,-0.00104287)
-// 61 (-0.000856204,-0.00104287)
 
-
-const size_t GAUSS_RANK = 100;
-const size_t GAUSS_RANK_l = 100; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
+const size_t GAUSS_RANK = 19;		// Precomputed 15, 31, 41, 51 and 61
+const size_t GAUSS_RANK_l = 10; 	 // Use only EVEN rank
 /*
  * increasing of GAUSS_RANK_l improves GrepEta_l(eta, spacetime).
  * for low GAUSS_RANK_l profiles for large (x,t) looks periodic
@@ -40,7 +37,16 @@ const size_t GAUSS_RANK_l = 100; 	 // Use only EVEN rank //7, 15, 20, 25 and 30
 const size_t GAUSS_INTEGRATION = 31; // Use only ODD rank // Precomputed 15, 31, 41, 51 and 61
 
 //const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
+
+
 const gauss_kronrod<double, GAUSS_RANK> g; // Precomputed 15, 31, 41, 51 and 61
+
+
+//const gauss<double, GAUSS_RANK> g; // Precomputed //7, 15, 20, 25 and 30
+
+
+
+
 const gauss<double, GAUSS_RANK_l> g_l; //7, 15, 20, 25 and 30
 const gauss_kronrod<double, GAUSS_INTEGRATION> g_integration; // Precomputed 15, 31, 41, 51 and 61
 
@@ -113,7 +119,7 @@ Cplx GrepEta_l(double eta,  SpaceTime st);
 Cplx Grep_l(SpaceTime st);
 
 
-
+Cplx Asymptotics(SpaceTime st);
 void Fourier2D();
 void Fourier1D();
 void Gpt();

@@ -8,7 +8,7 @@ TotalDuration mf("MatrixFilling");
 TotalDuration det("Determinant");
 
 //const size_t s = 2 * g.weights().size() ; //Gauss
-const size_t s = 2 * g.weights().size() - 1; //GKrondrod, we always have EVEN number of weights
+const size_t s = 2 * g.weights().size() - 1; //GKrondrod, we always have ODD number of weights
 
 
 using Eigen::MatrixXcd;
@@ -68,10 +68,9 @@ double Weight_G (const size_t i) {
 double Q (const size_t i) {
 	//size_t middle_point = g.abscissa().size() - 1;
 	return i < g.abscissa().size() - 1 ?
-			-KF() * g.abscissa()[g.abscissa().size() - i - 1] :
+			- KF() * g.abscissa()[g.abscissa().size() - i - 1] :
 			KF() * g.abscissa()[i - g.abscissa().size() + 1];
 }
-
 
 double Weight (const size_t i) {
 	//size_t middle_point = g.weights().size() - 1;
@@ -92,14 +91,19 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
 
-
+//	cout << "Weight\tQabscissa\n";
+//	for(int i = 0; i< s; ++i){
+//		cout << Weight(i) <<"\t" << Q(i)<< "\n";
+//	}
+//	cout << endl;
+//	terminate();
 
 	const Cplx first_term_of_PVderivative = - Cplx_i * spacetime.t * 2.0 * M_PI * G0(spacetime) / MASS;
-	{
+
 //#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
 		ADD_DURATION(elements);
-		Q_momenta q_i(Q(i));
+		Q_momenta q_i(Q(i)); //!
 		Cplx tau = Tau (q_i, spacetime);
 		Cplx pv = PrincipalValue(q_i, spacetime);
 		{
@@ -117,7 +121,7 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 		}
 	}
 
-	}
+
 	//time for 2 core proc
 	//avr 2125209 	parallel
 	//avr 31592		consequential
@@ -136,9 +140,9 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 			if (i == j) {
 				v = e_infty_derivative[i] * e_minus[i] * e_minus[i];
 				if(abs(v)< 1e-16){ v = Cplx(0, 0);}
-				V(i, i) = sqrt(Weight(i)) * v * sqrt(Weight(i)) + 1.0;
+				V(i, i) = sqrt(Weight(i)) * v * sqrt(Weight(i)) + 1.0; //!
 
-				W(i, i) = sqrt(Weight(i)) * (v - w) * sqrt(Weight(i)) + 1.0; //new part
+				W(i, i) = sqrt(Weight(i)) * (v - w) * sqrt(Weight(i)) + 1.0; //!
 			} else {
 				v = (e_infty[i] - e_infty[j]) * e_minus[i] * e_minus[j];
 				v /= Q(i) - Q(j);
