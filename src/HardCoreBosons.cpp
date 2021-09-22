@@ -98,7 +98,7 @@ void XsliceCurve(double x){
 
 int main() {
 	LOG_DURATION("Total");
-	UnitTests();
+	//UnitTests();
 	//CorrelatorCurve();
 
 	//Integrating();// verifies diff on answers btw Gauss and Gauss_Kronrod
