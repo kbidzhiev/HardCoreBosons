@@ -19,8 +19,7 @@ double KF(){
 }
 
 double Mu_chempot(){
-	return 0;
-	//return KF()*KF() * 0.5 / MASS;
+	return KF()*KF() * 0.5 / MASS;
 }
 
 double Energy(Q_momenta q_momenta){
@@ -65,14 +64,14 @@ double Weight_G (const size_t i) {
 			KF() * g.weights()[i - g.weights().size()];
 }
 
-double Q (const size_t i) {
+double Q_Kr(const size_t i) {
 	//size_t middle_point = g.abscissa().size() - 1;
 	return i < g.abscissa().size() - 1 ?
 			- KF() * g.abscissa()[g.abscissa().size() - i - 1] :
 			KF() * g.abscissa()[i - g.abscissa().size() + 1];
 }
 
-double Weight (const size_t i) {
+double Weight_Kr(const size_t i) {
 	//size_t middle_point = g.weights().size() - 1;
 	return i < g.weights().size() - 1?
 			KF() * g.weights()[g.weights().size() -1 - i ] :
@@ -91,9 +90,9 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
 
-//	cout << "Weight\tQabscissa\n";
-//	for(int i = 0; i< s; ++i){
-//		cout << Weight(i) <<"\t" << Q(i)<< "\n";
+//	cout << "Weight_Kr\tQabscissa\n";
+//	for(size_t i = 0; i< s; ++i){
+//		cout << Q_Kr(i) <<"\t" << Weight_Kr(i)<< "\n";
 //	}
 //	cout << endl;
 //	terminate();
@@ -103,7 +102,7 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 //#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
 		ADD_DURATION(elements);
-		Q_momenta q_i(Q(i)); //!
+		Q_momenta q_i(Q_Kr(i)); //!
 		Cplx tau = Tau (q_i, spacetime);
 		Cplx pv = PrincipalValue(q_i, spacetime);
 		{
@@ -113,9 +112,9 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 			e_minus[i] = Eminus(q_i, spacetime) ;
 		}
 		{
-			Cplx second_term_of_PVderivative = - Cplx_i * (Q(i) * spacetime.t / MASS - spacetime.x) * pv;
+			Cplx second_term_of_PVderivative = - Cplx_i * (Q_Kr(i) * spacetime.t / MASS - spacetime.x) * pv;
 			Cplx e_inf_der = (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
-			e_inf_der += -Lambda * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q(i) / MASS - spacetime.x);
+			e_inf_der += -Lambda * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
 			e_inf_der *= 1.0 /( Lambda * Lambda + 1.0);
 			e_infty_derivative[i] = e_inf_der;
 		}
@@ -135,20 +134,21 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 			Cplx v;
 			Cplx w = e_infty[i] * e_minus[i] //E_+ = E_infty E_-
 					* e_infty[j] * e_minus[j] ;
+
 			if(abs(w)< 1e-16) {w = Cplx(0, 0);}
-			//W(i, j) = sqrt(Weight(i)) * w * sqrt(Weight(j));
+			//W(i, j) = sqrt(Weight_Kr(i)) * w * sqrt(Weight_Kr(j));
 			if (i == j) {
 				v = e_infty_derivative[i] * e_minus[i] * e_minus[i];
 				if(abs(v)< 1e-16){ v = Cplx(0, 0);}
-				V(i, i) = sqrt(Weight(i)) * v * sqrt(Weight(i)) + 1.0; //!
+				V(i, i) = sqrt(Weight_Kr(i)) * ( v) * sqrt(Weight_Kr(i)) + 1.0; //!
 
-				W(i, i) = sqrt(Weight(i)) * (v - w) * sqrt(Weight(i)) + 1.0; //!
+				W(i, i) = sqrt(Weight_Kr(i)) * (v - w) * sqrt(Weight_Kr(i)) + 1.0; //!
 			} else {
 				v = (e_infty[i] - e_infty[j]) * e_minus[i] * e_minus[j];
-				v /= Q(i) - Q(j);
+				v /= Q_Kr(i) - Q_Kr(j);
 				if(abs(v)< 1e-16){ v = Cplx(0, 0);}
-				V(i, j) = sqrt(Weight(i)) * v * sqrt(Weight(j));
-				W(i, j) = sqrt(Weight(i)) * (v - w) * sqrt(Weight(j)); //new part
+				V(i, j) = sqrt(Weight_Kr(i)) * v * sqrt(Weight_Kr(j));
+				W(i, j) = sqrt(Weight_Kr(i)) * (v - w) * sqrt(Weight_Kr(j)); //new part
 
 				V(j, i) = V(i, j);
 				W(j, i) = W(i, j);
@@ -161,13 +161,15 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 	//142652   consequential
 	//terminate();
 
+	//W = V - W; // this part can be moved to the loop
+	//cout << V - W << endl;
+	//cout << W << endl;
+	//terminate();
 	Cplx detV;
 	Cplx detW;
-	//W = V - W; // this part can be moved to the loop
 	{
 		ADD_DURATION(det);
 		detV = V.determinant();
-
 		detW = W.determinant();
 	}
 
@@ -177,18 +179,12 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 
 Cplx GrepLambda(double Lambda,  SpaceTime st){
 	auto [detv,detw] = Determinants(Lambda, st);
-	Cplx coeff = G0 (st) * 2.0/(Lambda * Lambda + 1.0) ;
+	Cplx coeff = G0(st) * 2.0/(Lambda * Lambda + 1.0) ;
 	detv *= (coeff - 1.0);
 	return detv + detw;
 }
 
 Cplx Grep(SpaceTime st){
-//	auto f = [&](double Lambda){
-//			auto [detv,detw] = Determinants(Lambda, st);
-//			Cplx coeff = G0 (st) * 2.0/(Lambda * Lambda + 1.0) ;
-//			detv *= (coeff - 1.0);
-//			return detv + detw;
-//	};
 	auto f= [&](double Lambda){
 		return GrepLambda(Lambda, st);
 	};
@@ -199,7 +195,7 @@ Cplx Grep(SpaceTime st){
 	 * depth = 10;  time = 4 s;
 	 * depth = 5 ;  time =
 	 * */
-	Cplx result = gauss_kronrod<double, 31>::integrate(f, -50, 50,  10, 1e-9, &error);
+	Cplx result = gauss_kronrod<double, 61>::integrate(f, -100, 100,  10, 1e-9, &error);
 
 	//cout << "error value = " <<  error << endl;
 

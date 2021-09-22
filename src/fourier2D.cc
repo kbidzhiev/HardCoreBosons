@@ -276,7 +276,7 @@ void Fourier1D() {
 }
 
 void Gpt() {
-	size_t N = 100;
+	size_t N = 1000;
 	dcvector data(N);
 	dcvector data_fft(N);
 	dvector x(N);
@@ -302,11 +302,11 @@ void Gpt() {
 		result_vec.reserve(N);
 
 		complex<double> result = 0;
-#pragma omp parallel for num_threads(omp_get_num_procs())
+//#pragma omp parallel for num_threads(omp_get_num_procs())
 		for (size_t i = 0; i < N; ++i) {
 			x[i] = i * xmax / N - xmax / 2;
 
-			if(timemax >0.01 && false){
+			if(false && timemax >0.01 ){
 				SpaceTime st(X_coordinate(x[i]), T_time(time));
 				data[i] = Asymptotics (st);
 			} else {
@@ -314,7 +314,7 @@ void Gpt() {
 				SpaceTime st(X_coordinate(x[i] + 0.0*Cplx_i * x[i] / (1 + x[i] * x[i])), T_time(time));
 				data[i] = time > 0 ?
 							Grep(st) :
-							Grep(SpaceTime(X_coordinate(x[i]),T_time(time + 0.001)));
+							Grep(SpaceTime(X_coordinate(x[i]),T_time(time + 0.01)));
 				jacobian = 1.0; //+ Cplx_i * (1 - x[i] * x[i]) / ((1 + x[i] * x[i]) * (1 + x[i] * x[i]));
 				data[i] *= jacobian;
 			}

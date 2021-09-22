@@ -2,6 +2,23 @@
 
 using namespace std;
 
+void Integrating(){
+	// Here I'm checking quality between Gauss and Gauss_Kronrod.
+	// Apparently Gauss requires large matrices to reach the same answer as Gauss_Kronrod has
+	// for small matrices
+	// M = 11 gives diff answers,
+	// whereas M = 61 is ok and agrees with Mathematica
+	using namespace boost::math::quadrature;
+	auto f=[](const double x){
+		return cos(x);
+	};
+	double error ;
+	double kron = gauss_kronrod<double, 11>::integrate(f, -50, 50,  10, 1e-9, &error);
+	double g = gauss<double, 11>::integrate(f, -50, 50);
+	cout << kron << "\n" << g << endl;
+}
+
+
 void PV_comparison(){
 	Q_momenta q(10.5);
 	const SpaceTime st(X_coordinate(1.7),T_time(10.6));
@@ -17,5 +34,7 @@ void PV_comparison(){
 
 
 void UnitTests(){
-	PV_comparison();
+	//Integrating();
+	//PV_comparison();
+
 }
