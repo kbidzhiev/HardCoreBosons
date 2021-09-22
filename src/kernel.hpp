@@ -125,3 +125,9 @@ void Fourier1D();
 void Gpt();
 void Gp0t();
 void foo();
+
+
+
+///////////// UNIT TESTS ///////////
+
+void UnitTests();
