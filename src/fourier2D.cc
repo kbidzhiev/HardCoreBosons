@@ -311,11 +311,11 @@ void Gpt() {
 				data[i] = Asymptotics (st);
 			} else {
 
-				SpaceTime st(X_coordinate(x[i] + 0.0*Cplx_i * x[i] / (1 + x[i] * x[i])), T_time(time));
+				SpaceTime st(X_coordinate(x[i] + Cplx_i * x[i] / (1 + x[i] * x[i])), T_time(time));
 				data[i] = time > 0 ?
 							Grep(st) :
 							Grep(SpaceTime(X_coordinate(x[i]),T_time(time + 0.01)));
-				jacobian = 1.0; //+ Cplx_i * (1 - x[i] * x[i]) / ((1 + x[i] * x[i]) * (1 + x[i] * x[i]));
+				jacobian = 1.0 + Cplx_i * (1 - x[i] * x[i]) / ((1 + x[i] * x[i]) * (1 + x[i] * x[i]));
 				data[i] *= jacobian;
 			}
 			result += data[i];
