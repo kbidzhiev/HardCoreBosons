@@ -283,19 +283,19 @@ void Gpt() {
 	dvector f(N);
 	// Save
 	std::ofstream fh1, fh2, gpt_strm;
-	fh1.open("Data/Gxt.dat");
+	fh1.open("Gxt.dat");
 	fh1.precision(15);
-	fh2.open("Data/Gpt.dat");
-	gpt_strm.open("Data/Gp0t.dat");
-	fh1 << "# x \tRe[f(x)] \tIm[f(x)] \t time \n";
-	fh2 << "# f \tRe[f(w)] \tIm[f(w)] \t time \n";
-	gpt_strm << "# t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration \n";
+	fh2.open("Gpt.dat");
+	gpt_strm.open("Gp0t.dat");
+	fh1 << "# x \tRe[f(x)] \tIm[f(x)] \t time"<< endl;
+	fh2 << "# f \tRe[f(w)] \tIm[f(w)] \t time"<< endl;
+	gpt_strm << "# t \t RE_Fourier \t IM_Fourier \t RE_Integration \t IM_Integration"<< endl;
 
 
 	double xmax = 100;
 	double timemax = 100;
 	complex<double> jacobian;
-	for (double time = timemax; time > 0.01; time /= 1.1) {
+	for (double time = timemax; time > 0.1; time /= 1.02) {
 		fh1 << "\"t=" << time << "\"" << endl;
 
 		vector<pair<complex<double>, double>> result_vec;
