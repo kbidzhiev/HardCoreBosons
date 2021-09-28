@@ -49,8 +49,8 @@ Cplx Asymptotics (SpaceTime st) {
 
 void Fourier2D() {
 
-	size_t N1 = 30;
-	size_t N2 = 60;
+	size_t N1 = 1000;
+	size_t N2 = 1000;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
@@ -69,12 +69,13 @@ void Fourier2D() {
 	const double shift_x = xmax1 / 2.0;
 	const double shift_t = tmax2 / 2.0;
 
-	const double truncation = 0.0; //0.25
+
 	auto ExcludeVicinityOf0 = [&](double t) {
-		//Here I isolate vicinity of 0 into 4 regions
+		const double truncation = 0.1; //0.25
+		//Here I isolate vicinity of 0 into 3 regions
 		if (t <= -truncation || t >= truncation) { 			// (-T: -truncation]
 			return t;
-		} else { //(-truncation : 0)
+		} else { //(-truncation : truncation)
 			return truncation;
 		}
 	};
@@ -84,10 +85,6 @@ void Fourier2D() {
 	for (size_t j = 0; j < N2; ++j) {
 		for (size_t i = 0; i < N1; ++i) {
 
-
-
-
-//#pragma omp parallel for num_threads(omp_get_num_procs())
 			t2[j] = j * dt - shift_t;
 			x1[i] = i * dx - shift_x;
 
@@ -102,7 +99,7 @@ void Fourier2D() {
 
 
 			//const Cplx result = 2 * M_PI * GrepEta_l( M_PI, st);
-			const Cplx result = Grep_l(st); //- G0(st);
+			const Cplx result = Grep(st); //- G0(st);
 			//cout << result << endl;
 			//const Cplx result = Gauss(st);
 			//Cplx result = Asymptotics(st);
@@ -141,21 +138,6 @@ void Fourier2D() {
 
 	}
 
-	auto ValueFilter = [](double x) {
-//		if (abs(x) > 0.8){
-//			return x;
-//		} else {
-//			return 0.0;
-//		}
-
-//    	double cutoff = 0.5;
-//    	if (abs(x)<1e-16) return 0.0;
-//    	else if (abs(x) > cutoff){
-//    		if (x > cutoff) return cutoff;
-//    		else  return -cutoff;
-//    	}
-		return x;
-	};
 
 	// Fourier transform
 	FFT2D fft(N1, N2, xmax1, tmax2);
@@ -169,10 +151,10 @@ void Fourier2D() {
 	std::ofstream fh2;
 	std::ofstream fourier_momentum0;
 	std::ofstream function;
-	fh1.open("Data/data2d_Gauss" + to_string(GAUSS_RANK)+ ".dat");
-	fh2.open("Data/data2d_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
-	fourier_momentum0.open("Data/momentum0_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
-	function.open("Data/function_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+	fh1.open("data2d_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+	fh2.open("data2d_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+	fourier_momentum0.open("momentum0_fft_Gauss" + to_string(GAUSS_RANK)+ ".dat");
+	function.open("function_Gauss" + to_string(GAUSS_RANK)+ ".dat");
 
 	fh1 << "# x \tt \tRe[f(x, t)] \tIm[f(x,t)]\n";
 	fh2 << "# k \tw \tRe[f(k, w)] \tIm[f(x,t)]\n";
@@ -180,31 +162,31 @@ void Fourier2D() {
 		for (size_t j = 0; j < N2; ++j) {
 			fh1 << x1[i] << " \t";
 			fh1 << t2[j] << " \t";
-			fh1 << ValueFilter(data[i * N2 + j].real()) << " \t";
-			fh1 << ValueFilter(data[i * N2 + j].imag()) << "\n";
+			fh1 << data[i * N2 + j].real() << " \t";
+			fh1 << data[i * N2 + j].imag() << "\n";
 			//if (k1[i]>=0 && w2[j]>=0)
 			{
-				fh2 << k1[i]/KF() << " \t";
+				fh2 << k1[i]/KF() << "\t";
 				fh2 << w2[j]/EF << " \t";
-				fh2 << pow(-1, i+j) * ValueFilter(
+				fh2 << pow(-1, i+j) *
 						data_fft[i * N2 + j].real() * xmax1 * tmax2 / (2.0 * M_PI)
-						)<< " \t";
-				fh2	<< pow(-1, i+j) * ValueFilter(
+						<< "\t";
+				fh2	<< pow(-1, i+j) *
 						data_fft[i * N2 + j].imag() * xmax1 * tmax2 / (2.0 * M_PI)
-						)<< "\n";
+						<< "\n";
 				if(k1[i]  == 0){
-					fourier_momentum0 << w2[j]  << " \t"
-						<< pow(-1, i+j) * ValueFilter(
+					fourier_momentum0 << w2[j]  << "\t"
+						<< pow(-1, i+j) *
 							data_fft[i * N2 + j].real() * xmax1 * tmax2 / (2.0 * M_PI)
-							)<< " \t"
-						<< pow(-1, i+j) * ValueFilter(
+							<< "\t"
+						<< pow(-1, i+j) *
 							data_fft[i * N2 + j].imag() * xmax1 * tmax2 / (2.0 * M_PI)
-							) << "\n" ;
+							<< "\n" ;
 				}
 				if(x1[i]  == 0){
 					function << t2[j]  << " \t"
-						<< ValueFilter(data[i * N2 + j].real()) << " \t"
-						<< ValueFilter(data[i * N2 + j].imag()) << "\n" ;
+						<< data[i * N2 + j].real() << "\t"
+						<< data[i * N2 + j].imag() << "\n" ;
 				}
 			}
 		}
