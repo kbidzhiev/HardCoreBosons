@@ -49,8 +49,8 @@ Cplx Asymptotics (SpaceTime st) {
 
 void Fourier2D() {
 
-	size_t N1 = 1000;
-	size_t N2 = 1000;
+	size_t N1 = 100;
+	size_t N2 = 100;
 	size_t N = N1 * N2;
 	dcvector data(N);
 	dcvector data_fft(N);
@@ -275,9 +275,9 @@ void Gpt() {
 
 
 	double xmax = 100;
-	double timemax = 100;
+	double timemax = 10;
 	complex<double> jacobian;
-	for (double time = timemax; time > 0.1; time /= 1.02) {
+	for (double time = timemax; time > 0.001; time /= 1.02) {
 		fh1 << "\"t=" << time << "\"" << endl;
 
 		vector<pair<complex<double>, double>> result_vec;
@@ -342,50 +342,6 @@ void Gpt() {
 }
 
 
-void Gp0t() {
-	size_t N = 400;
-	dcvector data(N);
-	dvector x(N);
-	dvector f(N);
-	// Save
-	std::ofstream fh1;
-	std::ofstream fh2;
-	fh1.open("Data/Gp/Gxt.dat");
-	fh2.open("Data/Gp/Gpt.dat");
-	fh1 << "# \tx \tRe[f(x)] \tIm[f(x)]\n";
-	fh2 << "# \tf \tRe[f(w)] \tIm[f(w)]\n";
-
-	double xmax = 20.0;
-	double timemax = 20.;
-	for (double time = 0.0; time < timemax; time += 1.0) {
-		complex<double> result = 0;
-#pragma omp parallel for num_threads(omp_get_num_procs())
-		for (size_t i = 0; i < N; ++i) {
-			x[i] = i * xmax / N - xmax / 2;
-			SpaceTime st(X_coordinate(x[i]), T_time(time));
-			data[i] = time > 0 ? Grep(st) : 0;
-			result += data[i];
-			cout << "i = " << i << " / " << N
-					<<" time = " << time << " / " << timemax
-					<< endl;
-		}
-
-		int i = N / 2 -1;
-		fh1 << time << " \t"
-			<< data[i].real() << "\t"
-			<< data[i].imag() << endl;
-
-		fh2 << time << " \t"
-			<< real(result) * 2 / (N ) << " \t"
-			<< imag(result) * 2 / (N)
-			<< endl;
-	}
-
-	fh1.close();
-	fh2.close();
-
-	cout << "'Fourier' Gpt DONE" << endl;
-}
 
 
 void foo(){

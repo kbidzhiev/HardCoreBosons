@@ -113,8 +113,8 @@ int main() {
 
 
 	//Fourier1D();
-	Fourier2D();
-	//Gpt();
+	//Fourier2D();
+	Gpt();
 
 
 //	double eta = 1.0;
