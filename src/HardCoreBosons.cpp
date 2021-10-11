@@ -108,10 +108,10 @@ void Determinant(){
 	determinant.precision(15);
 
 	const double X_LIMITS = x ;
-	const double T_LIMITS = 0.2 ;
+	const double T_LIMITS = 0.002 ;
 	const double Lambda = 1;
 
-	for (double time = 1E-5; time < T_LIMITS; time += 1E-6) {
+	for (double time = 1E-10; time < T_LIMITS; time += 1E-6) {
 		SpaceTime sp = { X_coordinate(X_LIMITS), T_time(time) };
 		auto [V, W] = Determinants(Lambda, sp);
 		determinant << time << "\t" << abs(V) << "\t" << abs(W) << endl;
@@ -138,8 +138,8 @@ int main() {
 
 	//Fourier1D();
 	//Fourier2D();
-	//Gpt();
-	Determinant();
+	Gpt();
+	//Determinant();
 
 //	double eta = 1.0;
 //	Q_momenta k(1.14 );
