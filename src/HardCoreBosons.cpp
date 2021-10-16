@@ -97,7 +97,7 @@ void XsliceCurve(double x){
 
 void Determinant(){
 
-	double x = 0.1;
+	double x = 1.0;
 
 	ofstream determinant; //here I'm defining output streams, i.e. files
 	ios_base::openmode mode;
@@ -109,7 +109,7 @@ void Determinant(){
 
 	const double X_LIMITS = x ;
 	const double T_LIMITS = 0.002 ;
-	const double Lambda = 0.1;
+	const double Lambda = 0.5;
 
 	for (double time = 1E-10; time < T_LIMITS; time += 1E-6) {
 		SpaceTime sp = { X_coordinate(X_LIMITS), T_time(time) };
@@ -133,13 +133,13 @@ int main() {
 	//CorrelatorCurve();
 
 	//XsliceCurve(1.0); //
-	//TsliceCurve(0.01);//
+	//TsliceCurve(1.0);//
 
 
 	//Fourier1D();
 	//Fourier2D();
-	Gpt();
-	//Determinant();
+	//Gpt();
+	Determinant();
 
 //	double eta = 1.0;
 //	Q_momenta k(1.14 );

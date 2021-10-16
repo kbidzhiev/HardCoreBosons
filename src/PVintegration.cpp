@@ -7,7 +7,7 @@ const gauss<double, 100> gPV;// Use only even size == 2n;
 
 const double gauss_limits = 1.0;
 double TRUNC = 1e-9; // controls convergence for interval from "gauss_limits" to \infty
-double convergence = 1e-12; //gauss_kronrod convergence criteria
+double convergence = 1e-9; //gauss_kronrod convergence criteria
 const double step = 1.; //integration domain (i : i + step)
 
 using namespace boost::math;
@@ -16,8 +16,8 @@ using namespace boost::math;
 
 
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st){
-	Cplx result  = - M_PI * Cplx_i * exp( -Cplx_i * Tau(q_momenta, st));
-	Cplx erf_arg = (st.x - q_momenta.value * st.t) * (-1.0 + Cplx_i) / (2.0 * sqrt(st.t));
+	Cplx result  =  M_PI * Cplx_i * exp( -Cplx_i * Tau(q_momenta, st));//was - sign here
+	Cplx erf_arg = (st.x - q_momenta.value * st.t) * (1.0 - Cplx_i) / (2.0 * sqrt(st.t));
 	result *= (Faddeeva::erf(erf_arg));
 	return result;
 }

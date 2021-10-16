@@ -18,7 +18,7 @@ using Cplx = complex<double>;
 
 const Cplx Cplx_i = Cplx(0,1);
 const double MASS = 1.0;
-const double B_BETA = 100;
+const double B_BETA = 100.0;
 const double RHO = 0.5;
 const double MAGN_FIELD = 0.;
 
@@ -27,7 +27,7 @@ const double MAGN_FIELD = 0.;
 
 
 
-const size_t GAUSS_RANK = 31;		// use only ODD = 2n+1 numbers; Precomputed 15, 31, 41, 51 and 61
+const size_t GAUSS_RANK = 15;		// use only ODD = 2n+1 numbers; Precomputed 15, 31, 41, 51 and 61
 const size_t GAUSS_RANK_l = 10; 	 // Use only EVEN rank
 /*
  * increasing of GAUSS_RANK_l improves GrepEta_l(eta, spacetime).
