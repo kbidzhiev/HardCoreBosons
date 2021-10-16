@@ -293,15 +293,15 @@ void Gpt() {
 				data[i] = Asymptotics (st);
 			} else {
 
-				SpaceTime st(X_coordinate(x[i] + Cplx_i * pow(x[i] / (1 + x[i] * x[i]),2)), T_time(time));
+				SpaceTime st(X_coordinate(x[i] + 0.0*Cplx_i * pow(x[i] / (1 + x[i] * x[i]),2)), T_time(time));
 				data[i] = time > 0 ?
 							Grep(st) :
 							Grep(SpaceTime(X_coordinate(x[i]),T_time(time + 0.01)));
 				//jacobian = 1.0 + Cplx_i * (1 - x[i] * x[i]) / ((1 + x[i] * x[i]) * (1 + x[i] * x[i]));
-				jacobian = -Cplx_i * 2.0 * x[i] * (x[i]*x[i]-1.0);
-				jacobian /= pow((1.0+ x[i]*x[i]),3);
-				jacobian += 1.0;
-				data[i] *= jacobian;
+				//jacobian = -Cplx_i * 2.0 * x[i] * (x[i]*x[i]-1.0);
+				//jacobian /= pow((1.0+ x[i]*x[i]),3);
+				//jacobian += 1.0;
+				//data[i] *= jacobian;
 			}
 			result += data[i];
 			cout << "i = " << i << " / " << N << " time = " << time << " / "
