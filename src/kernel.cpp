@@ -124,28 +124,28 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 
 		//the same in terms of eta
 
-		e_infty[i] = sin(0.5 * eta)*sin(0.5 * eta) * (pv/M_PI)
-				+ sin(0.5 * eta)*cos(0.5 * eta) * exp(- Cplx_i * tau);
-		e_minus[i] = Eminus(q_i, spacetime) ;
-		Cplx second_term_of_PVderivative = - Cplx_i * (Q_Kr(i) * spacetime.t / MASS - spacetime.x) * pv;
-		Cplx e_inf_der = sin(0.5 * eta)*sin(0.5 * eta) * (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
-		e_inf_der += sin(0.5 * eta)*cos(0.5 * eta) * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
-
-		e_infty_derivative[i] = e_inf_der;
-
-		e_plus_for_W[i] = sin(0.5 * eta) * pv + cos(0.5 * eta)*exp(- Cplx_i * tau);
-		e_plus_for_W[i] /= sqrt(2.0);
-		e_plus_for_W[i] *= e_minus[i];
+//		e_infty[i] = sin(0.5 * eta)*sin(0.5 * eta) * (pv/M_PI)
+//				+ sin(0.5 * eta)*cos(0.5 * eta) * exp(- Cplx_i * tau);
+//		e_minus[i] = Eminus(q_i, spacetime) ;
+//		Cplx second_term_of_PVderivative = - Cplx_i * (Q_Kr(i) * spacetime.t / MASS - spacetime.x) * pv;
+//		Cplx e_inf_der = sin(0.5 * eta)*sin(0.5 * eta) * (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
+//		e_inf_der += sin(0.5 * eta)*cos(0.5 * eta) * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
+//
+//		e_infty_derivative[i] = e_inf_der;
+//
+//		e_plus_for_W[i] = sin(0.5 * eta) * pv + cos(0.5 * eta)*exp(- Cplx_i * tau);
+//		e_plus_for_W[i] /= sqrt(2.0);
+//		e_plus_for_W[i] *= e_minus[i];
 
 		//TEST
 
-//		e_infty[i] = (pv/M_PI - Lambda * exp(- Cplx_i * tau))/(Lambda * Lambda + 1.0);
-//		e_minus[i] = Eminus(q_i, spacetime) ;
-//		Cplx second_term_of_PVderivative = - Cplx_i * (Q_Kr(i) * spacetime.t / MASS - spacetime.x) * pv;
-//		Cplx e_inf_der = (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
-//		e_inf_der += -Lambda * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
-//		e_inf_der /= ( Lambda * Lambda + 1.0);
-//		e_infty_derivative[i] = e_inf_der;
+		e_infty[i] = (pv/M_PI - Lambda * exp(- Cplx_i * tau))/(Lambda * Lambda + 1.0);
+		e_minus[i] = Eminus(q_i, spacetime) ;
+		Cplx second_term_of_PVderivative = - Cplx_i * (Q_Kr(i) * spacetime.t / MASS - spacetime.x) * pv;
+		Cplx e_inf_der = (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
+		e_inf_der += -Lambda * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
+		e_inf_der /= ( Lambda * Lambda + 1.0);
+		e_infty_derivative[i] = e_inf_der;
 
 
 

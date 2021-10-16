@@ -138,8 +138,8 @@ int main() {
 
 	//Fourier1D();
 	//Fourier2D();
-	Gpt();
-	//Determinant();
+	//Gpt();
+	Determinant();
 
 //	double eta = 1.0;
 //	Q_momenta k(1.14 );
