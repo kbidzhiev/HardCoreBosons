@@ -86,11 +86,15 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 	vector<Cplx> e_infty(s,0.0);
 	vector<Cplx> e_infty_derivative(s,0.0);
 	vector<Cplx> e_plus_for_W(s,0.0);
-	//e_minus.reserve(s);
-	//e_infty.reserve(s);
-	//e_infty_derivative.reserve(s);
+	//
+	vector<Cplx> e_infty_eps(s,0.0);
+	vector<Cplx> e_minus_eps(s,0.0);
+	//
 	MatrixXcd V(s, s);
 	MatrixXcd W(s, s);
+
+
+
 
 //	cout << "Weight_Kr\tQabscissa\n";
 //	for(size_t i = 0; i< s; ++i){
@@ -101,7 +105,8 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 
 	const Cplx first_term_of_PVderivative = -Cplx_i * spacetime.t * 2.0 * M_PI * G0(spacetime) / MASS;
 
-	double eta = Lambda;
+
+	double epsilon = 1E-8;
 
 //#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (size_t i = 0; i < s; i++) {
@@ -110,42 +115,32 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 		Cplx tau = Tau (q_i, spacetime);
 		Cplx pv = PrincipalValue(q_i, spacetime);
 
-//		e_infty[i] = (Lambda * Lambda * pv/M_PI - Lambda * exp(- Cplx_i * tau))/(Lambda * Lambda + 1.0);
-//		e_minus[i] = Eminus(q_i, spacetime) ;
-//		Cplx second_term_of_PVderivative = - Cplx_i * (Q_Kr(i) * spacetime.t / MASS - spacetime.x) * pv;
-//		Cplx e_inf_der = Lambda * Lambda * (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
-//		e_inf_der += -Lambda * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
-//		e_inf_der /= Lambda * Lambda + 1.0;
-//		e_infty_derivative[i] = e_inf_der;
-//
-//		e_plus_for_W[i] = (Lambda * pv - exp(- Cplx_i * tau))/sqrt(2.0 * Lambda * Lambda + 2.0);
-//		e_plus_for_W[i] *= e_minus[i];
+		Q_momenta q_i_eps(Q_Kr(i) + epsilon); //!
+		Cplx tau_eps = Tau (q_i_eps, spacetime);
+		Cplx pv_eps = PrincipalValue(q_i_eps, spacetime);
 
 
-		//the same in terms of eta
+		double sinsin = 1.0/(1.0 + Lambda*Lambda);
+		double sincos = -Lambda/(1.0 + Lambda*Lambda);
+		double sin = sqrt(sinsin);
+		double cos = sincos / sin;
 
-//		e_infty[i] = sin(0.5 * eta)*sin(0.5 * eta) * (pv/M_PI)
-//				+ sin(0.5 * eta)*cos(0.5 * eta) * exp(- Cplx_i * tau);
-//		e_minus[i] = Eminus(q_i, spacetime) ;
-//		Cplx second_term_of_PVderivative = - Cplx_i * (Q_Kr(i) * spacetime.t / MASS - spacetime.x) * pv;
-//		Cplx e_inf_der = sin(0.5 * eta)*sin(0.5 * eta) * (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
-//		e_inf_der += sin(0.5 * eta)*cos(0.5 * eta) * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
-//
-//		e_infty_derivative[i] = e_inf_der;
-//
-//		e_plus_for_W[i] = sin(0.5 * eta) * pv + cos(0.5 * eta)*exp(- Cplx_i * tau);
-//		e_plus_for_W[i] /= sqrt(2.0);
-//		e_plus_for_W[i] *= e_minus[i];
-
-		//TEST
-
-		e_infty[i] = (pv/M_PI - Lambda * exp(- Cplx_i * tau))/(Lambda * Lambda + 1.0);
+		e_infty[i] = sinsin * (pv/M_PI) + sincos * exp(- Cplx_i * tau);
 		e_minus[i] = Eminus(q_i, spacetime) ;
+
+		//
+		e_infty_eps[i] = sinsin * (pv_eps/M_PI)	+ sincos * exp(- Cplx_i * tau_eps);
+		e_minus_eps[i] = Eminus(q_i_eps, spacetime) ;
+		//
 		Cplx second_term_of_PVderivative = - Cplx_i * (Q_Kr(i) * spacetime.t / MASS - spacetime.x) * pv;
-		Cplx e_inf_der = (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
-		e_inf_der += -Lambda * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
-		e_inf_der /= ( Lambda * Lambda + 1.0);
+		Cplx e_inf_der = sinsin * (first_term_of_PVderivative + second_term_of_PVderivative)/M_PI;
+		e_inf_der += sincos * exp(-Cplx_i * tau) *(-Cplx_i) * (spacetime.t * Q_Kr(i) / MASS - spacetime.x);
+
 		e_infty_derivative[i] = e_inf_der;
+
+		e_plus_for_W[i] = sin * (pv/M_PI) + cos*exp(- Cplx_i * tau);
+		e_plus_for_W[i] /= sqrt(2.0);
+		e_plus_for_W[i] *= e_minus[i];
 
 
 
@@ -157,38 +152,46 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 	//avr 31592		consequential
 
 
-	{
+
 //#pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
 	for (size_t i = 0; i < s; i++) {
 		ADD_DURATION(mf);
 		for (size_t j = 0; j < s; j++) { // j= i
-			Cplx v = e_minus[i] * e_minus[j];
-			//Cplx w =  e_plus_for_W[i] * e_plus_for_W[j];
+			Cplx v = e_minus_eps[i] * e_minus[j];
+			Cplx w =  e_plus_for_W[i] * e_plus_for_W[j];
 			// In order to avoid having 0/0 in W eq (3.25), we
 			// cancel sin^2 (eta/2) in denominator and enumerator
 
-			Cplx w = e_infty[i] * e_minus[i] //E_+ = E_infty E_-
-								* e_infty[j] * e_minus[j] * 0.5 * (1.0+Lambda * Lambda) ;
+			//Cplx w = e_infty[i] * e_minus[i] //E_+ = E_infty E_-
+			//					* e_infty[j] * e_minus[j];// * 0.5 * (1.0+Lambda * Lambda) ;
+
+
+
+				//v *= e_infty_derivative[i] ;
+				Cplx de =  e_infty_eps[i] - e_infty[j];
+				double dq =  Q_Kr(i) + epsilon - Q_Kr(j);
+				//cout << "de " << de << endl;
+				v *= (de/dq);
+				V(i, j) = sqrt(Weight_Kr(i)) * (v) * sqrt(Weight_Kr(j)) ; //!
+				W(i, j) = sqrt(Weight_Kr(i)) * (v-w) * sqrt(Weight_Kr(j)) ; //!
 
 
 			if (i == j) {
-				v *= e_infty_derivative[i] ;
-
-				V(i, i) = 1.0 + sqrt(Weight_Kr(i)) * (v) * sqrt(Weight_Kr(j)) ; //!
-				W(i, i) = 1.0 + sqrt(Weight_Kr(i)) * (v - w) * sqrt(Weight_Kr(j)) ; //!
+				V(i, j) += 1.0 ;
+				W(i, j) += 1.0 ;
 			} else {
-				v *= (e_infty[i] - e_infty[j]) ;
-				v /= Q_Kr(i) - Q_Kr(j);
-
-				V(i, j) = sqrt(Weight_Kr(i)) * v * sqrt(Weight_Kr(j));
-				W(i, j) = sqrt(Weight_Kr(i)) * (v - w) * sqrt(Weight_Kr(j)); //new part
+//				v *= (e_infty[i] - e_infty[j]) ;
+//				v /= Q_Kr(i) - Q_Kr(j);
+//
+//				V(i, j) = sqrt(Weight_Kr(i)) * v * sqrt(Weight_Kr(j));
+//				W(i, j) = sqrt(Weight_Kr(i)) * (v - w) * sqrt(Weight_Kr(j)); //new part
 
 				//V(j, i) = V(i, j);
 				//W(j, i) = W(i, j);
 			}
 		}
 	}
-	}
+
 
 	//cout << W.determinant() << "\n\n";
 	//cout << W << endl;
@@ -203,6 +206,107 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 	//cout << V - W << endl;
 	//cout << W << endl;
 	//terminate();
+
+
+	Cplx detV = V.determinant();
+	Cplx detW = W.determinant();
+
+	double Jacobian_from_eta_to_lambda = (2.0)/(Lambda * Lambda + 1.0);
+	detV *= Jacobian_from_eta_to_lambda;
+	detW *= Jacobian_from_eta_to_lambda;
+
+
+	return {detV, detW};
+}
+
+
+//for t=0
+/*
+pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
+
+	vector<Cplx> e_minus(s,0.0);
+	vector<Cplx> e_infty(s,0.0);
+	vector<Cplx> e_infty_derivative(s,0.0);
+	vector<Cplx> e_plus_for_W(s,0.0);
+	//
+	vector<Cplx> e_infty_eps(s,0.0);
+	vector<Cplx> e_minus_eps(s,0.0);
+	//
+	MatrixXcd V(s, s);
+	MatrixXcd W(s, s);
+
+
+	spacetime.t = 0;
+
+
+
+	const Cplx first_term_of_PVderivative = -Cplx_i * spacetime.t * 2.0 * M_PI * G0(spacetime) / MASS;
+
+	double eta = Lambda;
+
+	double epsilon = 1E-8;
+
+//#pragma omp parallel for num_threads(omp_get_num_procs())
+	for (size_t i = 0; i < s; i++) {
+		ADD_DURATION(elements);
+		Q_momenta q_i(Q_Kr(i)); //!
+		Cplx tau = Tau (q_i, spacetime);
+		Cplx pv = Cplx_i * M_PI * exp (-Cplx_i * Tau (q_i, spacetime));
+
+		Q_momenta q_i_eps(Q_Kr(i) + epsilon); //!
+		Cplx tau_eps = Tau(q_i_eps, spacetime);
+		Cplx pv_eps = Cplx_i * M_PI * exp (-Cplx_i * Tau (q_i_eps, spacetime));
+
+
+
+
+		e_infty[i] = pow(sin(0.5 * eta), 2) * (pv/M_PI)
+				+ sin(0.5 * eta)*cos(0.5 * eta) * exp(- Cplx_i * tau);
+		e_minus[i] = Eminus(q_i, spacetime) ;
+
+		//
+		e_infty_eps[i] = pow(sin(0.5 * eta), 2) * (pv_eps/M_PI)
+				+ sin(0.5 * eta)*cos(0.5 * eta) * exp(- Cplx_i * tau_eps);
+		e_minus_eps[i] = Eminus(q_i_eps, spacetime) ;
+		//
+
+
+		e_plus_for_W[i] = (sin(0.5 * eta) * (pv/M_PI)
+						+ cos(0.5 * eta) * exp(- Cplx_i * tau)) * Eminus(q_i, spacetime);
+
+
+	}
+
+
+	for (size_t i = 0; i < s; i++) {
+		ADD_DURATION(mf);
+		for (size_t j = 0; j < s; j++) { // j= i
+			Cplx v = e_minus_eps[i] * e_minus[j];
+			Cplx w =  e_infty_eps[i] * e_infty[j] * e_minus_eps[i] * e_minus[j]
+						/( 2.0 ) ;
+			// In order to avoid having 0/0 in W eq (3.25), we
+			// cancel sin^2 (eta/2) in denominator and enumerator
+
+				//v *= e_infty_derivative[i] ;
+				Cplx de =  e_infty_eps[i] - e_infty[j];
+				double dq =  Q_Kr(i) + epsilon - Q_Kr(j);
+				//cout << "w = " << w << endl;
+				v *= (de/dq);
+				V(i, j) = sqrt(Weight_Kr(i)) * (v) * sqrt(Weight_Kr(j)) ; //!
+				W(i, j) = sqrt(Weight_Kr(i)) * (v-w) * sqrt(Weight_Kr(j)) ; //!
+
+
+			if (i == j) {
+				V(i, j) += 1.0 ;
+				W(i, j) += 1.0 ;
+			} else {
+
+			}
+		}
+	}
+
+
+
 	Cplx detV;
 	Cplx detW;
 	{
@@ -214,12 +318,12 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 	return {detV, detW};
 }
 
+*/
 
 Cplx GrepLambda(double Lambda,  SpaceTime st){
 	auto [detv,detw] = Determinants(Lambda, st);
-	Cplx coeff = G0(st)  ;
-	detv *= (coeff - 1.0);
-	return (detv + detw)* (-2.0)/(Lambda * Lambda + 1.0);
+	detv *= (G0(st) - 1.0);
+	return (detv + detw);
 }
 
 Cplx Grep(SpaceTime st){
@@ -234,6 +338,9 @@ Cplx Grep(SpaceTime st){
 	 * depth = 5 ;  time =
 	 * */
 	Cplx result = gauss_kronrod<double, 61>::integrate(f, -100, 100,  10, 1e-9, &error);
+
+	//Cplx result = gauss_kronrod<double, 61>::integrate(f, -M_PI, M_PI,  10, 1e-9, &error);
+
 
 	//cout << "error value = " <<  error << endl;
 

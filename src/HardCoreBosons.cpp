@@ -59,10 +59,10 @@ void TsliceCurve(double time_){
 	tslice.open("Data/"+filename, mode);
 	tslice.precision(15);
 
-	const double X_LIMITS = 20.0 ;
+	const double X_LIMITS = 10.0 ;
 	const double T_LIMITS = time_;  // Energy(Q_momenta(KF()));
 
-	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += 0.5) {
+	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += 0.1) {
 		cout << coordinate << " / " << X_LIMITS  << endl;
 		SpaceTime sp = {X_coordinate(coordinate), T_time(T_LIMITS)};
 		//Cplx result = Asymptotics(sp);
@@ -108,15 +108,49 @@ void Determinant(){
 	determinant.precision(15);
 
 	const double X_LIMITS = x ;
-	const double T_LIMITS = 0.002 ;
-	const double Lambda = 0.5;
+	const double T_LIMITS = 0.001 ;
+	const double Lambda = 1.6;
 
-	for (double time = 1E-10; time < T_LIMITS; time += 1E-6) {
+	for (double time = 1E-6; time < T_LIMITS; time += 1E-5) {
 		SpaceTime sp = { X_coordinate(X_LIMITS), T_time(time) };
 		auto [V, W] = Determinants(Lambda, sp);
 		determinant << time << "\t" << abs(V) << "\t" << abs(W) << endl;
 		cout << "time = " << time << " /" << T_LIMITS << endl;
 	}
+}
+
+void Gx_sum(){
+
+
+	ofstream data; //here I'm defining output streams, i.e. files
+	ios_base::openmode mode;
+	mode = std::ofstream::out; //Erase previous file (if present)
+	//+ to_string((int)x)
+	string filename = "Gx_sum_"  + to_string(GAUSS_RANK) + ".dat";
+	data.open("Data/"+filename, mode);
+	data.precision(15);
+
+	const double X_LIMITS = 10.0 ;
+	const double T_LIMITS = 0.001 ;
+
+	Cplx result = 0.0;
+
+	const double dx = 0.001;
+
+	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += dx) {
+		cout << coordinate << " / " << X_LIMITS  << '\n';
+		SpaceTime sp = {X_coordinate(coordinate), T_time(T_LIMITS)};
+		Cplx tmp = Grep(sp);
+		data << coordinate << "\t" << real(tmp) << "\t" << imag(tmp) << "\n";
+		cout << tmp << '\n';
+		result += tmp;
+		//data << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
+	}
+	cout << "integral of Gx = " << result * dx << endl;
+
+	//0.1   -> (0.743116,-0.249829)
+	//0.01  -> (0.913798,-0.0685808)
+	//0.001 -> (0.985748,-0.032087)
 }
 
 
@@ -132,14 +166,16 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	//XsliceCurve(1.0); //
-	//TsliceCurve(1.0);//
+	XsliceCurve(0.0); //
+	TsliceCurve(10.0);//
 
 
 	//Fourier1D();
 	//Fourier2D();
-	Gpt();
+	//Gpt();
 	//Determinant();
+	//Gx_sum();
+
 
 //	double eta = 1.0;
 //	Q_momenta k(1.14 );
