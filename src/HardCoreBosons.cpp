@@ -130,23 +130,30 @@ void Gx_sum(){
 	data.open("Data/"+filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 10.0 ;
-	const double T_LIMITS = 0.001 ;
+	const double X_LIMITS = 0.05 ;
+	const double T_LIMITS = 0.00001 ;
 
 	Cplx result = 0.0;
 
-	const double dx = 0.001;
+	const double dx = 0.00001;
+
+	double flag = 1;
 
 	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += dx) {
 		cout << coordinate << " / " << X_LIMITS  << '\n';
-		SpaceTime sp = {X_coordinate(coordinate), T_time(T_LIMITS)};
-		Cplx tmp = Grep(sp);
+		SpaceTime sp = {X_coordinate(
+				coordinate + flag*Cplx_i * coordinate/(1.0 + pow(coordinate,2))
+				)
+				, T_time(T_LIMITS)};
+		Cplx j_cplx = - ( pow(coordinate,2) -1.0)/pow(1.0 +  pow(coordinate,2),2);
+		Cplx Jacobian =  (1.0 + flag*Cplx_i * j_cplx) * dx;
+		Cplx tmp = Grep(sp) * Jacobian;
 		data << coordinate << "\t" << real(tmp) << "\t" << imag(tmp) << "\n";
 		cout << tmp << '\n';
 		result += tmp;
 		//data << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
 	}
-	cout << "integral of Gx = " << result * dx << endl;
+	cout << "integral of Gx = " << result << ", abs = " << abs(result) << endl;
 
 	//0.1   -> (0.743116,-0.249829)
 	//0.01  -> (0.913798,-0.0685808)
@@ -166,15 +173,15 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	XsliceCurve(0.0); //
-	TsliceCurve(10.0);//
+	//XsliceCurve(0.0); //
+	//TsliceCurve(10.0);//
 
 
 	//Fourier1D();
 	//Fourier2D();
 	//Gpt();
 	//Determinant();
-	//Gx_sum();
+	Gx_sum();
 
 
 //	double eta = 1.0;
