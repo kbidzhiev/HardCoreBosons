@@ -119,42 +119,69 @@ void Determinant(){
 	}
 }
 
-void Gx_sum(){
+void Gxt_sum(){
 
-
-	ofstream data; //here I'm defining output streams, i.e. files
+	ofstream data_profile, data; //here I'm defining output streams, i.e. files
 	ios_base::openmode mode;
 	mode = std::ofstream::out; //Erase previous file (if present)
-	//+ to_string((int)x)
-	string filename = "Gx_sum_"  + to_string(GAUSS_RANK) + ".dat";
-	data.open("Data/"+filename, mode);
+
+	string filename_profile = "Gxt_profile_"  + to_string(GAUSS_RANK) + ".dat";
+	data_profile.open("Data/" + filename_profile, mode);
+	data_profile.precision(15);
+
+
+	string filename = "Gxt_sum_"  + to_string(GAUSS_RANK) + ".dat";
+	data.open("Data/" + filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 0.05 ;
-	const double T_LIMITS = 0.00001 ;
+	const double X_LIMITS = 10.0 ;
 
-	Cplx result = 0.0;
+	const double T_min = 0.1 ;
+	const double T_max = 1.0 ;
+	const double dt = 0.1;
+	const int n_max = (T_max - T_min)/dt;
 
-	const double dx = 0.00001;
 
-	double flag = 1;
 
-	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += dx) {
-		cout << coordinate << " / " << X_LIMITS  << '\n';
-		SpaceTime sp = {X_coordinate(
-				coordinate + flag*Cplx_i * coordinate/(1.0 + pow(coordinate,2))
-				)
-				, T_time(T_LIMITS)};
-		Cplx j_cplx = - ( pow(coordinate,2) -1.0)/pow(1.0 +  pow(coordinate,2),2);
-		Cplx Jacobian =  (1.0 + flag*Cplx_i * j_cplx) * dx;
-		Cplx tmp = Grep(sp) * Jacobian;
-		data << coordinate << "\t" << real(tmp) << "\t" << imag(tmp) << "\n";
-		cout << tmp << '\n';
-		result += tmp;
-		//data << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
+	const double dx = 1.0;
+
+	double deform_contour = 0;
+
+//#pragma omp parallel for num_threads(omp_get_num_procs())
+	for (int n = 0; n <= n_max; ++n) {
+		T_time time(T_min + n * dt);
+		data_profile << "\"t = " << time.value << "\"\n";
+
+
+		Cplx result = 0.0;
+
+		for (double x = -X_LIMITS; x <= X_LIMITS; x += dx) {
+			X_coordinate coord (x + deform_contour * Cplx_i * x/ (1.0 + pow(x, 2)));
+
+			SpaceTime sp(coord, time);
+
+			Cplx j_cplx = -(pow(coord.value, 2) - 1.0) / pow(1.0 + pow(coord.value, 2), 2);
+			Cplx Jacobian = (1.0 + deform_contour * Cplx_i * j_cplx) * dx;
+
+
+
+			Cplx tmp = Grep(sp) * Jacobian;
+
+			data_profile << x << '\t'
+					 << real(tmp) << '\t'
+					 << imag(tmp) << '\t'
+					 << time.value << "\n";
+			//cout << tmp << '\n';
+			result += tmp;
+			//data_profile << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
+		}
+		data_profile << "\n\n";
+
+		data << time.value << '\t'
+				<< real(result) << '\t'
+				<< imag(result) << '\n';
+
 	}
-	cout << "integral of Gx = " << result << ", abs = " << abs(result) << endl;
-
 	//0.1   -> (0.743116,-0.249829)
 	//0.01  -> (0.913798,-0.0685808)
 	//0.001 -> (0.985748,-0.032087)
@@ -181,7 +208,7 @@ int main() {
 	//Fourier2D();
 	//Gpt();
 	//Determinant();
-	Gx_sum();
+	Gxt_sum();
 
 
 //	double eta = 1.0;
