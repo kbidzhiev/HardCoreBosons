@@ -147,7 +147,7 @@ void Gxt_sum(){
 
 	const double dx = 0.01;
 
-	double deform_contour = 0;
+	double deform_contour = 1;
 
 #pragma omp parallel for num_threads(omp_get_num_procs())
 	for (int n = 0; n <= n_max; ++n) {
