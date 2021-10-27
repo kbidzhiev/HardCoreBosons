@@ -134,20 +134,22 @@ void Gxt_sum(){
 	data.open("Data/" + filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 10.0 ;
+	const double X_LIMITS = 1.0 ;
 
 	const double T_min = 0.1 ;
-	const double T_max = 10.0 ;
+	const double T_max = 1.0 ;
 	const double dt = 0.1;
 	const int n_max = (T_max - T_min)/dt;
 
+	map<double, Cplx> m_Gp0t;
 
+	int counter = 0;
 
-	const double dx = 0.01;
+	const double dx = 0.1;
 
 	double deform_contour = 0;
 
-//#pragma omp parallel for num_threads(omp_get_num_procs())
+#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (int n = 0; n <= n_max; ++n) {
 		T_time time(T_min + n * dt);
 		data_profile << "\"t = " << time.value << "\"\n";
@@ -177,14 +179,19 @@ void Gxt_sum(){
 		}
 		data_profile << "\n\n";
 
-		data << time.value << '\t'
-				<< real(result) << '\t'
-				<< imag(result) << '\n';
+		m_Gp0t[time.value] = result;
 
+		cout << static_cast<double>(counter++)/n_max << " %\n";
 	}
-	//0.1   -> (0.743116,-0.249829)
-	//0.01  -> (0.913798,-0.0685808)
-	//0.001 -> (0.985748,-0.032087)
+
+	for(auto &[t,G] : m_Gp0t){
+		data << t << '\t'
+				<< real(G) << '\t'
+				<< imag(G) << '\n';
+	}
+
+	cout << "Done !" << endl;
+
 }
 
 
