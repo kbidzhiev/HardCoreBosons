@@ -137,13 +137,13 @@ void Gxt_sum(){
 	const double X_LIMITS = 10.0 ;
 
 	const double T_min = 0.1 ;
-	const double T_max = 1.0 ;
+	const double T_max = 10.0 ;
 	const double dt = 0.1;
 	const int n_max = (T_max - T_min)/dt;
 
 
 
-	const double dx = 1.0;
+	const double dx = 0.01;
 
 	double deform_contour = 0;
 
