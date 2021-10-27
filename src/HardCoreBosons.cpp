@@ -134,18 +134,18 @@ void Gxt_sum(){
 	data.open("Data/" + filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 1.0 ;
+	const double X_LIMITS = 15.0 ;
 
-	const double T_min = 0.1 ;
-	const double T_max = 1.0 ;
-	const double dt = 0.1;
+	const double T_min = 0.01 ;
+	const double T_max = 10.0 ;
+	const double dt = 0.01;
 	const int n_max = (T_max - T_min)/dt;
 
 	map<double, Cplx> m_Gp0t;
 
 	int counter = 0;
 
-	const double dx = 0.1;
+	const double dx = 0.01;
 
 	double deform_contour = 0;
 
