@@ -134,18 +134,18 @@ void Gxt_sum(){
 	data.open("Data/" + filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 15.0 ;
+	const double X_LIMITS = 0.5 ;
 
-	const double T_min = 0.01 ;
-	const double T_max = 10.0 ;
-	const double dt = 0.01;
+	const double T_min = 0.001 ;
+	const double T_max = 0.01 ;
+	const double dt = 0.001;
 	const int n_max = (T_max - T_min)/dt;
 
 	map<double, Cplx> m_Gp0t;
 
 	int counter = 0;
 
-	const double dx = 0.01;
+	const double dx = 0.001;
 
 	double deform_contour = 1;
 
@@ -181,7 +181,7 @@ void Gxt_sum(){
 
 		m_Gp0t[time.value] = result;
 
-		cout << static_cast<double>(counter++)/n_max << " %\n";
+		cout << static_cast<double>(counter++)/(n_max+1) << " %" << endl;
 	}
 
 	for(auto &[t,G] : m_Gp0t){
