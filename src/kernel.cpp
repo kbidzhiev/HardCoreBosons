@@ -20,7 +20,6 @@ double KF(){
 
 double Mu_chempot(){
 	return KF()*KF() * 0.5 / MASS;
-
 }
 
 double Energy(Q_momenta q_momenta){
@@ -138,6 +137,9 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 
 		e_infty_derivative[i] = e_inf_der;
 
+
+		// In order to avoid having 0/0 in W eq (3.25), we
+		// cancel sin^2 (eta/2) in denominator and enumerator
 		e_plus_for_W[i] = sin * (pv/M_PI) + cos*exp(- Cplx_i * tau);
 		e_plus_for_W[i] /= sqrt(2.0);
 		e_plus_for_W[i] *= e_minus[i];
@@ -156,30 +158,40 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 //#pragma omp parallel for num_threads(omp_get_num_procs()) //collapse(2)
 	for (size_t i = 0; i < s; i++) {
 		ADD_DURATION(mf);
-		for (size_t j = 0; j < s; j++) { // j= i
+		for (size_t j = i; j < s; j++) {
 			Cplx v = e_minus_eps[i] * e_minus[j];
 			Cplx w =  e_plus_for_W[i] * e_plus_for_W[j];
-			// In order to avoid having 0/0 in W eq (3.25), we
-			// cancel sin^2 (eta/2) in denominator and enumerator
 
-			//Cplx w = e_infty[i] * e_minus[i] //E_+ = E_infty E_-
-			//					* e_infty[j] * e_minus[j];// * 0.5 * (1.0+Lambda * Lambda) ;
-
-
-
-				//v *= e_infty_derivative[i] ;
-				Cplx de =  e_infty_eps[i] - e_infty[j];
-				double dq =  Q_Kr(i) + epsilon - Q_Kr(j);
-				//cout << "de " << de << endl;
-				v *= (de/dq);
-				V(i, j) = sqrt(Weight_Kr(i)) * (v) * sqrt(Weight_Kr(j)) ; //!
-				W(i, j) = sqrt(Weight_Kr(i)) * (v-w) * sqrt(Weight_Kr(j)) ; //!
-
-
-			if (i == j) {
-				V(i, j) += 1.0 ;
-				W(i, j) += 1.0 ;
+			if(i == j){
+				v *= e_infty_derivative[i];
+				V(i, j) = 1.0 + sqrt(Weight_Kr(i)) * v * sqrt(Weight_Kr(j)) ;
+				W(i, j) = 1.0 + sqrt(Weight_Kr(i)) * (v-w) * sqrt(Weight_Kr(j)) ;
 			} else {
+				Cplx de =  e_infty[i] - e_infty[j];
+				double dq =  Q_Kr(i) - Q_Kr(j);
+				v *= (de/dq);
+				V(i, j) = sqrt(Weight_Kr(i)) * v * sqrt(Weight_Kr(j)) ;
+				W(i, j) = sqrt(Weight_Kr(i)) * (v-w) * sqrt(Weight_Kr(j)) ;
+				V(j,i) = V(i,j);
+				W(j,i) = W(i,j);
+			}
+
+
+//				//v *= e_infty_derivative[i] ;
+//				Cplx de =  e_infty_eps[i] - e_infty[j];
+//				double dq =  Q_Kr(i) + epsilon - Q_Kr(j);
+//				//cout << "de " << de << endl;
+//				v *= (de/dq);
+//				V(i, j) = sqrt(Weight_Kr(i)) * (v) * sqrt(Weight_Kr(j)) ; //!
+//				W(i, j) = sqrt(Weight_Kr(i)) * (v-w) * sqrt(Weight_Kr(j)) ; //!
+//
+//				V(j,i) = V(i,j);
+//				W(j,i) = W(i,j);
+//
+//			if (i == j) {
+//				V(i, j) += 1.0 ;
+//				W(i, j) += 1.0 ;
+//			} else {
 //				v *= (e_infty[i] - e_infty[j]) ;
 //				v /= Q_Kr(i) - Q_Kr(j);
 //
@@ -188,7 +200,7 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 
 				//V(j, i) = V(i, j);
 				//W(j, i) = W(i, j);
-			}
+//			}
 		}
 	}
 

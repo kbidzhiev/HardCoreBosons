@@ -59,7 +59,7 @@ void TsliceCurve(double time_){
 	tslice.open("Data/"+filename, mode);
 	tslice.precision(15);
 
-	const double X_LIMITS = 10.0 ;
+	const double X_LIMITS = 5.0 ;
 	const double T_LIMITS = time_;  // Energy(Q_momenta(KF()));
 
 	for (double coordinate = -X_LIMITS; coordinate <= X_LIMITS; coordinate += 0.1) {
@@ -83,7 +83,7 @@ void XsliceCurve(double x){
 	const double X_LIMITS = x ;
 	const double T_LIMITS = 20.0 ;
 
-	for (double time = 0.25; time < T_LIMITS; time += 0.5) {
+	for (double time = 0.25; time < T_LIMITS; time += 0.1) {
 		//xslice << "\"t=" << time << "\"\n";
 		SpaceTime sp = { X_coordinate(X_LIMITS), T_time(time) };
 		//Cplx result = Asymptotics(sp);
@@ -134,20 +134,27 @@ void Gxt_sum(){
 	data.open("Data/" + filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 0.5 ;
+	const double X_LIMITS = 2.0 ;
 
-	const double T_min = 0.001 ;
-	const double T_max = 0.01 ;
-	const double dt = 0.001;
+	const double T_min = 0.1 ;
+	const double T_max = 0.15 ;
+	const double dt = 0.1;
 	const int n_max = (T_max - T_min)/dt;
 
 	map<double, Cplx> m_Gp0t;
 
 	int counter = 0;
 
-	const double dx = 0.001;
+	double dx = 0.01;
 
 	double deform_contour = 1;
+
+
+
+	Cplx Grep_value;
+	Cplx Grep_next_value;
+
+
 
 #pragma omp parallel for num_threads(omp_get_num_procs())
 	for (int n = 0; n <= n_max; ++n) {
@@ -157,25 +164,50 @@ void Gxt_sum(){
 
 		Cplx result = 0.0;
 
+		//bool recompute_dx = true;
 		for (double x = -X_LIMITS; x <= X_LIMITS; x += dx) {
-			X_coordinate coord (x + deform_contour * Cplx_i * x/ (1.0 + pow(x, 2)));
 
-			SpaceTime sp(coord, time);
+			auto Grep_of_xt = [&](double x_cor){
+				X_coordinate coord (x_cor + deform_contour * Cplx_i * x_cor/ (1.0 + pow(x_cor, 2)));
+				SpaceTime sp(coord, time);
+				Cplx j_cplx = -(pow(coord.value, 2) - 1.0) / pow(1.0 + pow(coord.value, 2), 2);
+				Cplx Jacobian = (1.0 + deform_contour * Cplx_i * j_cplx) ;
+				return Grep(sp) * Jacobian;
+			};
 
-			Cplx j_cplx = -(pow(coord.value, 2) - 1.0) / pow(1.0 + pow(coord.value, 2), 2);
-			Cplx Jacobian = (1.0 + deform_contour * Cplx_i * j_cplx) * dx;
-
-
-
-			Cplx tmp = Grep(sp) * Jacobian;
+			Grep_value = Grep_of_xt(x);
+			bool recompute_dx = true;
+			size_t attempt = 0;
+			while (recompute_dx){
+				Grep_next_value = Grep_of_xt(x+dx);
+				double next_contrib = abs((Grep_next_value - Grep_value)/Grep_value);
+				cout << "x = " << x << '\t' ;
+				cout << "dx = " << dx <<"\t grad = " << next_contrib << '\t';
+				if(next_contrib > 7*1E-2){
+					cout << "DEcrease dx " << endl;
+					dx /= 2.0;
+				} else if (next_contrib < 3*1E-2) {
+					cout << "INcrease dx" << endl;
+					dx *= 1.1;
+				} else {
+					recompute_dx = false;
+					cout << "dx is ok" << endl;
+				}
+				if(attempt > 100){
+					recompute_dx = false;
+					dx = 0.01;
+				}
+				cout << attempt++ << endl;
+			}
 
 			data_profile << x << '\t'
-					 << real(tmp) << '\t'
-					 << imag(tmp) << '\t'
-					 << time.value << "\n";
+					 << real(Grep_value) << '\t'
+					 << imag(Grep_value) << '\t'
+					 << time.value << endl;
 			//cout << tmp << '\n';
-			result += tmp;
-			//data_profile << coordinate << "\t" << real(result) << "\t" << imag(result) << endl;
+			result += Grep_value;
+
+			//Grep_value = Grep_next_value;
 		}
 		data_profile << "\n\n";
 
@@ -194,6 +226,45 @@ void Gxt_sum(){
 
 }
 
+void Profile2D(){
+	ofstream profile2D; //here I'm defining output streams, i.e. files
+	ios_base::openmode mode;
+	mode = std::ofstream::out; //Erase previous file (if present)
+	string filename = "Profile2D_" + to_string(GAUSS_RANK) + ".dat";
+	profile2D.open("Data/"+filename, mode);
+	profile2D.precision(15);
+
+	const double X_LIMITS = 5.0 ;
+	const double dx = 0.1 ;
+	const int Xtotal = 2*X_LIMITS/dx;
+
+	const double T_initial = 0.1;
+	const double T_LIMITS = 10.0;
+	const double dt = 0.1;
+	const int Ttotal = (T_LIMITS - T_initial)/dt;
+
+
+	for (int n_t = 0; n_t <= Ttotal; ++n_t) {
+		double time = T_initial + n_t * dt;
+
+		profile2D << "\"t = " << time <<"\"" << endl;
+		for (int n_x = 0; n_x <= Xtotal; ++n_x){
+
+						double coord = -X_LIMITS + n_x * dt;
+
+			SpaceTime sp = { X_coordinate(coord), T_time(time) };
+			Cplx result = Grep(sp);
+
+			profile2D << coord << '\t'
+					<< real(result) << '\t'
+					<< imag(result) << '\t'
+					<< time << "\n" ;
+
+			cout << n_x + n_t * Xtotal << " / " << (Xtotal + 1) * Ttotal << endl;
+		}
+		profile2D << endl << endl;
+	}
+}
 
 int main() {
 	LOG_DURATION("Total");
@@ -207,15 +278,16 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	//XsliceCurve(0.0); //
-	//TsliceCurve(10.0);//
+	XsliceCurve(3.0); //
+	//TsliceCurve(15.0);//
 
+	//Profile2D();
 
 	//Fourier1D();
 	//Fourier2D();
 	//Gpt();
 	//Determinant();
-	Gxt_sum();
+	//Gxt_sum();
 
 
 //	double eta = 1.0;
