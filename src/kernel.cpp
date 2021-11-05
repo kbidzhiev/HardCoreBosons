@@ -163,7 +163,11 @@ pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime spacetime){
 			Cplx w =  e_plus_for_W[i] * e_plus_for_W[j];
 
 			if(i == j){
-				v *= e_infty_derivative[i];
+				//v *= e_infty_derivative[i];
+				Cplx de =  e_infty_eps[i] - e_infty[j];
+				double dq =  Q_Kr(i) + epsilon - Q_Kr(j);
+				v *= (de/dq);
+
 				V(i, j) = 1.0 + sqrt(Weight_Kr(i)) * v * sqrt(Weight_Kr(j)) ;
 				W(i, j) = 1.0 + sqrt(Weight_Kr(i)) * (v-w) * sqrt(Weight_Kr(j)) ;
 			} else {

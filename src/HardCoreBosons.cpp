@@ -134,18 +134,18 @@ void Gxt_sum(){
 	data.open("Data/" + filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 2.0 ;
+	const double X_LIMITS = 10.0 ;
 
-	const double T_min = 0.1 ;
-	const double T_max = 0.15 ;
-	const double dt = 0.1;
+	const double T_min = 0.0001 ;
+	const double T_max = 10.0 ;
+	const double dt = 0.0001;
 	const int n_max = (T_max - T_min)/dt;
 
 	map<double, Cplx> m_Gp0t;
 
 	int counter = 0;
 
-	double dx = 0.01;
+	double dx = 0.001;
 
 	double deform_contour = 1;
 
@@ -161,7 +161,6 @@ void Gxt_sum(){
 		T_time time(T_min + n * dt);
 		data_profile << "\"t = " << time.value << "\"\n";
 
-
 		Cplx result = 0.0;
 
 		//bool recompute_dx = true;
@@ -176,8 +175,9 @@ void Gxt_sum(){
 			};
 
 			Grep_value = Grep_of_xt(x);
-			bool recompute_dx = true;
+			bool recompute_dx = false;
 			size_t attempt = 0;
+
 			while (recompute_dx){
 				Grep_next_value = Grep_of_xt(x+dx);
 				double next_contrib = abs((Grep_next_value - Grep_value)/Grep_value);
@@ -205,15 +205,23 @@ void Gxt_sum(){
 					 << imag(Grep_value) << '\t'
 					 << time.value << endl;
 			//cout << tmp << '\n';
-			result += Grep_value;
+			result += Grep_value * dx;
 
 			//Grep_value = Grep_next_value;
+
+			cout << static_cast<double>(counter)
+					<<"/"
+					<< (n_max+1) * 2 * X_LIMITS/dx
+					<< '\t'
+					<< static_cast<double>(counter) / ((n_max + 1) * 2.0 * X_LIMITS/dx)
+					<< " %" << endl;
+			++counter;
 		}
 		data_profile << "\n\n";
 
 		m_Gp0t[time.value] = result;
 
-		cout << static_cast<double>(counter++)/(n_max+1) << " %" << endl;
+
 	}
 
 	for(auto &[t,G] : m_Gp0t){
@@ -278,7 +286,7 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	XsliceCurve(3.0); //
+	//XsliceCurve(3.0); //
 	//TsliceCurve(15.0);//
 
 	//Profile2D();
@@ -287,7 +295,7 @@ int main() {
 	//Fourier2D();
 	//Gpt();
 	//Determinant();
-	//Gxt_sum();
+	Gxt_sum();
 
 
 //	double eta = 1.0;
