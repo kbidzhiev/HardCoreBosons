@@ -161,8 +161,11 @@ void Gxt_sum(){
 
 
 //#pragma omp parallel for num_threads(omp_get_num_procs())
-	for (int n = 0; n <= n_max; ++n) {
-		T_time time(T_min + n * dt);
+
+	for (double time_d = T_min; time_d <= T_max; time_d *= 1.1) {
+	//	for (int n = 0; n <= n_max; ++n) {
+	//	T_time time(T_min + n * dt);
+		T_time time(time_d);
 		data_profile << "\"t = " << time.value << "\"\n";
 
 		Cplx result = 0.0;
