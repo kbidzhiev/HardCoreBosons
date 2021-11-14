@@ -128,6 +128,7 @@ void Gxt_sum(){
 	string filename_profile = "Gxt_profile_"  + to_string(GAUSS_RANK) + ".dat";
 	data_profile.open("Data/" + filename_profile, mode);
 	data_profile.precision(15);
+	data_profile << "#time \t Re G(p=0,t) \t Im G(p=0,t)" << endl;
 
 
 	string filename = "Gxt_sum_"  + to_string(GAUSS_RANK) + ".dat";
@@ -136,19 +137,18 @@ void Gxt_sum(){
 
 	const double X_LIMITS = 10.0 ;
 
-	const double T_min = 0.0001 ;
+	const double T_min = 0.01 ;
 	const double T_max = 10.0 ;
-	const double dt = 0.0001;
+	const double dt = 0.01;
 	const int n_max = (T_max - T_min)/dt;
 
 	map<double, Cplx> m_Gp0t;
 
 	int counter = 0;
 
-	double dx = 0.001;
+	double dx = 0.01;
 
 	double deform_contour = 1;
-
 
 
 	Cplx Grep_value;
@@ -156,7 +156,7 @@ void Gxt_sum(){
 
 
 
-#pragma omp parallel for num_threads(omp_get_num_procs())
+//#pragma omp parallel for num_threads(omp_get_num_procs())
 	for (int n = 0; n <= n_max; ++n) {
 		T_time time(T_min + n * dt);
 		data_profile << "\"t = " << time.value << "\"\n";
@@ -178,9 +178,9 @@ void Gxt_sum(){
 			bool recompute_dx = false;
 			size_t attempt = 0;
 
-			while (recompute_dx){
+			if (recompute_dx){
 				Grep_next_value = Grep_of_xt(x+dx);
-				double next_contrib = abs((Grep_next_value - Grep_value)/Grep_value);
+				double next_contrib = abs((Grep_next_value - Grep_value)/dx);
 				cout << "x = " << x << '\t' ;
 				cout << "dx = " << dx <<"\t grad = " << next_contrib << '\t';
 				if(next_contrib > 7*1E-2){
@@ -190,12 +190,7 @@ void Gxt_sum(){
 					cout << "INcrease dx" << endl;
 					dx *= 1.1;
 				} else {
-					recompute_dx = false;
 					cout << "dx is ok" << endl;
-				}
-				if(attempt > 100){
-					recompute_dx = false;
-					dx = 0.01;
 				}
 				cout << attempt++ << endl;
 			}
@@ -220,7 +215,6 @@ void Gxt_sum(){
 		data_profile << "\n\n";
 
 		m_Gp0t[time.value] = result;
-
 
 	}
 
