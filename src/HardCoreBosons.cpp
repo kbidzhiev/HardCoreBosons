@@ -135,12 +135,12 @@ void Gxt_sum(){
 	data.open("Data/" + filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 2.0 ;
+	const double X_LIMITS = 10.0 ;
 
 
 
 	const double T_min = 0.001 ;
-	const double T_max = 1.0 ;
+	const double T_max = 10.0 ;
 	const double dt = 0.001;
 	const int n_max = (T_max - T_min)/dt;
 
