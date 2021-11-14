@@ -137,9 +137,9 @@ void Gxt_sum(){
 
 	const double X_LIMITS = 10.0 ;
 
-	const double T_min = 0.01 ;
+	const double T_min = 0.1 ;
 	const double T_max = 10.0 ;
-	const double dt = 0.01;
+	const double dt = 0.1;
 	const int n_max = (T_max - T_min)/dt;
 
 	map<double, Cplx> m_Gp0t;
