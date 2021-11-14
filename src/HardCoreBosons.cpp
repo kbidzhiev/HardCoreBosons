@@ -137,6 +137,8 @@ void Gxt_sum(){
 
 	const double X_LIMITS = 10.0 ;
 
+
+
 	const double T_min = 0.1 ;
 	const double T_max = 10.0 ;
 	const double dt = 0.1;
@@ -147,6 +149,8 @@ void Gxt_sum(){
 	int counter = 0;
 
 	double dx = 0.01;
+	const int nx_max = 2 * X_LIMITS /dx;
+
 
 	double deform_contour = 1;
 
@@ -164,7 +168,9 @@ void Gxt_sum(){
 		Cplx result = 0.0;
 
 		//bool recompute_dx = true;
-		for (double x = -X_LIMITS; x <= X_LIMITS; x += dx) {
+#pragma omp parallel for num_threads(omp_get_num_procs())
+		for (int n_x = 0; n_x <= nx_max; ++n_x) {
+			double x = -X_LIMITS + n_x * dx;
 
 			auto Grep_of_xt = [&](double x_cor){
 				X_coordinate coord (x_cor + deform_contour * Cplx_i * x_cor/ (1.0 + pow(x_cor, 2)));
