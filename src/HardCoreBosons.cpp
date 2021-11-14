@@ -135,20 +135,20 @@ void Gxt_sum(){
 	data.open("Data/" + filename, mode);
 	data.precision(15);
 
-	const double X_LIMITS = 10.0 ;
+	const double X_LIMITS = 2.0 ;
 
 
 
-	const double T_min = 0.1 ;
-	const double T_max = 10.0 ;
-	const double dt = 0.1;
+	const double T_min = 0.001 ;
+	const double T_max = 1.0 ;
+	const double dt = 0.001;
 	const int n_max = (T_max - T_min)/dt;
 
 	map<double, Cplx> m_Gp0t;
 
 	int counter = 0;
 
-	double dx = 0.01;
+	double dx = 0.001;
 	const int nx_max = 2 * X_LIMITS /dx;
 
 
