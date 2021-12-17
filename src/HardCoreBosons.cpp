@@ -83,7 +83,7 @@ void XsliceCurve(double x){
 	const double X_LIMITS = x ;
 	const double T_LIMITS = 20.0 ;
 
-	for (double time = 0.25; time < T_LIMITS; time += 0.1) {
+	for (double time = 0.1; time < T_LIMITS; time += 0.1) {
 		//xslice << "\"t=" << time << "\"\n";
 		SpaceTime sp = { X_coordinate(X_LIMITS), T_time(time) };
 		//Cplx result = Asymptotics(sp);
@@ -289,8 +289,8 @@ int main() {
 	//LambdaCurve();
 	//CorrelatorCurve();
 
-	//XsliceCurve(3.0); //
-	//TsliceCurve(15.0);//
+	XsliceCurve(0.0); //
+	//TsliceCurve(10.0);//
 
 	//Profile2D();
 
@@ -298,7 +298,7 @@ int main() {
 	//Fourier2D();
 	//Gpt();
 	//Determinant();
-	Gxt_sum();
+	//Gxt_sum();
 
 
 //	double eta = 1.0;
