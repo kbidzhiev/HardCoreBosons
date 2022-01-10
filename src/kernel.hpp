@@ -27,7 +27,7 @@ const double MAGN_FIELD = 0.;
 
 
 
-const size_t GAUSS_RANK = 41;		// use only ODD = 2n+1 numbers; Precomputed 15, 31, 41, 51 and 61
+const size_t GAUSS_RANK = 60;		// use only ODD = 2n+1 numbers; Precomputed 15, 31, 41, 51 and 61
 const size_t GAUSS_RANK_l = 10; 	 // Use only EVEN rank
 /*
  * increasing of GAUSS_RANK_l improves GrepEta_l(eta, spacetime).
@@ -36,10 +36,10 @@ const size_t GAUSS_RANK_l = 10; 	 // Use only EVEN rank
  * */
 const size_t GAUSS_INTEGRATION = 31; // Use only ODD 2n+1 rank // Precomputed 15, 31, 41, 51 and 61
 
-//const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
+const gauss<double, GAUSS_RANK> g; // Use only even size; g has pre-computed tables of abscissa and weights for 7, 15, 20, 25 and 30 points
 
 
-const gauss_kronrod<double, GAUSS_RANK> g; //  Precomputed 15, 31, 41, 51 and 61
+//const gauss_kronrod<double, GAUSS_RANK> g; //  Precomputed 15, 31, 41, 51 and 61
 
 
 //const gauss<double, GAUSS_RANK> g; // Precomputed //7, 15, 20, 25 and 30
@@ -91,12 +91,18 @@ double Energy(Q_momenta q_momenta);
 complex<double> Tau(Q_momenta q_momenta,  SpaceTime st);
 double Theta (Q_momenta q_momenta);
 Cplx Eminus (Q_momenta q_momenta,  SpaceTime st);
+Cplx Einf (double eta, Q_momenta q_momenta,  SpaceTime spacetime);
+Cplx Eplus (double eta, Q_momenta q_momenta,  SpaceTime spacetime);
 Cplx PrincipalValue(Q_momenta q_momenta,  SpaceTime st);
 Cplx PrincipalValue_old(Q_momenta q_momenta,  SpaceTime st);
 Cplx G0 (SpaceTime st);
 pair <Cplx, Cplx> Determinants(double Lambda, SpaceTime st);
 Cplx GrepLambda(double Lambda,  SpaceTime st);
 Cplx Grep(SpaceTime st);
+
+pair <Cplx, Cplx> Determinants_eta(double eta, SpaceTime st);
+Cplx GrepEta(double eta,  SpaceTime st);
+Cplx Grep_new(SpaceTime st);
 
 /////////// Lattice version ///////////
 double Energy_l(Q_momenta q_momenta);
