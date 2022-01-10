@@ -123,20 +123,20 @@ void Gxt_sum(){
 	string filename = "Gxt_sum_"  + to_string(GAUSS_RANK) + ".dat";
 	data.open("Data/" + filename, mode);
 	data.precision(15);
-	const double X_LIMITS = 2.5 ;
+	const double X_LIMITS = 5.0 ;
 	const double T_min = 0.001 ;
 	const double T_max = 1.0 ;
 	const double dt = 0.01;
 	const int n_max = (T_max - T_min)/dt;
 	map<double, Cplx> m_Gp0t;
 	int counter = 0;
-	double dx = 0.05;
+	double dx = 0.01;
 	const int nx_max = 2 * X_LIMITS /dx;
 	double deform_contour = 1;
 	Cplx Grep_value;
 	Cplx Grep_next_value;
 //#pragma omp parallel for num_threads(omp_get_num_procs())
-	for (double time_d = T_min; time_d <= T_max; time_d *= 2.0) {
+	for (double time_d = T_min; time_d <= T_max; time_d *= 1.1) {
 	//	for (int n = 0; n <= n_max; ++n) {
 	//	T_time time(T_min + n * dt);
 		T_time time(time_d);
@@ -190,7 +190,7 @@ void Gxt_sum(){
 	}
 	for(auto &[t,G] : m_Gp0t){
 		data << t << '\t'
-				<< real(G) << '\t' << imag(G) << '\n';
+				<< real(G) << '\t' << imag(G)  << '\t' << abs(G) << '\n';
 	}
 	cout << "Done !" << endl;
 }
