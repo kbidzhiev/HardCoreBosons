@@ -230,9 +230,9 @@ void Profile2D(){
 }
 
 
-void RayCurve(double zeta){
+void RayCurve(double ray){
 	std::ostringstream strs;
-	strs << zeta;
+	strs << ray;
 	std::string zeta_str = strs.str();
 
 
@@ -249,9 +249,9 @@ void RayCurve(double zeta){
 
 	for (double t = 0.1; t <= T_LIMITS; t += 0.1) {
 		cout << t << " / " << T_LIMITS  << endl;
-		SpaceTime st = {X_coordinate(zeta*t), T_time(t)};
+		SpaceTime st = {X_coordinate(ray*t), T_time(t)};
 
-		Cplx result = GrepLambda(0, st);
+		Cplx result = GrepEta(0.0, st);
 		tslice << t << "\t" << real(result) << "\t" << imag(result)
 				<< "\t" << abs(result)<< endl;
 	}
@@ -271,12 +271,12 @@ int main() {
 
 	//XsliceCurve(0.0); //
 	//TsliceCurve(10.0);//
-	//RayCurve(0.2);
+	RayCurve(0.5);
 	//LambdaCurve();
 
 	double eta = 0.1;
 	Q_momenta q{1.5};
-	SpaceTime st = {X_coordinate(1.7), T_time(1.0)};
+	SpaceTime st = {X_coordinate(0.5), T_time(1.0)};
 
 	cout << "KF = " << KF() << endl;
 	cout << "G0 = " << G0(st) << endl;
@@ -296,7 +296,7 @@ int main() {
 	//Fourier2D();
 	//Gpt();
 	//Determinant();
-	Gxt_sum();
+	//Gxt_sum();
 
 
 //	double eta = 1.0;
